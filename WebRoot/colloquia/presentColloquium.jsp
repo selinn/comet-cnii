@@ -231,7 +231,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Posted By:</td>
+					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Posted:</td>
 					<td colspan="2" style="font-size: 0.75em;"><a href="calendar.do?user_id=<%=rs.getString("owner_id")%>"><%=rs.getString("owner")%></a> <b>on</b>&nbsp;
 <% 
 			sql = "SELECT date_format(MIN(lastupdate),_utf8'%b %d %r') posttime " +
@@ -342,7 +342,21 @@
 		if(ub != null){
 			uid = ub.getUserID();
 		} 
-		sql = "INSERT INTO talkview (user_id,viewTime,col_id) VALUES (" + uid + ",NOW()," + col_id + ")";
+		String sessionID = session.getId();
+		Cookie cookies[] = request.getCookies();
+		//Find session id
+		boolean foundSessionID = false;
+		if(cookies != null){
+			for(int i=0;i<cookies.length;i++){
+				Cookie c = cookies[i];
+			    if (c.getName().equalsIgnoreCase("sessionid")) {
+			        sessionID = c.getValue();
+			    	foundSessionID = true;
+			    }			
+			}
+		}
+		String ipaddress = request.getRemoteAddr();
+		sql = "INSERT INTO talkview (user_id,viewTime,col_id,ipaddress,sessionid) VALUES (" + uid + ",NOW()," + col_id + ",'" + ipaddress + "','" + sessionID + "')";
 		conn.executeUpdate(sql);
 
 		if(ub != null){
@@ -429,7 +443,7 @@
 			}else{
 				styleBookmark = "style=\"height: 0px;overflow: hidden;\"";
 %>
-					<td colspan="2" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">
+					<td colspan="3" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">
 						Your Note
 					</td>
 					<td width="40%" bgcolor="#efefef" align="right">
@@ -673,6 +687,11 @@
 		</td>
 		<td width="90" valign="top">
 			<table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
+				<tr>
+					<td>
+						<tiles:insert template="/utils/impact.jsp" />
+					</td>
+				</tr>
 				<tr>
 					<td>
 						<%@include file="/utils/feed.jsp" %>
