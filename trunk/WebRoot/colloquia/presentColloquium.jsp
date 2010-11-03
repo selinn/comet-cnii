@@ -6,6 +6,7 @@
 <%@page import="java.util.Vector"%>
 <%@page import="java.util.Collections"%>
 <%@page import="java.util.Iterator"%>
+<%@page import="java.net.URLEncoder"%>
 
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html" prefix="html" %>
@@ -13,6 +14,7 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-template" prefix="template" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-nested" prefix="nested" %>
+
 
 <script type="text/javascript">
 	var oAJAXIFrame = null;
@@ -204,15 +206,57 @@
 <!--
 	window.onload = function(){
 		var aTitle = "CoMeT | ";
-		aTitle = aTitle.concat("<%=title%>");
+		aTitle = aTitle.concat("<%=title %>");
 		setDocumentTitle(aTitle);
 	};
 //-->
 </script>
 <table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
-		<td width="790" valign="top">
+		<td width="770" valign="top">
 			<table width="100%" cellspacing="0" cellpadding="0" align="left" style="padding-right: 1px;">
+				<tr>
+					<td width="100%" colspan="3">
+
+<% 
+			String path = request.getContextPath();
+			String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
+			String paperPath = basePath + "presentColloquium.do?col_id=" + col_id;
+%>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
+							<tr>
+								<td align="center" width="25%">
+									<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
+									<fb:like href="<%=paperPath %>" layout="button_count" action="recommend"></fb:like>		
+								</td>
+								<td align="center" width="25%">
+									<a href="http://twitter.com/share" class="twitter-share-button" data-text="<%=title %>" 
+										data-url="<%=paperPath %>" data-count="horizontal">Tweet</a>
+									<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+								</td>
+								<td align="center" width="25%">
+									<a title="Post to Google Buzz" class="google-buzz-button" href="http://www.google.com/buzz/post" 
+										data-button-style="small-count" data-url="<%=paperPath %>"></a>
+									<script type="text/javascript" src="http://www.google.com/buzz/api/button.js"></script>		
+								</td>
+								<td align="center" width="25%">
+									<!-- AddThis Button BEGIN -->
+									<div class="addthis_toolbox addthis_default_style">
+										<a class="addthis_counter addthis_pill_style" href="http://www.addthis.com/bookmark.php" 
+											addthis:url="<%=paperPath %>" addthis:title="<%=title %>" ></a>
+									</div>
+									<script type="text/javascript">var addthis_config = {"data_track_clickback":true};</script>
+									<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=chirayukong"></script>
+									<!-- AddThis Button END -->
+								</td>
+							</tr>	
+						</table>
+
+					</td>
+				</tr>
+				<tr>
+					<td colspan="3">&nbsp;</td>
+				</tr>
 				<tr>
 					<td colspan="3" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
@@ -443,7 +487,7 @@
 			}else{
 				styleBookmark = "style=\"height: 0px;overflow: hidden;\"";
 %>
-					<td colspan="3" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">
+					<td colspan="2" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">
 						Your Note
 					</td>
 					<td width="40%" bgcolor="#efefef" align="right">
@@ -559,7 +603,7 @@
 										</td>
 									</tr>
 									<tr>
-										<td colspan="2"><input type="submit" class="btn" value="Save" /></td>
+										<td colspan="3"><input type="submit" class="btn" value="Save" /></td>
 									</tr>
 								</table>
 							</html:form>
@@ -685,7 +729,7 @@
 %>
 			</table>
 		</td>
-		<td width="90" valign="top">
+		<td width="110" valign="top">
 			<table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
 				<tr>
 					<td>
@@ -694,7 +738,7 @@
 				</tr>
 				<tr>
 					<td>
-						<%@include file="/utils/feed.jsp" %>
+						<tiles:insert template="/utils/feed.jsp" />
 						<tiles:insert template="/utils/tagCloud.jsp" />
 					</td>
 				</tr>
