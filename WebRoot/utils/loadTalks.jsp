@@ -472,6 +472,7 @@
 		}
 		//Show talk snap shot
 		String col_id = rs.getString("col_id");
+		String title = rs.getString("title");
 %>
 					<tr>
 <% 
@@ -600,7 +601,7 @@
 									</td>
 									<td width="90.5%" valign="top">
 
-							<b><a href="presentColloquium.do?col_id=<%=col_id%>"><%=rs.getString("title")%></a></b>
+							<b><a href="presentColloquium.do?col_id=<%=col_id%>"><%=title%></a></b>
 <% 
 		String video_url = rs.getString("video_url");
 		if(video_url != null){
@@ -776,8 +777,43 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 							<br/><b>Bookmarked by:</b><%=bookmarks%>
 <%			
 		}
+		String path = request.getContextPath();
+		String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
+		String paperPath = basePath + "presentColloquium.do?col_id=" + col_id;
 %>
 							</span>
+<%-- 
+<br/><br/>							
+<table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
+	<tr>
+		<td align="center" width="25%">
+			<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
+			<fb:like href="<%=paperPath %>" layout="button_count" action="recommend"></fb:like>		
+		</td>
+		<td align="center" width="25%">
+			<a href="http://twitter.com/share" class="twitter-share-button" data-text="<%=title %>" 
+				data-url="<%=paperPath %>" data-count="horizontal">Tweet</a>
+			<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+		</td>
+		<td align="center" width="25%">
+			<a title="Post to Google Buzz" class="google-buzz-button" href="http://www.google.com/buzz/post" 
+				data-button-style="small-count" data-url="<%=paperPath %>"></a>
+			<script type="text/javascript" src="http://www.google.com/buzz/api/button.js"></script>		
+		</td>
+		<td align="center" width="25%">
+			<!-- AddThis Button BEGIN -->
+			<div class="addthis_toolbox addthis_default_style">
+				<a class="addthis_counter addthis_pill_style" href="http://www.addthis.com/bookmark.php" 
+					addthis:url="<%=paperPath %>" addthis:title="<%=title %>" ></a>
+			</div>
+			<script type="text/javascript">var addthis_config = {"data_track_clickback":true};</script>
+			<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=chirayukong"></script>
+			<!-- AddThis Button END -->
+		</td>
+	</tr>	
+</table>
+<br/>							
+--%>
 
 									</td>
 								</tr>
