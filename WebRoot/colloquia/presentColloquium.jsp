@@ -240,6 +240,7 @@
 									<script type="text/javascript" src="http://www.google.com/buzz/api/button.js"></script>		
 								</td>
 								<td align="center" width="25%">
+<%-- 
 									<!-- AddThis Button BEGIN -->
 									<div class="addthis_toolbox addthis_default_style">
 										<a class="addthis_counter addthis_pill_style" href="http://www.addthis.com/bookmark.php" 
@@ -248,6 +249,7 @@
 									<script type="text/javascript">var addthis_config = {"data_track_clickback":true};</script>
 									<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=chirayukong"></script>
 									<!-- AddThis Button END -->
+--%>								
 								</td>
 							</tr>	
 						</table>
@@ -742,6 +744,7 @@
 						<tiles:insert template="/utils/tagCloud.jsp" />
 					</td>
 				</tr>
+<%-- 
 				<tr>
 					<td>
 						<tiles:insert template="/utils/scholarCitationStat.jsp" />
@@ -750,6 +753,7 @@
 				<tr>
 					<td>&nbsp;</td>
 				</tr>
+--%>
 				<tr>
 					<td valign="top">
 						<tiles:insert template="/utils/namedEntity.jsp" />
