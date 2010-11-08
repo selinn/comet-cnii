@@ -598,6 +598,7 @@
 %>
 													<td colspan="<%=(3-row%3)%>" style="font-size: 0.75em;">&nbsp;</td>
 												</tr>
+
 <%		
 			}
 %>										
