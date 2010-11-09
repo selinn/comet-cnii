@@ -504,11 +504,17 @@
 		
 		//How many views
 		int viewno = 0;
-		sql = "SELECT COUNT(*) _no FROM talkview WHERE col_id=" + col_id;
+		sql = "SELECT ipaddress,sessionid,COUNT(*) _no FROM talkview WHERE col_id=" + col_id + " GROUP BY ipaddress,sessionid";
 		rsExt = conn.getResultSet(sql);
 		if(rsExt!=null){
 			if(rsExt.next()){
-				viewno = rsExt.getInt("_no");
+				String ipaddress = rsExt.getString("ipaddress");
+				String sessionid = rsExt.getString("sessionid").trim().toLowerCase();
+				if(ipaddress.trim().length()==0||sessionid.trim().length()==0){
+					viewno += rsExt.getInt("_no");
+				}else{
+					viewno++;
+				}
 			}
 		}
 		
