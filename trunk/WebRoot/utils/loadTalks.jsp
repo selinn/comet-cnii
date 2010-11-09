@@ -509,7 +509,7 @@
 		if(rsExt!=null){
 			if(rsExt.next()){
 				String ipaddress = rsExt.getString("ipaddress");
-				String sessionid = rsExt.getString("sessionid").trim().toLowerCase();
+				String sessionid = rsExt.getString("sessionid");
 				if(ipaddress.trim().length()==0||sessionid.trim().length()==0){
 					viewno += rsExt.getInt("_no");
 				}else{
