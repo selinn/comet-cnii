@@ -507,7 +507,7 @@
 		sql = "SELECT ipaddress,sessionid,COUNT(*) _no FROM talkview WHERE col_id=" + col_id + " GROUP BY ipaddress,sessionid";
 		rsExt = conn.getResultSet(sql);
 		if(rsExt!=null){
-			if(rsExt.next()){
+			while(rsExt.next()){
 				String ipaddress = rsExt.getString("ipaddress");
 				String sessionid = rsExt.getString("sessionid");
 				if(ipaddress.trim().length()==0||sessionid.trim().length()==0){
