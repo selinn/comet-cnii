@@ -107,7 +107,11 @@
 		sql+=" AND c.col_id IN (SELECT ee.col_id FROM entities ee,entity e " +
 				"WHERE ee.entity_id = e.entity_id AND e._type  IN (" + type_list + "))"; 
 	}
-	sql += " ORDER BY c._date DESC";
+	sql += " c.col_id,c.title," +
+			"cast(c.detail as char character set utf8), date_format(c._date,_utf8'%b %e %Y')," +
+			"date_format(c.begintime,_utf8'%l:%i %p'), date_format(c.endtime,_utf8'%l:%i %p')," +
+			"s.name,c.location,c.owner_id,u.name " +
+			"ORDER BY c._date DESC";
 
 	DateFormat formatter = new SimpleDateFormat("MMM d yyyy h:m a");
 	
@@ -116,7 +120,7 @@
 		String _col_id = rs.getString("col_id");
 		String location = rs.getString("location");
 		String description = rs.getString("detail");
-        String link = "http://washington.sis.pitt.edu/comet/presentColloquium.do?col_id=" + _col_id;	
+        String link = "http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=" + _col_id;	
 		
 		String talkDate = rs.getString("day");
 		// Begin Date
