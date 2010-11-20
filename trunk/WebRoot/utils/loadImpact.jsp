@@ -19,6 +19,11 @@
 <div id="divImpactContent">
 
 <% 
+final String[] months = {"January","Febuary","March",
+	    "April","May","June",
+	    "July","August","September",
+	    "October","November","December"};
+
 	connectDB conn = new connectDB();
 	session = request.getSession(false);
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
@@ -91,12 +96,15 @@
 	String strBeginDate = "";
 	String strEndDate = "";
 	
+	String strDisplayDateRange = "";
 	/*****************************************************************/
 	/* Day View                                                      */
 	/*****************************************************************/
 	if(req_day > 0){
 		strBeginDate = req_year + "-" + req_month + "-" + req_day;
 		strEndDate = req_year + "-" + req_month + "-" + req_day;
+
+		strDisplayDateRange = "Date: " + months[req_month-1] + " " + req_day + ", " + req_year; 
 	}else{
 	    if(req_month == 1){
 	    	setcal.set(req_year-1, 11, 1);
@@ -108,25 +116,38 @@
 	/* Week View                                                     */
 	/*****************************************************************/
 		if(req_week > 0){
+			strDisplayDateRange = "Week " + req_week + " of " + months[req_month-1] + ": ";
 			if(startday == 0){
 				strBeginDate = req_year + "-" + req_month + "-" + (7*(req_week-1) + 1);
+				strDisplayDateRange += " " + (7*(req_week-1) + 1);
 			}else{
 				if(req_week == 1){
 					strBeginDate = req_year + "-" + (req_month-1) + "-" + (daysPrevMonth - startday + 1);
 					if(req_month==1){
 						strBeginDate = (req_year-1) + "-12-" + (daysPrevMonth - startday + 1);
-					}		
+						strDisplayDateRange += months[11] + " " + (daysPrevMonth - startday + 1) + ", " + (req_year-1);
+					}else{
+						strDisplayDateRange += months[req_month-2] + " " + (daysPrevMonth - startday + 1);
+					}
 				}else{
 					strBeginDate = req_year + "-" + req_month + "-" + (7*(req_week - 1) - startday + 1);		
+					strDisplayDateRange += months[req_month-1] + " " + (7*(req_week - 1) - startday + 1);
 				}
 			}
 			if(7*req_week - startday <= stopday ){
 				strEndDate = req_year + "-" + req_month + "-" + (7*req_week - startday);			
+				if(req_week == 1){
+					strDisplayDateRange += " - " + months[req_month-1] + " " + (7*req_week - startday) + ", " + req_year;
+				}else{
+					strDisplayDateRange += " - " + (7*req_week - startday) + ", " + req_year;
+				}
 			}else{
 				if(req_month == 12){
 					strEndDate = (req_year+1) + "-1-" + (7 - ((startday + stopday)%7));
+					strDisplayDateRange += " - " + months[0] + " " + (7 - ((startday + stopday)%7)) + ", " + (req_year+1);
 				}else{
 					strEndDate = (req_year) + "-" + (req_month+1) + "-" +(7 - ((startday + stopday)%7));
+					strDisplayDateRange += " - " + months[req_month] + " " + (7 - ((startday + stopday)%7)) + ", " + (req_year);
 				}
 			}
 			if(req_most_recent){
@@ -139,20 +160,30 @@
     /*****************************************************************/
 			if(startday == 0){
 				strBeginDate = req_year + "-" + req_month + "-1";
+				strDisplayDateRange = "Month: " + months[req_month-1] + " " + req_year + ": 1";
 			}else{
 				if(req_month == 1){
 					strBeginDate = (req_year-1) + "-12-" + (31 - startday + 1);
+					strDisplayDateRange = "Month: " + months[req_month-1] + " " + req_year + ": " + months[11] + " " + (31 - startday + 1) + ", " + (req_year-1);
 				}else{
 					strBeginDate = req_year + "-" + (req_month-1) + "-" + (daysPrevMonth - startday + 1);		
+					if(req_month == 12){
+						strDisplayDateRange = "Month: " + months[req_month-1] + " " + req_year + ": " + months[req_month-2] + " " + (daysPrevMonth - startday + 1) + ", " + req_year;
+					}else{
+						strDisplayDateRange = "Month: " + months[req_month-1] + " " + req_year + ": " + months[req_month-2] + " " + (daysPrevMonth - startday + 1);						
+					}
 				}
 			}
 			if((startday + stopday)%7 == 0){
 				strEndDate = req_year + "-" + req_month + "-" + (stopday);
+				strDisplayDateRange += " - " + months[req_month-1] + " " + (stopday) + ", " + req_year;
 			}else{
 				if(req_month == 12){
 					strEndDate = (req_year+1) + "-1-" + (7 - ((startday + stopday)%7));
+					strDisplayDateRange += " - " + months[0] + " " + (7 - ((startday + stopday)%7)) + ", " + (req_year+1);
 				}else{
 					strEndDate = (req_year) + "-" + (req_month + 1) + "-" +(7 - ((startday + stopday)%7));
+					strDisplayDateRange += " - " + months[req_month] + " " + (7 - ((startday + stopday)%7)) + ", " + req_year;
 				}
 			}
 		}
@@ -166,7 +197,7 @@
     HashMap<Integer,String> viewColDateMap = new HashMap<Integer,String>();
 	String sql = "SELECT date_format(c._date,_utf8'%W, %b %e, %Y') AS 'day', c.col_id, c.title, " +
 					"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
-					"s.name,COUNT(*) AS view_no " +
+					"s.name,tv.ipaddress,tv.sessionid,COUNT(*) AS view_no " +
 					"FROM talkview tv INNER JOIN colloquium c ON tv.col_id = c.col_id " +
 					"INNER JOIN speaker s ON s.speaker_id = c.speaker_id " + 
 					"WHERE " +
@@ -220,7 +251,7 @@
 	}
 	sql += " GROUP BY date_format(c._date,_utf8'%W, %b %e, %Y'), c.col_id, c.title, " +
 					"date_format(c.begintime,_utf8'%l:%i %p'), date_format(c.endtime,_utf8'%l:%i %p'), " +
-					"s.name";
+					"s.name,tv.ipaddress,tv.sessionid";
 	String day = "";
 	//out.println(sql);
 	ResultSet rs = conn.getResultSet(sql);
@@ -237,8 +268,27 @@
 			String title = rs.getString("title");
 			int _viewno = rs.getInt("view_no");
 			viewTitleMap.put(title,col_id);
-			viewCountMap.put(col_id,_viewno);
-			viewno += _viewno;	
+			
+			String ipaddress = rs.getString("ipaddress");
+			String sessionid = rs.getString("sessionid").trim().toLowerCase();
+			
+			int _prev_viewno = 0;
+			if(ipaddress.trim().length()==0||sessionid.trim().length()==0){
+				if(viewCountMap.containsKey(col_id)){
+					_prev_viewno = viewCountMap.get(col_id);
+				}
+				viewCountMap.put(col_id,_prev_viewno + _viewno);
+				
+				viewno += _viewno;
+			}else{
+				if(viewCountMap.containsKey(col_id)){
+					_prev_viewno = viewCountMap.get(col_id);
+				}
+				viewCountMap.put(col_id,_prev_viewno + 1);
+
+				viewno++;
+			}
+
 			String colDate = "<span style=\"font-size: 0.75em;\"><b>By:</b> " + rs.getString("name") + "&nbsp;" +
 								"<b>on:</b> " + rs.getString("day") + " " + rs.getString("_begin")+ " - " + rs.getString("_end") + "</span>";
 			viewColDateMap.put(col_id,colDate);
@@ -462,7 +512,14 @@
 				bookmarkerMap.put(col_id,bookmarker);
 			}
 		}
-
+%>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+		<tr>
+			<td><%=strDisplayDateRange%></td>
+		</tr>
+<%
 		if(bookmarkno > 0){
 %>
 		<tr>
