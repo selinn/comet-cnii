@@ -1,5 +1,6 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@page import="edu.pitt.sis.db.connectDB"%>
+<%@page import="edu.pitt.sis.form.ColloquiumForm"%>
 <%@page import="java.sql.ResultSet"%>
 <%@page import="java.util.HashSet"%>
 
@@ -37,7 +38,18 @@
 
 	
 <logic:present name="Colloquium">
-<span style="font-size: 0.8em;font-weight: bold;">Submit Successful!</span><br/>
+<% 
+	ColloquiumForm cqf = (ColloquiumForm)session.getAttribute("Colloquium");
+	String title = cqf.getTitle();
+	long col_id = cqf.getCol_id();
+%>
+<span style="font-size: 0.8em;font-weight: bold;"><a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> was Submitted Successfully!</span>
+<br/><br/>
+<span style="font-size: 0.8em;">It will automatically redirect to the talk page in 3 seconds.</span><br/>
+<script type="text/javascript">
+	var talkpage = "presentColloquium.do?col_id=<%=col_id %>";
+	window.setTimeout(function(){window.location = talkpage;},3000);
+</script>
 <span style="font-size: 0.8em;">
 Questions can be directed to CoMeT via email at 
 <a href="mailto:comet.paws@gmail.com">comet.paws@gmail.com</a>.</span>
@@ -195,7 +207,8 @@ Questions can be directed to CoMeT via email at
 
 <%	
 	sql = "SELECT series_id,name FROM series " +
-			"WHERE semester = (SELECT currsemester FROM sys_config) ORDER BY name";
+			//"WHERE semester = (SELECT currsemester FROM sys_config) " + 
+			"ORDER BY name";
 	rs = conn.getResultSet(sql);
 %>
 						<div id="divSeries" style="<%=seriesStyle%>">
