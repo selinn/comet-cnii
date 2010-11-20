@@ -42,7 +42,7 @@
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShow childrenSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%		
@@ -70,7 +70,7 @@
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -99,7 +99,7 @@
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -159,7 +159,7 @@
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -231,7 +231,7 @@
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -260,7 +260,7 @@
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -321,7 +321,7 @@
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%

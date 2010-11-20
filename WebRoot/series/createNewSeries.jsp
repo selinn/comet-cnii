@@ -17,7 +17,11 @@
 	</script>
 </logic:notPresent>
 <logic:present name="createNewSeries">
-	<div><h2>Post Colloquium Series Successful!</h2></div>
+	<div style="font-size: 0.8em;font-weight: bold;">Post Colloquium Series Successful!</div>
+	<div style="font-size: 0.8em;">
+		Questions can be directed to CoMeT via email at 
+		<a href="mailto:comet.paws@gmail.com">comet.paws@gmail.com</a>.
+	</div>
 	<html:link forward="aaa.pre.create.series"><span style="font-size: 0.9em;">Create New Series</span></html:link>
 </logic:present>
 
@@ -46,13 +50,12 @@
 	}	
 %>
 	<html:form action="/PostNewSeries" method="POST">
-		<table cellspacing="0" cellpadding="0" width="100%" align="center" style="font-size: 0.9em;">
+		<table cellspacing="0" cellpadding="0" width="100%" align="center">
 			<tr>
 				<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 			</tr>
 			<tr>
-				<td colspan="2" bgcolor="#efefef">
-					<h3>
+				<td colspan="2" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
 <% 
 		if(request.getParameter("series_id") == null){
 %>
@@ -63,14 +66,14 @@
 					Edit
 <%		
 		}
-%>					 Colloquium Series</h3>
+%>					 Colloquium Series
 				</td>
 			</tr>
 			<tr>
-				<td width="25%" align="left">
+				<td width="25%" align="left" style="font-size: 0.7em;font-weight: bold;">
 						Series Name
 				</td>
-				<td align="left">
+				<td align="left" style="font-size: 0.7em;">
 					<html:text maxlength="400" property="name" size="50" value="<%=name%>" />
 				</td>
 			</tr>
@@ -78,10 +81,10 @@
 				<td colspan="2" style="color: red;font-weight: bold;"><html:errors property="name" /></td>
 			</tr>
 			<tr>
-				<td width="25%" align="left" valign="top">
+				<td width="25%" align="left" valign="top" style="font-size: 0.7em;font-weight: bold;">
 					Semester
 				</td>
-				<td align="left">
+				<td align="left" style="font-size: 0.7em;">
 <% 
 	sql = "SELECT currsemester FROM sys_config";
 	rs = conn.getResultSet(sql);
@@ -119,18 +122,18 @@
 				</td>
 			</tr>
 			<tr>
-				<td width="25%" align="left" valign="top">
+				<td width="25%" align="left" valign="top" style="font-size: 0.7em;font-weight: bold;">
 					URL
 				</td>
-				<td align="left">
+				<td align="left" style="font-size: 0.7em;">
 					<html:text maxlength="400" property="url" size="50" value="<%=url%>" />
 				</td>
 			</tr>
 			<tr>
-				<td width="25%" align="left" valign="top">
+				<td width="25%" align="left" valign="top" style="font-size: 0.7em;font-weight: bold;">
 					Description
 				</td>
-				<td align="left">
+				<td align="left" style="font-size: 0.7em;">
 					<html:textarea property="description" rows="5" cols="65" value="<%=description%>"></html:textarea>
 				</td>
 			</tr>
@@ -138,8 +141,8 @@
 				<td colspan="2" style="color: red;font-weight: bold;"><html:errors property="description" /></td>
 			</tr>
 			<tr>
-				<td align="left" valign="top">Sponsor(s)</td>
-				<td>
+				<td align="left" valign="top" style="font-size: 0.7em;font-weight: bold;">Sponsor(s)</td>
+				<td style="font-size: 0.7em;">
 <% 
 	sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id IS NULL ";
 	ResultSet rs0 = conn.getResultSet(sql);
@@ -211,7 +214,7 @@
 			</tr>
 			<tr>
 				<td>
-					<html:submit property="btnSubmit" value="Submit" />
+					<input type="submit" name="btnSubmit" class="btn" value="Submit" />
 				</td>
 				<td>&nbsp;<input type="hidden" name="series_id" value="<%=series_id%>" /></td>
 			</tr>
