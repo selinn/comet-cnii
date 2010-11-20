@@ -44,14 +44,16 @@
 				<table border="0" cellpadding="0" cellspacing="0" width="100%">
 					<tr>
 						<td>
-							<tiles:insert template="/utils/feed.jsp"/>
+							<tiles:insert template="/utils/feed.jsp?mostrecent=1"/>
 						</td>
 					</tr>
+<%--					
 					<tr>
 						<td>
 							<tiles:insert template="/utils/tagCloud.jsp"/>
 						</td>
 					</tr>
+--%>
 					<tr>
 						<td>
 							<tiles:insert template="/utils/popAnnotatedTalk.jsp?rows=5"/>
@@ -102,5 +104,3 @@
 	</table>
 
 </body>
-
-
