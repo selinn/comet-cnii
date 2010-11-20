@@ -19,7 +19,6 @@
 <%@page import="java.util.GregorianCalendar"%><html>
   	<head>  	
   		<link rel="CoMeT Icon" href="images/logo.png" />
-		<meta name="verify-v1" content="l0CQvQDPL4wiwBjoedkJy9GHBepEw/uvcIvTxLcXXzU=" />	    
     	<title>
     		<tiles:getAsString name="title"/>
 	    </title>
@@ -54,9 +53,50 @@ input.btn {
 	</head>
 <% 
 	session=request.getSession(false);
+	int userID = -1;
+	String userName = "";
+	String sessionID = session.getId();
+	Cookie cookies[] = request.getCookies();
+	//Find session id & user id
+	boolean foundSessionID = false;
+	boolean foundUserID = false;
+	if(cookies != null){
+		for(int i=0;i<cookies.length;i++){
+			Cookie c = cookies[i];
+            if (c.getName().equals("comet.session.id")) {
+                sessionID = c.getValue();
+            	foundSessionID = true;
+            }			
+            if (c.getName().equals("comet.user.id")) {
+                userID = Integer.parseInt(c.getValue());
+            	foundUserID = true;
+            }			
+            if (c.getName().equals("comet.user.name")) {
+                userName = c.getValue();
+            }			
+		}
+	}
+	if(!foundSessionID){
+		Cookie c = new Cookie("comet.session.id", sessionID);
+        c.setMaxAge(356*24*60*60);
+        response.addCookie(c);
+	}
 	connectDB conn = new connectDB();
 	ResultSet rs;
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
+	if(ub != null){
+		Cookie c = new Cookie("comet.user.id", "" + ub.getUserID());
+        c.setMaxAge(356*24*60*60);
+        response.addCookie(c);
+		c = new Cookie("comet.user.name", ub.getName());
+        c.setMaxAge(356*24*60*60);
+        response.addCookie(c);
+	}else if(foundUserID){
+		ub = new UserBean();
+		ub.setUserID(userID);
+		ub.setName(userName);
+		session.setAttribute("UserSession",ub);
+	}
 %>
 	<body leftmargin="0" topmargin="0" style="font-family: arial,Verdana,sans-serif,serif;font-size: 0.9em;">
 		<table width="100%" border="0" cellpadding="0" cellspacing="0" style = "margin-top:8px;margin-bottom:8px;"> 
@@ -90,28 +130,28 @@ input.btn {
 					<logic:notPresent name="HideBar">
 						<logic:notPresent name="UserSession">
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="google" src="images/google.png" border="0"></a> 
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="facebook" src="images/facebook.png" border="0"></a>
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="yahoo" src="images/yahoo.png" border="0"></a>
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="twitter" src="images/twitter.png" border="0"></a>
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="yahoo" src="images/aol.png" border="0"></a>
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="myspace" src="images/myspace.png" border="0"></a>
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="mslive" src="images/mslive.png" border="0"></a>
 							<a class="rpxnow" onclick="return false;"
-								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Faaa%2Frpx.do">
+								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="openid" src="images/openid.png" border="0"></a>
 						</logic:notPresent>
 					</logic:notPresent>

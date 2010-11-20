@@ -79,6 +79,9 @@
 			action = "utils/loadImpact.jsp";
 			action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 			action = action.concat('&impact=1');
+		}else if(isBookmark == 3){
+			action = "utils/popImpact.jsp";
+			action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 		}	
 		if(queryString){
 			action = action.concat('&',queryString);
@@ -171,6 +174,9 @@
 			action = "utils/loadImpact.jsp";
 			action = action.concat('?month=',month,'&year=',year,'&week=',week);
 			action = action.concat('&impact=1');
+		}else if(isBookmark == 3){
+			action = "utils/popImpact.jsp";
+			action = action.concat('?month=',month,'&year=',year,'&week=',week);
 		}	
 		if(queryString){
 			action = action.concat('&',queryString);
@@ -222,6 +228,9 @@
 			action = "utils/loadImpact.jsp";
 			action = action.concat('?month=',month,'&year=',year);
 			action = action.concat('&impact=1');
+		}else if(isBookmark == 3){
+			action = "utils/popImpact.jsp";
+			action = action.concat('?month=',month,'&year=',year);
 		}	
 		if(queryString){
 			action = action.concat('&',queryString);
@@ -376,7 +385,7 @@
 					"AND _date <= '" + strEndDate + "' ";
 
 	if(req_impact){
-		sql = "SELECT date_format(viewTime,_utf8'%m%d') AS `day`, COUNT(*) AS lecture_no " +
+		sql = "SELECT date_format(viewTime,_utf8'%m%d') AS `day`, col_id,ipaddress,sessionid,COUNT(*) AS lecture_no " +
 				"FROM talkview " +
 				"WHERE " +
 				" viewTime >= '" + strBeginDate + "' " +
@@ -424,7 +433,7 @@
 	}
 	
 	if(req_impact){
-		sql += "GROUP BY date_format(viewTime,_utf8'%m%d');";
+		sql += "GROUP BY date_format(viewTime,_utf8'%m%d'),col_id,ipaddress,sessionid;";
 	}else{
 		if(req_posted){
 			sql += "GROUP BY date_format(posttime,_utf8'%m%d');";
@@ -438,7 +447,24 @@
 	//out.print("sql: " + sql + "<br/>");
 	HashMap<String,Integer> days = new HashMap<String,Integer>();
 	while(rs.next()){
-		days.put(rs.getString("day"),new Integer(rs.getInt("lecture_no")));
+		if(req_impact){
+			String ipaddress = rs.getString("ipaddress");
+			String sessionid = rs.getString("sessionid").trim().toLowerCase();
+			int _prev_viewno = 0;
+			String _day = rs.getString("day");
+			if(days.containsKey(_day)){
+				_prev_viewno = days.get(_day);
+			}
+			int viewno = 0;
+			if(ipaddress.trim().length()==0||sessionid.trim().length()==0){
+				viewno = rs.getInt("lecture_no");
+			}else{
+				viewno = 1;
+			}
+			days.put(_day,_prev_viewno + viewno);
+		}else{
+			days.put(rs.getString("day"),new Integer(rs.getInt("lecture_no")));
+		}
 		//out.print("day:" + rs.getString("day") + " no:" + rs.getString("lecture_no") + "<br/>");
 	}	
 	rs.close();
@@ -453,7 +479,7 @@
 					<td align="center" style="font-size: 0.7em;cursor: pointer;color: #003399;border: 1px #003399 solid;"
 						onmouseover="this.style.fontWeight='bold'"
 						onmouseout="this.style.fontWeight='normal'"
-						onclick="flip2Month();window.setTimeout(function(){back();},50);"
+						onclick="flip2Month();window.setTimeout(function(){back();},150);"
 					>
 						&nbsp;&lt;&nbsp;
 					</td>
@@ -461,7 +487,7 @@
 					<td align="center" style="font-size: 0.7em;cursor: pointer;color: #003399;border: 1px #003399 solid;"
 						onmouseover="this.style.fontWeight='bold'"
 						onmouseout="this.style.fontWeight='normal'"
-						onclick="flip2Month();window.setTimeout(function(){next();},50);"
+						onclick="flip2Month();window.setTimeout(function(){next();},150);"
 					>
 						&nbsp;&gt;&nbsp;
 					</td>
@@ -627,9 +653,18 @@ String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
 						<td colspan="4" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">Feed</td>
 					</tr>
 					<tr>
-						<td width="25%" style="font-size: 0.75em;"><a href="utils/rss.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" src="images/rss_feed.gif" alt="RSS 2.0" /></a></td>
-						<td width="25%" style="font-size: 0.75em;"><a href="utils/atom.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" src="images/atom_feed.gif" alt="Atom" /></a></td>
-						<td width="35%" align="right" style="font-size: 0.75em;"><a href="utils/ical.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" style="height: 14px;width: auto;" src="images/ical.jpg" alt="Atom" /></a></td>
+						<td width="25%" style="font-size: 0.75em;"><a href="utils/_rss.jsp<%
+							if(request.getQueryString()!=null)out.print("?"+request.getQueryString());
+							if(feed_para.length() > 0)out.print(feed_para);
+							%>"><img border="0" src="images/rss_feed.gif" alt="RSS 2.0" /></a></td>
+						<td width="25%" style="font-size: 0.75em;"><a href="utils/_atom.jsp<%
+							if(request.getQueryString()!=null)out.print("?"+request.getQueryString());
+							if(feed_para.length() > 0)out.print(feed_para);
+							%>"><img border="0" src="images/atom_feed.gif" alt="Atom" /></a></td>
+						<td width="35%" align="right" style="font-size: 0.75em;"><a href="utils/_ical.jsp<%
+							if(request.getQueryString()!=null)out.print("?"+request.getQueryString());
+							if(feed_para.length() > 0)out.print(feed_para);
+							%>"><img border="0" style="height: 14px;width: auto;" src="images/ical.jpg" alt="Atom" /></a></td>
 						<td width="15%" align="right" style="font-size: 0.75em;">
 <!-- AddThis Button BEGIN -->
 <div class="addthis_toolbox addthis_default_style">
