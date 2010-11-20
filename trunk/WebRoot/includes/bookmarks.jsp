@@ -9,7 +9,7 @@
 
 <script type="text/javascript">
 	var isBookmark = 1;//0: Post;1: Bookmark;2: Impact;3: Impact Summary
-	var period = 2;//0: day; 1: week; 2: month
+	var period = 1;//0: day; 1: week; 2: month
 	var queryString = window.location.search;
 	if(queryString!=null){
 		queryString = queryString.substr(1,queryString.length-1);
@@ -162,6 +162,39 @@
 	/***********************************************/
 	/* Account Navigation Script                   */
 	/***********************************************/
+	function flip2ImpactSummary(){
+		divBtnBookmark.style.background = "#ffffff";
+		divBtnBookmark.style.color = "#003399";
+		divBtnBookmark.style.fontWeight = "normal";
+		divBtnBookmark.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnBookmark.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+	
+		divBtnPost.style.background = "#ffffff";
+		divBtnPost.style.color = "#003399";
+		divBtnPost.style.fontWeight = "normal";
+		divBtnPost.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnPost.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+		
+		divBtnImpact.style.background = "#ffffff";
+		divBtnImpact.style.color = "#003399";
+		divBtnImpact.style.fontWeight = "normal";
+		divBtnImpact.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpact.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";		
+		
+		divBtnImpactSummary.style.background = "#003399";
+		divBtnImpactSummary.style.color = "#ffffff";
+		divBtnImpactSummary.style.fontWeight = "bold";
+		divBtnImpactSummary.onmouseover = "this.style.background='#003399';this.style.color='#ffffff';";
+		divBtnImpactSummary.onmouseout = "this.style.background='#ffffff';this.style.color='#003399';";		
+
+		isBookmark = 3;
+		
+		switch(period){
+			case 0: flip2Day();break;
+			case 1: flip2Week();break;
+			case 2: flip2Month();break;
+		}
+	}
 	function flip2Impact(){
 		divBtnBookmark.style.background = "#ffffff";
 		divBtnBookmark.style.color = "#003399";
@@ -181,6 +214,12 @@
 		divBtnImpact.onmouseover = "this.style.background='#003399';this.style.color='#ffffff';";
 		divBtnImpact.onmouseout = "this.style.background='#ffffff';this.style.color='#003399';";		
 		
+		divBtnImpactSummary.style.background = "#ffffff";
+		divBtnImpactSummary.style.color = "#003399";
+		divBtnImpactSummary.style.fontWeight = "normal";
+		divBtnImpactSummary.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpactSummary.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
 		isBookmark = 2;
 		
 		switch(period){
@@ -208,6 +247,12 @@
 		divBtnImpact.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
 		divBtnImpact.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
 
+		divBtnImpactSummary.style.background = "#ffffff";
+		divBtnImpactSummary.style.color = "#003399";
+		divBtnImpactSummary.style.fontWeight = "normal";
+		divBtnImpactSummary.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpactSummary.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
 		isBookmark = 0;
 		
 		switch(period){
@@ -234,6 +279,12 @@
 		divBtnImpact.style.fontWeight = "normal";
 		divBtnImpact.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
 		divBtnImpact.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
+		divBtnImpactSummary.style.background = "#ffffff";
+		divBtnImpactSummary.style.color = "#003399";
+		divBtnImpactSummary.style.fontWeight = "normal";
+		divBtnImpactSummary.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpactSummary.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
 
 		isBookmark = 1;
 
@@ -271,7 +322,7 @@
 		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
-		}else if(isBookmark == 2){
+		}else if(isBookmark == 2 || isBookmark == 3){
 			action = action.concat('&impact=1');
 		}	
 		if(queryString){
@@ -287,6 +338,9 @@
 			action = "utils/loadImpact.jsp";
 			action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 			action = action.concat('&impact=1');
+		}else if(isBookmark == 3){
+			action = "utils/popImpact.jsp";
+			action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 		}	
 		if(queryString){
 			action = action.concat('&',queryString);
@@ -319,7 +373,7 @@
 		action = action.concat('?month=',_month,'&year=',_year,'&week=',thisweek);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
-		}else if(isBookmark == 2){
+		}else if(isBookmark == 2 || isBookmark == 3){
 			action = action.concat('&impact=1');
 		}	
 		if(queryString){
@@ -335,6 +389,9 @@
 			action = "utils/loadImpact.jsp";
 			action = action.concat('?month=',_month,'&year=',_year,'&week=',thisweek);
 			action = action.concat('&impact=1');
+		}else if(isBookmark == 3){
+			action = "utils/popImpact.jsp";
+			action = action.concat('?month=',_month,'&year=',_year,'&week=',thisweek);
 		}	
 		if(queryString){
 			action = action.concat('&',queryString);
@@ -366,7 +423,7 @@
 		action = action.concat('?month=',_month,'&year=',_year);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
-		}else if(isBookmark == 2){
+		}else if(isBookmark == 2 || isBookmark == 3){
 			action = action.concat('&impact=1');
 		}	
 		if(queryString){
@@ -382,6 +439,9 @@
 			action = "utils/loadImpact.jsp";
 			action = action.concat('?month=',_month,'&year=',_year);
 			action = action.concat('&impact=1');
+		}else if(isBookmark == 3){
+			action = "utils/popImpact.jsp";
+			action = action.concat('?month=',_month,'&year=',_year);
 		}	
 		if(queryString){
 			action = action.concat('&',queryString);
@@ -434,7 +494,9 @@
 		}
 		//alert(action);
 		if(isBookmark == 2){
-			loadTalks("utils/loadImpact.jsp".concat(action));		
+			loadTalks("utils/loadImpact.jsp".concat(action));
+		}else if(isBookmark == 3){
+			loadTalks("utils/popImpact.jsp".concat(action));	
 		}else{
 			loadTalks("utils/loadTalks.jsp".concat(action));		
 		}
@@ -488,6 +550,8 @@
 		}
 		if(isBookmark == 2){
 			loadTalks("utils/loadImpact.jsp".concat(action));			
+		}else if(isBookmark == 3){
+			loadTalks("utils/popImpact.jsp".concat(action));	
 		}else{
 			loadTalks("utils/loadTalks.jsp".concat(action));		
 		}
@@ -520,7 +584,11 @@
 							action = action.concat('&impact=1');
 						}	
 						oDeleteTalkIFrame.location = action;
-						window.setTimeout(function(){refreshTalks();},100);
+						window.setTimeout(
+							function(){
+								alert("Delete Talk(s) Successful!");
+								refreshTalks();
+							},100);
 					}
 				}
 		}
@@ -587,6 +655,16 @@
 								align="center"
 								onclick="flip2Impact();">
 								Impact
+							</div>
+						</td>
+						<td width="140">
+							<div id="divBtnImpactSummary" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="flip2ImpactSummary();">
+								Impact Summary
 							</div>
 						</td>
 						<td>&nbsp;</td>
