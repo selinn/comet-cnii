@@ -64,7 +64,7 @@
 		
 		String localhost= "washington.sis.pitt.edu";
 		String mailhost= "smtp.gmail.com";
-		String mailuser= "comet.paws@gmail.com";
+		String mailuser= "NoReply";
 		MailNotifier mail = new MailNotifier(localhost,mailhost,mailuser,requst_email);
 		String emailContent = "Dear " + name + "\n\n" +
 		"This automated e-mail of the CoMeT Sysytem:\n\n" + 
