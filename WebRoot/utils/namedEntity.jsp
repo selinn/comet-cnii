@@ -16,46 +16,21 @@
 	try{ 
 	session = request.getSession(false);
 	
-	int tag_id = 0;
-	int col_id = 0;
-	int user_id = 0;
-	int comm_id = 0;
-	int series_id = 0;
-	int entity_id = 0;
-	int affiliate_id = -1;
-	String _type = "";
-	//int topic_id = 0;
 	int rows = 100;
 	int start = 0;
+	String[] user_id_value = request.getParameterValues("user_id");
+	String[] tag_id_value = request.getParameterValues("tag_id");
+	String[] entity_id_value = request.getParameterValues("entity_id");
+	String[] type_value = request.getParameterValues("_type");
+	String[] series_id_value = request.getParameterValues("series_id");
+	String[] comm_id_value = request.getParameterValues("comm_id");
+	String[] affiliate_id_value = request.getParameterValues("affiliate_id");
+	String[] col_id_value = request.getParameterValues("col_id");
 	if(request.getParameter("rows")!=null){
 		rows = Integer.parseInt((String)request.getParameter("rows"));
 	}	
 	if(request.getParameter("start") != null){
 		start = Integer.parseInt((String)request.getParameter("start"));
-	}
-	if(request.getParameter("tag_id")!=null){
-		tag_id = Integer.parseInt((String)request.getParameter("tag_id"));
-	}	
-	if(request.getParameter("col_id") != null){
-		col_id = Integer.parseInt((String)request.getParameter("col_id"));
-	}
-	if(request.getParameter("user_id") != null){
-		user_id = Integer.parseInt((String)request.getParameter("user_id"));
-	}
-	if(request.getParameter("comm_id") != null){
-		comm_id = Integer.parseInt((String)request.getParameter("comm_id"));
-	}
-	if(request.getParameter("series_id") != null){
-		series_id = Integer.parseInt((String)request.getParameter("series_id"));
-	}
-	if(request.getParameter("entity_id") != null){
-		entity_id = Integer.parseInt((String)request.getParameter("entity_id"));
-	}
-	if(request.getParameter("affiliate_id") != null){
-		affiliate_id = Integer.parseInt((String)request.getParameter("affiliate_id"));
-	}
-	if(request.getParameter("_type") != null){
-		_type = (String)request.getParameter("_type");
 	}
 	//if(request.getParameter("topic_id") != null){
 	//	topic_id = Integer.parseInt((String)request.getParameter("topic_id"));
@@ -64,8 +39,6 @@
 	ResultSet rs = null;
 	String sql = "";
 
-	String[] entity_id_value = request.getParameterValues("entity_id");
-	String[] type_value = request.getParameterValues("_type");
 	String entity_id_list = "";
 	String type_list = "";
 	if(entity_id_value !=null){
@@ -81,7 +54,7 @@
 		}
 	}
 
-	if(entity_id > 0 || !_type.equalsIgnoreCase("")){
+	if(entity_id_value != null || type_value != null){
 %>
 <%--
 	<tr>
@@ -99,7 +72,7 @@
 <% 
 		if(entity_id_value != null){
 			for(int i = 0;i<entity_id_value.length;i++){
-				entity_id = Integer.parseInt((String)entity_id_value[i]);
+				int entity_id = Integer.parseInt((String)entity_id_value[i]);
 				
 				sql = "SELECT e._type,e.entity,e.normalized " +
 						"FROM entity e " +
@@ -144,7 +117,13 @@
 								</tr>
 								<tr>
 									<td>
-										<a href="entity.do?entity_id=<%=entity_id%><%if(affiliate_id>0)out.print("&affiliate_id="+affiliate_id);%>" 
+										<a href="entity.do?entity_id=<%=entity_id%><%
+					if(affiliate_id_value != null){
+						for(int ii = 0;i<affiliate_id_value.length;ii++){
+							int affiliate_id = Integer.parseInt((String)affiliate_id_value[ii]);
+							out.print("&affiliate_id="+affiliate_id);	
+						}
+					}%>" 
 											style="text-decoration: none;font-size: 0.7em;"
 											onmouseout="this.style.textDecoration='none'"
 											onmouseover="this.style.textDecoration='underline'"
@@ -170,11 +149,10 @@
 		
 		if(type_value != null){
 			for(int i=0;i<type_value.length;i++){
-				_type = type_value[i].trim();
+				String _type = type_value[i].trim();
 				sql = "SELECT e.entity_id,e.entity,e.normalized " +
-						"FROM entity e,entities ee,colloquium c " +
-						"WHERE e.entity_id = ee.entity_id AND " +
-						"ee.col_id = c.col_id AND " +
+						"FROM entity e JOIN entities ee ON e.entity_id = ee.entity_id JOIN colloquium c " +
+						"ON ee.col_id = c.col_id WHERE " +
 						"e._type = ? " + //'" + _type + "' " +
 						"GROUP BY e.entity_id,e.entity,e.normalized";
 	
@@ -227,7 +205,14 @@
 %>
 								<tr>
 									<td>
-										<a href="entity.do?entity_id=<%=id%><%if(affiliate_id>0)out.print("&affiliate_id="+affiliate_id);%>" 
+										<a href="entity.do?entity_id=<%=id%><%
+							if(affiliate_id_value != null){
+								for(int ii = 0;i<affiliate_id_value.length;ii++){
+									int affiliate_id = Integer.parseInt((String)affiliate_id_value[ii]);
+									out.print("&affiliate_id="+affiliate_id);	
+								}
+							}
+							%>" 
 											style="text-decoration: none;font-size: 0.7em;"
 											onmouseout="this.style.textDecoration='none'"
 											onmouseover="this.style.textDecoration='underline'"
@@ -268,7 +253,7 @@
 	}
 
 	int col = 1;
-	if(entity_id_value == null && type_value == null && col_id <=0 && tag_id <=0 && comm_id <=0 && series_id <=0){
+	if(entity_id_value == null && type_value == null && col_id_value == null && tag_id_value == null && comm_id_value == null && series_id_value == null){
 		col = 3;
 	}
         if(col==3){
@@ -283,7 +268,7 @@
 	</tr>
 <%
         }
-	if(entity_id > 0 || !_type.equalsIgnoreCase("")){
+	if(entity_id_value != null || type_value != null){
 %>
 	<tr>
 		<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
@@ -300,50 +285,85 @@
 		<td style="font-size: 0.8em;<%if(col==1)out.print("border: 1px #EFEFEF solid;");%>">
 <%	
 	sql = "SELECT e._type,e.entity_id,e.entity,e.normalized " +
-			"FROM entity e,entities ee,colloquium c " +
-			"WHERE e.entity_id = ee.entity_id AND ee.col_id = c.col_id"; 
+			"FROM entity e JOIN entities ee ON e.entity_id = ee.entity_id JOIN colloquium c " +
+			"ON ee.col_id = c.col_id "; 
 
-	if(affiliate_id > 0 ){
-		sql += " AND ee.col_id IN " +
+	if(affiliate_id_value != null ){
+		for(int i=0;i<affiliate_id_value.length;i++){
+			int affiliate_id = Integer.parseInt(affiliate_id_value[i]);
+			sql += "AND ee.col_id IN " +
 				"(SELECT ac.col_id FROM affiliate_col ac," +
 				"(select child_id from relation where path like concat((SELECT path from relation where child_id = "+ affiliate_id + "),',%')) cc " +
 				"WHERE ac.affiliate_id = cc.child_id " +
-				"UNION SELECT col_id FROM affiliate_col WHERE affiliate_id = " + affiliate_id + ")";
+				"UNION SELECT col_id FROM affiliate_col WHERE affiliate_id = " + affiliate_id + ") ";
+		}
 	}
-	if(tag_id > 0){
-		sql += " AND ee.col_id IN " + 
-				"(SELECT u.col_id FROM tags tt,userprofile u WHERE tt.userprofile_id=u.userprofile_id AND " +
-				"tt.tag_id = " + tag_id + ")";
+	if(tag_id_value != null){
+		String tag_ids = null;
+		for(int i=0;i<tag_id_value.length;i++){
+			if(tag_ids == null){
+				tag_ids = tag_id_value[i];
+			}else{
+				tag_ids += "," + tag_id_value[i];
+			}
+		}
+		sql += "JOIN userprofile up ON ee.col_id=up.col_id JOIN tags tt ON tt.userprofile_id=up.userprofile_id AND " +
+			"tt.tag_id IN (" + tag_ids + ") ";
 	}
-	if(col_id > 0){
-		sql += " AND ee.col_id = " + col_id;
+	if(col_id_value != null){
+		String col_ids = null;
+		for(int i=0;i<col_id_value.length;i++){
+			if(col_ids == null){
+				col_ids = col_id_value[i];
+			}else{
+				col_ids += "," + col_id_value[i];
+			}
+		}
+		sql += "AND ee.col_id IN (" + col_ids + ") ";
 	}
-	if(user_id > 0){
-		sql += " AND ee.col_id IN (SELECT col_id " +
-				"FROM userprofile " +
-				"WHERE user_id = " + user_id + ")";
+	if(user_id_value !=null){
+		String user_ids = null;
+		for(int i=0;i<user_id_value.length;i++){
+			if(user_ids == null){
+				user_ids = user_id_value[i];
+			}else{
+				user_ids += "," + user_id_value[i];
+			}
+		}
+		sql += "JOIN userprofile uup ON ee.col_id=uup.col_id " +
+				"AND uup.user_id IN (" + user_ids + ") ";
 	}
-	if(comm_id > 0){
-		sql += " AND ee.col_id IN (SELECT u.col_id FROM contribute c,userprofile u " +
-				"WHERE u.userprofile_id = c.userprofile_id AND c.comm_id = " + comm_id + ")";
+	if(comm_id_value !=null){
+		String comm_ids = null;
+		for(int i=0;i<comm_id_value.length;i++){
+			if(comm_ids == null){
+				comm_ids = comm_id_value[i];
+			}else{
+				comm_ids += "," + comm_id_value[i];
+			}
+		}
+		sql += " JOIN userprofile upp ON ee.col_id=upp.col_id JOIN contribute cc " +
+				"ON upp.userprofile_id = cc.userprofile_id AND cc.comm_id IN (" + comm_ids + ") ";
 	}
-	if(series_id > 0){
-		sql += " AND ee.col_id IN (SELECT col_id " +
-				"FROM seriescol " +
-				"WHERE series_id = " + series_id + ")";
+	if(series_id_value !=null){
+		String series_ids = null;
+		for(int i=0;i<series_id_value.length;i++){
+			if(series_ids == null){
+				series_ids = series_id_value[i];
+			}else{
+				series_ids += "," + series_id_value[i];
+			}
+		}
+		sql += "JOIN seriescol sc ON ee.col_id=sc.col_id " +
+				"AND sc.series_id IN (" + series_ids + ") ";
 	}
 	if(entity_id_value != null){
-		sql += " AND e.entity_id NOT IN (" + entity_id_list + ")";
-		for(int i=0;i<entity_id_value.length;i++){
-			sql += " AND ee.col_id IN (SELECT col_id FROM entities WHERE entity_id=" + entity_id_value[i] + ")";
-		}
+		sql += "AND e.entity_id NOT IN (" + entity_id_list + ") " +
+				"JOIN entities eee ON ee.col_id = eee.col_id AND eee.entity_id IN (" + entity_id_list + ") ";
 	}
 	if(type_value != null){
-		sql+=" AND e._type NOT IN (" + type_list + ")";
-		for(int i=0;i<type_value.length;i++){
-			sql+=" AND ee.col_id IN (SELECT ee.col_id FROM entities ee,entity e " +
-					"WHERE ee.entity_id = e.entity_id AND e._type='" + type_value[i] + "')"; 
-		}
+		sql+="AND e._type NOT IN (" + type_list + ") " +
+				"JOIN entities e3 ON ee.col_id=e3.col_id JOIN entity e2 ON e3.entity_id=e2.entity_id AND e2._type IN (" + type_list + ")";
 	}
 	sql += " GROUP BY e._type,e.entity_id,e.entity,e.normalized";
 	

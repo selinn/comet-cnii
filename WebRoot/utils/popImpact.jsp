@@ -178,7 +178,7 @@
     /*****************************************************************/
     HashMap<Integer,String> viewUserNameMap = new HashMap<Integer,String>();
     HashMap<Integer,Integer> viewUserCountMap = new HashMap<Integer,Integer>();
-	String sql = "SELECT u.user_id,u.name,COUNT(*) AS view_no " +
+	String sql = "SELECT u.user_id,u.name,tv.ipaddress,tv.sessionid,COUNT(*) AS view_no " +
 					"FROM talkview tv INNER JOIN colloquium c ON tv.col_id = c.col_id " +
 					"INNER JOIN userinfo u ON c.owner_id = u.user_id " +
 					"WHERE " +
@@ -221,7 +221,7 @@
 					"UNION SELECT col_id FROM affiliate_col WHERE affiliate_id=" + affiliate_id_value[i] + ") ";
 		}
 	}
-	sql += " GROUP BY u.user_id,u.name ORDER BY COUNT(*) DESC";
+	sql += " GROUP BY u.user_id,u.name,tv.ipaddress,tv.sessionid ORDER BY COUNT(*) DESC";
 	if(req_most_recent){
 		sql += " LIMIT 3";
 	}
@@ -239,13 +239,33 @@
 			int user_id = rs.getInt("user_id");
 			String username = rs.getString("name");
 			int _viewno = rs.getInt("view_no");
-			viewUserNameMap.put(user_id,username);
-			viewUserCountMap.put(user_id,_viewno);
+			String ipaddress = rs.getString("ipaddress");
+			String sessionid = rs.getString("sessionid").trim().toLowerCase();
 			
-			TotalUserNameMap.put(user_id,username);
-			TotalUserCountMap.put(user_id,_viewno);
-			
-			viewno += _viewno;	
+			int _prev_viewno = 0;
+			if(ipaddress.trim().length()==0||sessionid.trim().length()==0){
+				viewUserNameMap.put(user_id,username);
+				if(viewUserCountMap.containsKey(user_id)){
+					_prev_viewno = viewUserCountMap.get(user_id);
+				}
+				viewUserCountMap.put(user_id,_prev_viewno + _viewno);
+				
+				TotalUserNameMap.put(user_id,username);
+				TotalUserCountMap.put(user_id,_prev_viewno + _viewno);
+				
+				viewno += _viewno;
+			}else{
+				if(viewUserCountMap.containsKey(user_id)){
+					_prev_viewno = viewUserCountMap.get(user_id);
+				}
+				viewUserCountMap.put(user_id,_prev_viewno + 1);
+				
+				TotalUserNameMap.put(user_id,username);
+				TotalUserCountMap.put(user_id,_prev_viewno + 1);
+
+				viewno++;
+			}
+
 		}
 	    /*****************************************************************/
 	    /* Popularity on Total emails                                    */

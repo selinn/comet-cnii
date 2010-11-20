@@ -24,10 +24,10 @@
 		<td colspan="4" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">Feed</td>
 	</tr>
 	<tr>
-		<td align="center" width="25%" style="font-size: 0.75em;"><a href="utils/_rss.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" src="images/rss_feed.gif" alt="RSS 2.0" /></a></td>
-		<td align="center" width="25%" style="font-size: 0.75em;"><a href="utils/_atom.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" src="images/atom_feed.gif" alt="Atom" /></a></td>
-		<td align="center" width="25%" style="font-size: 0.75em;"><a href="utils/_ical.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" style="height: 14px;width: auto;" src="images/ical.jpg" alt="iCal" /></a></td>
-		<td align="center" width="25%" style="font-size: 0.75em;">
+		<td align="center" width="20%" style="font-size: 0.75em;"><a href="utils/_rss.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" src="images/rss_feed.gif" alt="RSS 2.0" /></a></td>
+		<td align="center" width="20%" style="font-size: 0.75em;"><a href="utils/_atom.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" src="images/atom_feed.gif" alt="Atom" /></a></td>
+		<td align="center" width="20%" style="font-size: 0.75em;"><a href="utils/_ical.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" style="height: 14px;width: auto;" src="images/ical.jpg" alt="iCal" /></a></td>
+		<td align="center" width="20%" style="font-size: 0.75em;">
 <!-- AddThis Button BEGIN -->
 <a class="addthis_button" href="http://www.addthis.com/bookmark.php?v=250&amp;pub=chirayukong"><img src="http://s7.addthis.com/static/btn/sm-share-en.gif" width="83" height="16" alt="Bookmark and Share" style="border:0"/></a><script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pub=chirayukong"></script>
 <!-- AddThis Button END -->
@@ -37,6 +37,6 @@
 --%>
 	</tr>
 	<tr>
-		<td align="center" width="25%" style="font-size: 0.75em;"><a href="http://www.google.com/calendar/render?cid=http://washington.sis.pitt.edu/comet/utils/_gcal.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" style="height: 20px;width: auto;" src="images/gcal.png" alt="Google Calendar" /></a></td>
+		<td align="center" width="20%" style="font-size: 0.75em;"><a href="http://www.google.com/calendar/render?cid=http://washington.sis.pitt.edu/comet/utils/_gcal.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" style="height: 20px;width: auto;" src="images/gcal.png" alt="Google Calendar" /></a></td>
 	</tr>	
 </table>

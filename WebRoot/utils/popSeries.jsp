@@ -42,7 +42,8 @@
 					"WHERE s.series_id = sc.series_id AND " +
 					"sc.col_id = c.col_id AND " +
 					"u.col_id = c.col_id AND " +
-					"s.semester = (SELECT currsemester FROM sys_config) ";
+					"c._date >= (SELECT beginterm FROM sys_config) AND " +
+					"c._date < (SELECT endterm FROM sys_config) ";
 	if(affiliate_id > 0){
 		sql += "AND s.series_id IN " +
 				"(SELECT afs.series_id FROM affiliate_series afs," +
@@ -67,7 +68,12 @@
 						>
 					<%=rs.getString("name") %>
 					&nbsp;-&nbsp;<span style="font-size: 0.85em;"><%=rs.getString("_count") %> bookmarks</span>
-					</a>
+					</a>&nbsp;
+					<a href="PreCreateSeries.do?series_id=<%=rs.getString("series_id")%>"
+						style="text-decoration: none;font-size: 0.6375em;"
+						onmouseover="this.style.textDecoration='underline'" 
+						onmouseout="this.style.textDecoration='none'"
+					>Edit</a>
 				</li>
 <%
 		}

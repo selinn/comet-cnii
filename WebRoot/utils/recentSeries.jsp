@@ -37,11 +37,14 @@
 <%
 	connectDB conn = new connectDB();
 	ResultSet rs = null;
-	String sql = "SELECT s.name,s.series_id,s.description,COUNT(*) _no " +
-					"FROM series s,seriescol sc,colloquium c " +
-					"WHERE " +
-					"s.series_id = sc.series_id AND sc.col_id = c.col_id AND " +
-					"s.semester = (SELECT currsemester FROM sys_config) ";
+	String sql = "SELECT s.name,s.series_id,s.description,sc._no " +
+					"FROM series s LEFT JOIN " +
+					"(SELECT sc.series_id,COUNT(*) _no FROM seriescol sc JOIN colloquium c ON sc.col_id = c.col_id " +
+					"AND c._date >= (SELECT beginterm FROM sys_config) AND " +
+					"c._date < (SELECT endterm FROM sys_config) " +
+					"GROUP BY sc.series_id) sc ON s.series_id = sc.series_id " +
+					"WHERE TRUE ";// +
+					//"s.semester = (SELECT currsemester FROM sys_config) ";
 	if(affiliate_id > 0){
 		sql += "AND s.series_id IN " +
 				"(SELECT afs.series_id FROM affiliate_series afs," +
@@ -50,7 +53,7 @@
 				"WHERE afs.affiliate_id = cc.child_id " +
 				"UNION SELECT series_id FROM affiliate_series WHERE affiliate_id = " + affiliate_id + ") ";
 	}
-	sql += "GROUP BY s.name,s.series_id,s.description ";
+	sql += "ORDER BY s.name,s.series_id,s.description ";
 	if(rows > 0){
 		sql += "LIMIT " + start + "," + rows;
 	}
@@ -59,10 +62,14 @@
     try{
     	rs = conn.getResultSet(sql);
         while(rs.next()){
-        	int _no = rs.getInt("_no");
-        	String _talk_no = _no + " talk";
-        	if(_no > 1){
-        		_talk_no += "s";
+        	String _talk_no = "";
+        	if(rs.getString("_no") != null){
+        		_talk_no = " - ";
+            	int _no = rs.getInt("_no");
+            	_talk_no += _no + " talk";
+            	if(_no > 1){
+            		_talk_no += "s";
+            	}
         	}
 %>
 				<li>
@@ -71,8 +78,13 @@
 						onmouseout="this.style.textDecoration='none'"
 						>
 					<%=rs.getString("name")%>
-					&nbsp;-&nbsp;<span style="font-size: 0.85em;"><%=_talk_no%></span>
-					</a>
+					<span style="font-size: 0.85em;"><%=_talk_no%></span>
+					</a>&nbsp;
+					<a href="PreCreateSeries.do?series_id=<%=rs.getString("series_id")%>"
+						style="text-decoration: none;font-size: 0.6375em;"
+						onmouseover="this.style.textDecoration='underline'" 
+						onmouseout="this.style.textDecoration='none'"
+					>Edit</a>
 				</li>
 <%
 		}
