@@ -1,8 +1,6 @@
 package edu.pitt.sis.action;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -197,12 +195,12 @@ public class AddBookmarkColloquiumAction extends Action {
 		session.setAttribute("menu","colloquium");
 
 		//Call recTalk
-		try {
+		/*try {
 			//System.out.println(url_to_get);
 			URL url = new URL("http://localhost:8080/recTalk/userprofile.jsp?user_id=" + ub.getUserID());
 			//make connection
 			URLConnection urlc = url.openConnection();
-	        /** Some web servers requires these properties */
+	        *//** Some web servers requires these properties *//*
 	        urlc.setRequestProperty("User-Agent", 
 	                "Profile/MIDP-1.0 Configuration/CLDC-1.0");
 	        urlc.setRequestProperty("Content-Length", "0");
@@ -219,8 +217,19 @@ public class AddBookmarkColloquiumAction extends Action {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}*/
+		try {
+			Runtime rt = Runtime.getRuntime();
+			Process pr = rt.exec("curl http://localhost:8080/recTalk/userprofile.jsp?user_id=" + ub.getUserID() + " > /dev/null &");
+			
+			//get result
+			BufferedReader br = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+	
+			br.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 		
 		return mapping.findForward("Success");
 	}	
