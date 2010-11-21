@@ -7,6 +7,7 @@
 <%@page import="java.util.Collections"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.net.URLEncoder"%>
+<%@page import="java.util.ArrayList"%>
 
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html" prefix="html" %>
@@ -315,6 +316,66 @@
 			}
 %>
 <% 
+		sql = "SELECT r.path FROM affiliate_col ac INNER JOIN relation r ON ac.affiliate_id = r.child_id WHERE ac.col_id = " + col_id;
+		ResultSet rsSponsor = conn.getResultSet(sql);
+		ArrayList<String> relationList = new ArrayList<String>();
+		HashMap<String,String> aList = new HashMap<String,String>();
+		while(rsSponsor.next()){
+			String relation = rsSponsor.getString("path");
+			relationList.add(relation);
+			String[] _path = relation.split(",");
+			for(int i=0;i<_path.length;i++){
+				aList.put(_path[i],null);
+			}
+			
+		}
+		String affList = null;
+		for(Iterator<String> i=aList.keySet().iterator();i.hasNext();){
+			if(affList ==null){
+				affList = "";
+			}else{
+				affList +=",";
+			}
+			affList +=i.next();
+		}
+		sql = "SELECT affiliate_id,affiliate FROM affiliate WHERE affiliate_id IN ("+affList+")";
+		rsSponsor = conn.getResultSet(sql);
+		while(rsSponsor.next()){
+			aList.put(rsSponsor.getString("affiliate_id"),rsSponsor.getString("affiliate"));
+		}
+		rsSponsor.close();
+		if(relationList.size()>0){
+%>
+				<tr>
+					<td valign="top" width="8%" style="font-weight: bold;">Sponsor:</td>
+					<td align="left" style="">
+<% 
+			for(int i=0;i<relationList.size();i++){
+				String[] _path = relationList.get(i).split(",");
+				for(int j=0;j<_path.length;j++){
+%>
+								<a href="index.do?affiliate_id=<%=_path[j]%>"><%=(String)aList.get(_path[j])%>
+									</a>
+<%					
+						if(j!=_path.length-1){
+%>
+								&nbsp;>&nbsp;
+<%
+						}
+				}			
+				if(i!=relationList.size()-1){
+%>
+								<br/>
+<%
+				}
+			}
+%>									
+					</td>
+				</tr>
+<%		
+		}
+%>
+<% 
 			String _sql = "SELECT s.series_id,s.name FROM series s,seriescol sc " +
 							"WHERE s.series_id = sc.series_id AND sc.col_id=" + col_id;
 			
@@ -606,7 +667,7 @@
 										</td>
 									</tr>
 									<tr>
-										<td colspan="3"><input type="submit" class="btn" value="Save" /></td>
+										<td colspan="3"><input type="submit" class="btn" value="Bookmark" /></td>
 									</tr>
 								</table>
 							</html:form>
