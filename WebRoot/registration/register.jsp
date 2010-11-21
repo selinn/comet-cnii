@@ -1,6 +1,8 @@
 <%@ page language="java"%>
 <%@page import="edu.pitt.sis.db.connectDB"%>
 <%@page import="java.sql.ResultSet"%>
+<%@ page import="net.tanesha.recaptcha.ReCaptcha" %>
+<%@ page import="net.tanesha.recaptcha.ReCaptchaFactory" %>
 
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html" prefix="html" %>
@@ -59,12 +61,26 @@
 			</td>
 		</tr>
 		<tr>	
-			<td colspan="3">&nbsp;</td>
+			<td colspan="3">
+<% 
+	//Halley Machine
+	//ReCaptcha c = ReCaptchaFactory.newReCaptcha("6Ldamb4SAAAAAIOIeAP8KHcnyZ7IZ889Rg0ZyzxT", "6Ldamb4SAAAAAHTCLlHVW2TSPp2Mn-YkByFU5EXB", false);
+	//Washington Machine
+	ReCaptcha c = ReCaptchaFactory.newReCaptcha("6LfZ6b4SAAAAADmXK0NFuzK98qbk6p0Ta3xUfdO5", "6LfZ6b4SAAAAABgyEW4S1NiKrZBLR_077NCw_-xz", false);
+	out.print(c.createRecaptchaHtml(null, null));
+%>
+			</td>
+		</tr>
+		<tr>	
+			<td colspan="3">
+				<font class="error"><html:errors property="recaptcha"/></font>
+				&nbsp;
+			</td>
 		</tr>
 		<tr>
-			<td width="10%" align="right">
-				&nbsp;
+			<td width="10%" align="left">
 				<input type="submit" id="btnRegister" class="btn" value="Register" />
+				&nbsp;
 			</td>
 			<td colspan="2">&nbsp;<html:link style="font-size: 0.75em;" forward="aaa.authentication.login">Sign in?</html:link></td>
 		</tr>

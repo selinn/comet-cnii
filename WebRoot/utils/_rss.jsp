@@ -281,7 +281,7 @@
 		out.println("<channel>");
 		out.println("<title>CoMeT</title>");
 		out.println("<description>Collaborative Management of Talks: A social web system for research communities</description>");
-		out.println("<link>http://washington.sis.pitt.edu/comet/</link>");
+		out.println("<link>http://halley.exp.sis.pitt.edu/comet/</link>");
 		
 		Html2Text parser = new Html2Text();
 		
@@ -290,7 +290,7 @@
         	String title = rs.getString("title");
         	String _col_id = rs.getString("col_id");
         	String description = rs.getString("detail");
-        	String link = "http://washington.sis.pitt.edu/comet/presentColloquium.do?col_id=" + _col_id;
+        	String link = "http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=" + _col_id;
         	String _lastupdate = rs.getString("_lastupdate");
         	String author = rs.getString("owner");
         	String speaker = rs.getString("name");
