@@ -38,22 +38,22 @@
 		<tr>
 			<td width="25%" style="font-size: 0.75em;font-weight: bold;">Screen Name:</td>
 			<td><html:text style="font-size: 0.75em;" property="name" size="30" /></td>
-			<td><font class="error"><html:errors property="name"/></font></td>
+			<td style="font-size: 0.75em;color: red;font-weight: bold;""><html:errors property="name" /></td>
 		</tr>
 		<tr>
 			<td width="25%" style="font-size: 0.75em;font-weight: bold;">E-Mail Address:</td>
 			<td><html:text style="font-size: 0.75em;" property="userEmail" size="30" /></td>
-			<td><font class="error"><html:errors property="userEmail"/></font></td>
+			<td style="font-size: 0.75em;color: red;font-weight: bold;"><html:errors property="userEmail"/></td>
 		</tr>
 		<tr>
 			<td width="25%" style="font-size: 0.75em;font-weight: bold;">Choose a Password:</td>
 			<td><html:password style="font-size: 0.75em;" property="password" size="30" /></td>
-			<td><font class="error"><html:errors property="password"/></font></td>
+			<td style="font-size: 0.75em;color: red;font-weight: bold;"><html:errors property="password"/></td>
 		</tr>
 		<tr>
 			<td width="25%" style="font-size: 0.75em;font-weight: bold;">Re-enter Password:</td>
 			<td><html:password style="font-size: 0.75em;" property="repassword" size="30" /></td>
-			<td><font class="error"><html:errors property="repassword"/></font></td>
+			<td style="font-size: 0.75em;color: red;font-weight: bold;"><html:errors property="repassword"/></td>
 		</tr>
 		<tr>
 			<td colspan="3">
@@ -72,8 +72,8 @@
 			</td>
 		</tr>
 		<tr>	
-			<td colspan="3">
-				<font class="error"><html:errors property="recaptcha"/></font>
+			<td colspan="3" style="font-size: 0.75em;color: red;font-weight: bold;">
+				<html:errors property="recaptcha"/>
 				&nbsp;
 			</td>
 		</tr>
