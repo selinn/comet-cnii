@@ -11,12 +11,8 @@ h1 {
 }
 
 .aButton {
-  color:#003399; 
-  font: bold 0.7em verdana,helvetica,sans-serif; 
-  background-color: #99CCFF; 
-  border: 2px solid; 
-  border-color: #0066CC #003366 #003366 #0066CC; 
-  filter:progid:DXImageTransform.Microsoft.Gradient (GradientType=0,StartColorStr='#ffffffff',EndColorStr='#ffeeddaa'); 
+  display: block;
+  font-size: 16pt;
 }
 
 /** Most GWT widgets already have a style name defined */
@@ -38,12 +34,11 @@ h1 {
 }
 
 .gwt-SliderBar-shell {
-  color:#003399; 
-  font: bold 0.7em verdana,helvetica,sans-serif; 
-  border: 2px solid;
-  border-color: #0066CC #003366 #003366 #0066CC; 
-  background-color: #99CCFF;
-  height: 25pt;
+  border: 2px solid #faf9f7;
+  border-right: 2px solid #848280;
+  border-bottom: 2px solid #848280;
+  background-color: #efebe7;
+  height: 34pt;
   width: 100%;
 }
 .gwt-SliderBar-shell .gwt-SliderBar-line {
@@ -51,26 +46,26 @@ h1 {
   background-color: white;
   height: 4px;
   width: 95%;
-  top: 15pt;
+  top: 22pt;
   overflow: hidden;
 }
 .gwt-SliderBar-shell .gwt-SliderBar-knob {
-  top: 9pt;
+  top: 14pt;
   width: 11px;
   height: 21px;
   z-index: 1;
   cursor: pointer;
 }
 .gwt-SliderBar-shell .gwt-SliderBar-tick {
-  top: 10pt;
+  top: 12pt;
   width: 1px;
-  height: 6pt;
+  height: 8pt;
   background: black;
   overflow: hidden;
 }
 .gwt-SliderBar-shell .gwt-SliderBar-label {
-  top: 1pt;
-  font-size: 7pt;
+  top: 2pt;
+  font-size: 8pt;
   cursor: default;
 }
 .gwt-SliderBar-shell-focused {
