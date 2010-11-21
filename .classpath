@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="mailapi.jar"/>
 	<classpathentry kind="lib" path="recaptcha4j-0.0.7.jar"/>
+	<classpathentry kind="lib" path="/SliderBarFeedback/war/WEB-INF/lib/gwt-servlet.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
