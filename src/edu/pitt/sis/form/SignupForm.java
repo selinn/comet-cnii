@@ -11,6 +11,8 @@ import org.apache.struts.action.ActionErrors;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 
+import net.tanesha.recaptcha.ReCaptchaImpl;
+import net.tanesha.recaptcha.ReCaptchaResponse;
 /** 
  * MyEclipse Struts
  * Creation date: 12-03-2004
@@ -59,6 +61,20 @@ public class SignupForm extends ActionForm {
 				errors.add("repassword", new ActionError("signup.error.password.notmatch"));
 			}
 		}
+		String remoteAddr = request.getRemoteAddr();
+        ReCaptchaImpl reCaptcha = new ReCaptchaImpl();
+        //Halley Private Key
+        //reCaptcha.setPrivateKey("6Ldamb4SAAAAAHTCLlHVW2TSPp2Mn-YkByFU5EXB");
+        //Washington Private Key
+        reCaptcha.setPrivateKey("6LfZ6b4SAAAAABgyEW4S1NiKrZBLR_077NCw_-xz");
+
+        String challenge = request.getParameter("recaptcha_challenge_field");
+        String uresponse = request.getParameter("recaptcha_response_field");
+        ReCaptchaResponse reCaptchaResponse = reCaptcha.checkAnswer(remoteAddr, challenge, uresponse);
+
+        if (!reCaptchaResponse.isValid()) {
+        	errors.add("recaptcha",new ActionError("signup.error.recaptcha.notmatch"));
+        }
 		
 		return errors;
 	}	
