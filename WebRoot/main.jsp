@@ -7,10 +7,6 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-template" prefix="template" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-nested" prefix="nested" %>
 
-<head>
- <title>Main Page</title>
-</head>
-<body>
 <%
 	session=request.getSession(false);	
 	String redirect = (String)session.getAttribute("redirect");
@@ -102,5 +98,3 @@
 		</tr>
 --%>
 	</table>
-
-</body>
