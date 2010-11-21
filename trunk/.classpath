@@ -4,8 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
 	<classpathentry kind="con" path="melibrary.com.genuitec.eclipse.cross.easystruts.eclipse.STRUTS11_CONTAINER"/>
-	<classpathentry kind="lib" path="mailapi.jar"/>
-	<classpathentry kind="lib" path="recaptcha4j-0.0.7.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/FCKeditor-2.3.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-beanutils.jar"/>
@@ -24,7 +22,6 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/ical4j-1.0-rc1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jakarta-oro.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jcert.jar"/>
-	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jdo2-api-2.3-eb.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jnet.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jsse.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jstl.jar"/>
