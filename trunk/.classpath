@@ -31,5 +31,6 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/ical4j-1.0-rc1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/mail.jar"/>
 	<classpathentry kind="lib" path="mailapi.jar"/>
+	<classpathentry kind="lib" path="recaptcha4j-0.0.7.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
