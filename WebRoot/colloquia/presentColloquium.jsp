@@ -517,7 +517,7 @@
 				</tr>
 				<tr>
 					<td colspan="3" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">
-						E-mail this talk to your friends (Separate them by comma)
+						E-mail this talk to your friends (Separate by comma)
 					</td>
 				</tr>
 				<tr>
@@ -614,9 +614,9 @@
 								<table cellspacing="0" cellpadding="0" width="100%" align="center">
 									<tr>
 										<td width="20%" style="font-size: 0.75em;font-weight: bold;">Tags:</td>
-										<td style="font-size: 0.75em;">
-											<input type="text" name="tags" size="50" value="<%=usertags%>" />
-											<input type="hidden" name="col_id" value="<%=col_id%>"  /><b>(Separate them by white space)</b>
+										<td>
+											<input style="font-size: 0.75em;" type="text" name="tags" size="50" value="<%=usertags%>" />
+											<input type="hidden" name="col_id" value="<%=col_id%>" /><b>(Separate by white space)</b>&nbsp;<input type="submit" class="btn" value="Bookmark" />
 										</td>
 									</tr>
 									<tr>
@@ -666,9 +666,11 @@
 											</table>
 										</td>
 									</tr>
+<%-- 
 									<tr>
 										<td colspan="3"><input type="submit" class="btn" value="Bookmark" /></td>
 									</tr>
+--%>
 								</table>
 							</html:form>
 						</div>
