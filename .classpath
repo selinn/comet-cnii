@@ -6,7 +6,6 @@
 	<classpathentry kind="con" path="melibrary.com.genuitec.eclipse.cross.easystruts.eclipse.STRUTS11_CONTAINER"/>
 	<classpathentry kind="lib" path="mailapi.jar"/>
 	<classpathentry kind="lib" path="recaptcha4j-0.0.7.jar"/>
-	<classpathentry kind="lib" path="/SliderBarFeedback/war/WEB-INF/lib/gwt-servlet.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/FCKeditor-2.3.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/activation.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-beanutils.jar"/>
