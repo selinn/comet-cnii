@@ -47,7 +47,7 @@
 								</tr>
 								<tr>
 									<td>
-										 <iframe src="http://washington.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fwashington.sis.pitt.edu%2Fcomet%2Frpx.do" 
+										 <iframe src="http://washington.rpxnow.com/openid/embed?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do" 
 										 	scrolling="no"  frameBorder="no"  allowtransparency="true"  style="width:400px;height:240px"></iframe> 
 									</td>
 								</tr>
