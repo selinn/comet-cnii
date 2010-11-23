@@ -347,8 +347,8 @@
 		if(relationList.size()>0){
 %>
 				<tr>
-					<td valign="top" width="8%" style="font-weight: bold;">Sponsor:</td>
-					<td align="left" style="">
+					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Sponsor:</td>
+					<td colspan="2" style="font-size: 0.75em;">
 <% 
 			for(int i=0;i<relationList.size();i++){
 				String[] _path = relationList.get(i).split(",");
