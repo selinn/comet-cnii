@@ -28,11 +28,14 @@
     Calendar calendar = new GregorianCalendar();
     int month = calendar.get(Calendar.MONTH);
     int year = calendar.get(Calendar.YEAR);
+    int this_year = year;
     int req_day = -1;
     int req_week = -1;
     int req_month = month+1;
     int req_year = year;
-	boolean req_posted = false;//True means user posts' talks
+    boolean isdebug = false;
+	boolean req_specific_date = false;
+    boolean req_posted = false;//True means user posts' talks
 	boolean req_impact = false;//True means user impact
 	boolean req_most_recent = false;
 	String[] user_id_value = request.getParameterValues("user_id");
@@ -44,21 +47,25 @@
 	String[] affiliate_id_value = request.getParameterValues("affiliate_id");
     if(request.getParameter("day")!=null){
         req_day = Integer.parseInt(request.getParameter("day"));
+        req_specific_date = true;
         //out.println("d:" + req_day);
     }
     
     if(request.getParameter("week")!=null){
         req_week = Integer.parseInt(request.getParameter("week"));
+        req_specific_date = true;
         //out.println("w:" + req_week);
     }
     
     if(request.getParameter("month")!=null){
         req_month = Integer.parseInt(request.getParameter("month"));
+        req_specific_date = true;
         //out.println("m:" + req_month);
     }
     
     if(request.getParameter("year")!=null){
         req_year = Integer.parseInt(request.getParameter("year"));
+        req_specific_date = true;
     }else{
     	req_week = calendar.get(Calendar.WEEK_OF_MONTH);
     }
@@ -71,6 +78,10 @@
     if(request.getParameter("mostrecent")!=null){
     	req_most_recent = true;
 	    req_week = calendar.get(Calendar.WEEK_OF_MONTH);
+        req_specific_date = true;
+    }
+    if(request.getParameter("isdebug")!=null){
+    	isdebug = true;
     }
     
 	String menu = (String)session.getAttribute("menu");
@@ -243,12 +254,13 @@
 			
 			//Fetch user recommendation
 			String sql = "SELECT c.col_id FROM rec_user ru JOIN colloquium c ON ru.col_id = c.col_id " +
-							"WHERE ru.weight > 1.49 AND ru.user_id=" + ub.getUserID() + 
+							"JOIN userinfo u ON ru.user_id = u.user_id " +
+							"WHERE ru.weight >= u.min_score AND ru.user_id=" + ub.getUserID() + 
 							" AND c._date >='" + strRecBeginDate + "' " +
 							"AND c._date <='" + strRecEndDate + "' " +
 							"AND c.col_id NOT IN (SELECT col_id FROM userprofile WHERE user_id=" + ub.getUserID() + ") " +
 							"AND c.col_id NOT IN (SELECT col_id FROM userfeedback where user_id=" + ub.getUserID() + 
-							" AND rating <= (SELECT SUM(rating)/COUNT(*) FROM userfeedback WHERE user_id=1) GROUP BY col_id) " +
+							" AND rating <= (SELECT SUM(rating)/COUNT(*) FROM userfeedback WHERE user_id=" +ub.getUserID() + ") GROUP BY col_id) " +
 							"ORDER BY ru.weight DESC LIMIT 5";
 			ResultSet rs = conn.getResultSet(sql);
 			//out.println(sql);
@@ -304,12 +316,13 @@
 				}
 
 				String sql = "SELECT c.col_id FROM rec_user ru JOIN colloquium c ON ru.col_id = c.col_id " +
-								"WHERE ru.weight > 1.49 AND ru.user_id=" + ub.getUserID() + 
+								"JOIN userinfo u ON ru.user_id = u.user_id " +
+								"WHERE ru.weight >= u.min_score AND ru.user_id=" + ub.getUserID() + 
 								" AND c._date >='" + strRecBeginDate + "' " +
 								"AND c._date <='" + strRecEndDate + "' " +
 								"AND c.col_id NOT IN (SELECT col_id FROM userprofile WHERE user_id=" + ub.getUserID() + ") " +
 								"AND c.col_id NOT IN (SELECT col_id FROM userfeedback where user_id=" + ub.getUserID() + 
-								" AND rating <= (SELECT SUM(rating)/COUNT(*) FROM userfeedback WHERE user_id=1) GROUP BY col_id) " +
+								" AND rating <= (SELECT SUM(rating)/COUNT(*) FROM userfeedback WHERE user_id=" + ub.getUserID() + ") GROUP BY col_id) " +
 								"ORDER BY ru.weight DESC LIMIT 5";
 				ResultSet rs = conn.getResultSet(sql);
 				//out.println(sql);
@@ -328,76 +341,88 @@
 
 	String sql = "SELECT date_format(c._date,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 					"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
-					"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation " +
+					"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
+					"date_format(c._date,_utf8'%Y') _year " +
 					"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
-					"LEFT JOIN host h ON c.host_id = h.host_id " +
-					"LEFT JOIN loc_col lc ON c.col_id = lc.col_id " +
-					"JOIN userinfo u ON c.owner_id = u.user_id " +
-					"WHERE TRUE ";// +
+					"JOIN userinfo u ON c.owner_id = u.user_id ";// +
+					//"LEFT JOIN host h ON c.host_id = h.host_id " +
+					//"LEFT JOIN loc_col lc ON c.col_id = lc.col_id ";// +
+					//"WHERE TRUE ";// +
 					//"c._date >= (SELECT beginterm FROM sys_config) " +
 					//"AND c._date <= (SELECT endterm FROM sys_config) ";
 	if(req_posted){
 		sql = "SELECT date_format(pt.posttime,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 				"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
-				"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation " +
+				"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
+				"date_format(c._date,_utf8'%Y') _year " +
 				"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
-				"LEFT JOIN host h ON c.host_id = h.host_id " +
-				"LEFT JOIN loc_col lc ON c.col_id = lc.col_id " +
 				"JOIN userinfo u ON c.owner_id = u.user_id " +
 				"JOIN " +
 				"(SELECT col_id,MIN(lastupdate) posttime FROM " +
-				"(SELECT col_id,MIN(lastupdate) lastupdate FROM col_bk GROUP BY col_id " +
-				"UNION " +
-				"SELECT col_id,lastupdate FROM colloquium) tpost GROUP BY col_id) pt ON c.col_id = pt.col_id " +
-				"WHERE TRUE ";
+				" (SELECT col_id,MIN(lastupdate) lastupdate FROM col_bk GROUP BY col_id " +
+				" UNION " +
+				" SELECT col_id,lastupdate FROM colloquium) tpost " +
+				"GROUP BY col_id) pt ON c.col_id = pt.col_id ";// +
+				//"LEFT JOIN host h ON c.host_id = h.host_id " +
+				//"LEFT JOIN loc_col lc ON c.col_id = lc.col_id ";// +
+				//"WHERE TRUE ";
 	}
 		
 	if(user_id_value !=null){//User Mode
 		for(int i=0;i<user_id_value.length;i++){
 			if(req_posted){
-				sql += "AND c.col_id IN (SELECT col_id FROM colloquium WHERE owner_id=" + user_id_value[i] + ") ";
+				sql += "JOIN colloquium cc" + i + " ON c.col_id=cc" + i + ".col_id AND cc"+ i + ".owner_id = " + user_id_value[i] + " ";
 			}else{
-				sql += "AND c.col_id IN (SELECT col_id FROM userprofile WHERE user_id=" + user_id_value[i]+") ";
+				sql += "JOIN userprofile up" + i + " ON c.col_id=up" + i + ".col_id AND up" + i + ".user_id = " + user_id_value[i] + " ";
 			}
 		}
 	}
 	if(comm_id_value != null){//Community Mode
 		for(int i=0;i<comm_id_value.length;i++){
-			sql += "AND c.col_id IN (SELECT u.col_id FROM contribute c,userprofile u WHERE u.userprofile_id = c.userprofile_id AND c.comm_id=" + comm_id_value[i] + ") ";
+			sql += "JOIN userprofile upc" + i + " ON c.col_id=upc" + i + ".col_id " +
+					"JOIN contribute ct" + i + " ON upc" + i + ".userprofile_id = ct" + i + ".userprofile_id " + 
+					"AND ct" + i + ".comm_id = " + comm_id_value[i] + " ";
 		}
+		sql += "AND c._date >= (SELECT beginterm FROM sys_config) AND c._date < (SELECT endterm FROM sys_config) ";
 	}
 	if(tag_id_value != null){//Tag Mode
 		for(int i=0;i<tag_id_value.length;i++){
-			sql += "AND c.col_id IN (SELECT u.col_id FROM tags t,userprofile u WHERE t.userprofile_id = u.userprofile_id AND t.tag_id=" + tag_id_value[i] + ") ";
+			sql += "JOIN userprofile upt" + i + " ON c.col_id=upt" + i + ".col_id " +
+					"JOIN tags tt" + i + " ON upt" + i + ".userprofile_id = tt" + i + ".userprofile_id " + 
+					"AND tt" + i + ".tag_id = " + tag_id_value[i] + " ";
 		}
 	}
 	if(series_id_value != null){//Series Mode
 		for(int i=0;i<series_id_value.length;i++){
-			sql += "AND c.col_id IN (SELECT col_id FROM seriescol WHERE series_id=" + series_id_value[i] + ") ";
+			sql += "JOIN seriescol sc" + i + " ON c.col_id = sc" + i + ".col_id AND sc" + i + ".series_id=" + series_id_value[i] + " ";
 		}
+		sql += "AND c._date >= (SELECT beginterm FROM sys_config) AND c._date < (SELECT endterm FROM sys_config) ";
 	}
 	if(entity_id_value != null){//Entity Mode
 		for(int i=0;i<entity_id_value.length;i++){
-			sql += "AND c.col_id IN (SELECT col_id FROM entities WHERE entity_id=" + entity_id_value[i] + ") ";
+			sql += "JOIN entities ee" + i + " ON c.col_id = ee" + i + ".col_id AND ee" + i + ".entity_id = " + entity_id_value[i] + " ";
 		}
 	}
 	if(type_value != null){//Entity Type Mode
 		for(int i=0;i<type_value.length;i++){
-			sql += "AND c.col_id IN (SELECT ee.col_id FROM entity e,entities ee " +
-					"WHERE e.entity_id = ee.entity_id AND e._type='" + type_value[i] + "') ";
+			sql += "JOIN entities eee" + i + " ON c.col_id = eee" + i + ".col_id JOIN entity e" + i + " ON " +
+			"e" + i + ".entity_id = eee" + i + ".entity_id AND e" + i + "._type = '" + type_value[i] + "' ";
 		}
 	}
+	sql += "LEFT JOIN host h ON c.host_id = h.host_id " +
+			"LEFT JOIN loc_col lc ON c.col_id = lc.col_id " +
+			"WHERE TRUE ";
 	if(affiliate_id_value !=null ){
 		for(int i=0;i<affiliate_id_value.length;i++){
 			sql += "AND c.col_id IN " +
-					"(SELECT ac.col_id FROM affiliate_col ac," +
+					"(SELECT ac.col_id FROM affiliate_col ac JOIN " +
 					"(SELECT child_id FROM relation WHERE " +
 					"path LIKE CONCAT((SELECT path FROM relation WHERE child_id="+ affiliate_id_value[i] + "),',%')) cc " +
-					"WHERE ac.affiliate_id = cc.child_id " +
+					"ON ac.affiliate_id = cc.child_id " +
 					"UNION SELECT col_id FROM affiliate_col WHERE affiliate_id=" + affiliate_id_value[i] + ") ";
 		}
 	}
-	if(menu.equalsIgnoreCase("calendar")||menu.equalsIgnoreCase("myaccount")||req_most_recent){
+	if(menu.equalsIgnoreCase("calendar")||menu.equalsIgnoreCase("myaccount")||req_most_recent||req_specific_date){
 		if(req_posted){
 			sql += "AND pt.posttime >= '" + strBeginDate + " 00:00:00' " +
 			"AND pt.posttime <= '" + strEndDate + " 23:59:59' ";
@@ -406,13 +431,16 @@
 			"AND c._date <= '" + strEndDate + " 23:59:59' ";
 		}
 	}
+	sql += "GROUP BY c.col_id ";
 	if(req_posted){
 		sql += "ORDER BY pt.posttime;";
 	}else{
 		sql += "ORDER BY c._date,c.begintime;";
 	}
 	String day = "";
-	//out.println(sql);
+	if(isdebug){
+		out.println(sql);
+	}
 	ResultSet rs = conn.getResultSet(sql);
 	boolean noTalks = true;
 	
@@ -433,6 +461,10 @@
 	while(rs.next()){
 		noTalks = false;
 		String aDay = rs.getString("day");
+		String _year = rs.getString("_year");
+		if(this_year != Integer.parseInt(_year)){
+			aDay += ", " + _year;
+		}
 		//String host = rs.getString("host");
 		String owner_id = rs.getString("owner_id");
 		String owner = rs.getString("owner");
@@ -449,7 +481,9 @@
 			<td>&nbsp;</td>
 		</tr>
 		<tr>
-			<td align="right"><input class="btn" type="button" value="Delete" onclick="deleteCols();return false;" ></td>
+			<td align="right">
+				<input class="btn" type="button" value="Delete" onclick="deleteCols();" >
+			</td>
 		</tr>
 <%			}
 			day = aDay;
@@ -472,7 +506,6 @@
 		}
 		//Show talk snap shot
 		String col_id = rs.getString("col_id");
-		String title = rs.getString("title");
 %>
 					<tr>
 <% 
@@ -504,11 +537,18 @@
 		
 		//How many views
 		int viewno = 0;
-		sql = "SELECT COUNT(*) _no FROM talkview WHERE col_id=" + col_id;
+		sql = "SELECT ipaddress,sessionid,COUNT(*) _no FROM talkview WHERE col_id=" + col_id + " GROUP BY ipaddress,sessionid";
 		rsExt = conn.getResultSet(sql);
 		if(rsExt!=null){
-			if(rsExt.next()){
-				viewno = rsExt.getInt("_no");
+			while(rsExt.next()){
+				String ipaddress = rsExt.getString("ipaddress");
+				String sessionid = rsExt.getString("sessionid").trim().toLowerCase();
+				if(ipaddress.trim().length()==0||sessionid.trim().length()==0){
+					viewno += rsExt.getInt("_no");
+				}else{
+					viewno++;
+				}
+				
 			}
 		}
 		
@@ -601,7 +641,7 @@
 									</td>
 									<td width="90.5%" valign="top">
 
-							<b><a href="presentColloquium.do?col_id=<%=col_id%>"><%=title%></a></b>
+							<b><a href="presentColloquium.do?col_id=<%=col_id%>"><%=rs.getString("title")%></a></b>
 <% 
 		String video_url = rs.getString("video_url");
 		if(video_url != null){
@@ -797,43 +837,8 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 							<br/><b>Bookmarked by:</b><%=bookmarks%>
 <%			
 		}
-		String path = request.getContextPath();
-		String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
-		String paperPath = basePath + "presentColloquium.do?col_id=" + col_id;
 %>
 							</span>
-<%-- 
-<br/><br/>							
-<table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
-	<tr>
-		<td align="center" width="25%">
-			<script src="http://connect.facebook.net/en_US/all.js#xfbml=1"></script>
-			<fb:like href="<%=paperPath %>" layout="button_count" action="recommend"></fb:like>		
-		</td>
-		<td align="center" width="25%">
-			<a href="http://twitter.com/share" class="twitter-share-button" data-text="<%=title %>" 
-				data-url="<%=paperPath %>" data-count="horizontal">Tweet</a>
-			<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
-		</td>
-		<td align="center" width="25%">
-			<a title="Post to Google Buzz" class="google-buzz-button" href="http://www.google.com/buzz/post" 
-				data-button-style="small-count" data-url="<%=paperPath %>"></a>
-			<script type="text/javascript" src="http://www.google.com/buzz/api/button.js"></script>		
-		</td>
-		<td align="center" width="25%">
-			<!-- AddThis Button BEGIN -->
-			<div class="addthis_toolbox addthis_default_style">
-				<a class="addthis_counter addthis_pill_style" href="http://www.addthis.com/bookmark.php" 
-					addthis:url="<%=paperPath %>" addthis:title="<%=title %>" ></a>
-			</div>
-			<script type="text/javascript">var addthis_config = {"data_track_clickback":true};</script>
-			<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#username=chirayukong"></script>
-			<!-- AddThis Button END -->
-		</td>
-	</tr>	
-</table>
-<br/>							
---%>
 
 									</td>
 								</tr>
