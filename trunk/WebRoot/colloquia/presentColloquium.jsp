@@ -215,7 +215,7 @@
 <%-- 
 <logic:notPresent name="UserSession">
 <% 
-	session.setAttribute("redirect", "presentColloquium.do?col_id=" + col_id);
+	session.setAttribute("after-login-redirect", "presentColloquium.do?col_id=" + col_id);
 %>
 </logic:notPresent>
 --%>
