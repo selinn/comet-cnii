@@ -17,7 +17,7 @@
 <form method="post" action="lostPassword.do">
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tr>
-			<td style="font-size: 1.2em;" colspan="2">To recover your password, please enter your email.</td>
+			<td style="font-weight: bold;" colspan="2">To recover your password, please enter your email.</td>
 		</tr>
 		<tr>
 			<td align="left" width="60">E-mail:</td>
@@ -57,19 +57,19 @@
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 %>
-	<p style="color: red;font-size: 1.5em;">Requesting Password was Error. Please Try Again.</p>
+	<p style="color: red;font-weight: bold;">Requesting Password was Error. Please Try Again.</p>
 <%
 			return;
 		}
 		
-		String localhost= "washington.sis.pitt.edu";
+		String localhost= "halley.exp.sis.pitt.edu";
 		String mailhost= "smtp.gmail.com";
 		String mailuser= "NoReply";
 		MailNotifier mail = new MailNotifier(localhost,mailhost,mailuser,requst_email);
 		String emailContent = "Dear " + name + "\n\n" +
 		"This automated e-mail of the CoMeT Sysytem:\n\n" + 
 		"Your password is " + DecryptedPassword + "\n\n" +
-		"CoMeT Website: http://washington.sis.pitt.edu/comet ";
+		"CoMeT Website: http://halley.exp.sis.pitt.edu/comet ";
 		
 		try {
 			mail.send("Lost Password | CoMeT", emailContent);
@@ -80,7 +80,7 @@
 		conn.conn.close();
 		conn = null;
 %>
-	<p style="font-size: 1.5em;">Your password was sent to your inbox shortly.</p>
+	<p style="font-size: 1.5em;">Your password will be sent to your inbox shortly.</p>
 <%
 	}
 %>
