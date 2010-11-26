@@ -44,6 +44,8 @@ public class ColloquiumForm extends ActionForm {
 	private String url;
 	private String[] sponsor_id;
 	private String video_url;
+	private String slide_url;
+	private String s_bio;
 
 	// --------------------------------------------------------- Methods
 	
@@ -73,8 +75,11 @@ public class ColloquiumForm extends ActionForm {
 		ActionErrors errors = new ActionErrors();
 		
 		//Basic field validation is here
-		if(this.title.trim().equalsIgnoreCase("") || this.title.length() < 1)
+		if(this.title == null){
 			errors.add("title", new ActionError("colloquium.entry.error.title"));
+		}else if(this.title.trim().equalsIgnoreCase("") || this.title.length() < 1){
+			errors.add("title", new ActionError("colloquium.entry.error.title"));
+		}
 		if(this.speaker.trim().equalsIgnoreCase("") || this.speaker.length() < 1)
 			errors.add("speaker", new ActionError("colloquium.entry.error.speaker"));
 		if(this.talkDate.trim().equalsIgnoreCase("") || this.talkDate.length() < 1)
@@ -106,6 +111,7 @@ public class ColloquiumForm extends ActionForm {
 	public void reset(ActionMapping mapping, HttpServletRequest request) {
 
 		// TODO Auto-generated method stub
+		title = null;
 		speaker = null;
 		talkDate = null;
 		//begintime = null;
@@ -116,6 +122,8 @@ public class ColloquiumForm extends ActionForm {
 		host = null;
 		series_id = null;
 		video_url = null;
+		slide_url = null;
+		s_bio = null;
 	}
 
 	public String getHost() {
@@ -260,6 +268,22 @@ public class ColloquiumForm extends ActionForm {
 
 	public void setAffiliation(String affiliation) {
 		this.affiliation = affiliation;
+	}
+
+	public String getSlide_url() {
+		return slide_url;
+	}
+
+	public void setSlide_url(String slide_url) {
+		this.slide_url = slide_url;
+	}
+
+	public String getS_bio() {
+		return s_bio;
+	}
+
+	public void setS_bio(String s_bio) {
+		this.s_bio = s_bio;
 	}
 
 

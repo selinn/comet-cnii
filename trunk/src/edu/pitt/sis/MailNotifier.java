@@ -137,7 +137,7 @@ public class MailNotifier {
 		try {
 			if(rs.next()){
 				String content = "Dear my friend,\n\n" + 
-								"This e-mail is on behalf of the CoMeT Sysytem:\n\n" + 
+								//"This e-mail is on behalf of the CoMeT Sysytem:\n\n" + 
 								sender_name + "(" + sender_email + ") sugguest this colloquium to you as follows.\n\n" + 
 								"Title: " + rs.getString("title") + "\n" +
 								"Speaker: " + rs.getString("name") +  "\n" +
@@ -145,7 +145,7 @@ public class MailNotifier {
 								"Date: " + rs.getString("_date") + "\n" +
 								"Time: " + rs.getString("_begin") + " - " + rs.getString("_end") + "\n" +
 								"Location: " + rs.getString("location") + "\n\n" +
-								"More detail please visit http://washington.sis.pitt.edu/comet/presentColloquium.do?col_id=" + col_id;
+								"More detail please visit http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=" + col_id;
 
 				System.out.println(content);
 				

@@ -58,7 +58,7 @@ Questions can be directed to CoMeT via email at
 <logic:notPresent name="Colloquium">
 
 <html:form action="/PostColloquiumEntry" method="post">
-<table width="100%" border="0" cellspacing="0" cellpadding="2">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 <% 
 	//UserBean ub = (UserBean)session.getAttribute("UserSession");
 	String col_id = "0";
@@ -74,11 +74,13 @@ Questions can be directed to CoMeT via email at
 	String detail = "";
 	String url = "";
 	String video_url = "";
+	String slide_url = "";
+	String s_bio = "";
 	HashSet<String> sponsorSet = new HashSet<String>();
 
 	String sql = "SELECT c.col_id,c.title,s.name,s.affiliation,h.host,date_format(c._date,_utf8'%m/%d/%Y') _date," +
 					"date_format(c.begintime,_utf8'%l %i %p') _begin," +
-					"date_format(c.endtime,_utf8'%l %i %p') _end,c.location,c.detail,c.url,c.video_url " +
+					"date_format(c.endtime,_utf8'%l %i %p') _end,c.location,c.detail,c.url,c.video_url,c.slide_url,c.s_bio " +
 					"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
 					"LEFT OUTER JOIN host h ON c.host_id = h.host_id " + 
 					"WHERE " +
@@ -104,6 +106,14 @@ Questions can be directed to CoMeT via email at
 		video_url = rs.getString("video_url");
 		if(video_url==null){
 			video_url = "";
+		}
+		slide_url = rs.getString("slide_url");
+		if(slide_url==null){
+			slide_url = "";
+		}
+		s_bio = rs.getString("s_bio");
+		if(s_bio==null){
+			s_bio = "";
 		}
 		
 		sql = "SELECT affiliate_id FROM affiliate_col WHERE col_id = " + request.getParameter("col_id");
@@ -261,7 +271,7 @@ Questions can be directed to CoMeT via email at
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%		
@@ -292,7 +302,7 @@ Questions can be directed to CoMeT via email at
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -324,7 +334,7 @@ Questions can be directed to CoMeT via email at
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -393,7 +403,7 @@ Questions can be directed to CoMeT via email at
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -474,7 +484,7 @@ Questions can be directed to CoMeT via email at
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -506,7 +516,7 @@ Questions can be directed to CoMeT via email at
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -576,7 +586,7 @@ Questions can be directed to CoMeT via email at
 									}
 								}
 							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show sibling(s)" 
+						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
 						onclick="ShowSponsor<%=aid%>();"  />
 							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
 <%
@@ -788,8 +798,12 @@ Questions can be directed to CoMeT via email at
 			  <td colspan="2"><font style="color: red;"><html:errors property="location"/></font></td>
 			</tr>
 			<tr>
-				<td width="20%" style="font-weight: bold;">Video URL:</td>
+				<td width="20%" style="font-weight: bold;">Video URL: (optional)</td>
 				<td><html:text style="font-size: 1em;" property="video_url" size="80" value="<%=video_url%>" /></td>
+			</tr>
+			<tr>
+				<td width="20%" style="font-weight: bold;">Slide URL: (optional)</td>
+				<td><html:text style="font-size: 1em;" property="slide_url" size="80" value="<%=slide_url%>" /></td>
 			</tr>
 			<tr>
 				<td valign="top" style="font-weight: bold;">Detail:</td>
@@ -812,6 +826,25 @@ Questions can be directed to CoMeT via email at
 			</tr>
 			<tr>
 				<td colspan="2"><font style="color: red;"><html:errors property="detail" /></font></td>
+			</tr>
+			<tr>
+				<td valign="top" style="font-weight: bold;">Bio: (optional)</td>
+				<td>
+					<textarea style="font-size: 1em;" name="s_bio" rows="20" cols="80"><%=s_bio%></textarea>
+				<script type="text/javascript"> 
+				//<![CDATA[
+ 
+					// This call can be placed at any point after the
+					// <textarea>, or inside a <head><script> in a
+					// window.onload event handler.
+ 
+					// Replace the <textarea id="editor"> with an CKEditor
+					// instance, using default configurations.
+					CKEDITOR.replace( 's_bio' );
+ 
+				//]]>
+				</script> 
+				</td>
 			</tr>
       </table></td>
       </tr>

@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.servlet.http.*;
 
 import edu.pitt.sis.FetchNE;
+import edu.pitt.sis.MailNotifier;
 import edu.pitt.sis.db.*;
 import edu.pitt.sis.beans.*;
 import edu.pitt.sis.form.*;
@@ -232,9 +233,9 @@ public class AddColloquiumAction extends Action {
 			//Insert talk
 			sql = "INSERT INTO colloquium " +
 					"(_date,begintime,endtime,location,detail,lastupdate," +
-					"title,user_id,speaker_id,host_id,url,owner_id,video_url) " +
+					"title,user_id,speaker_id,host_id,url,owner_id,video_url,slide_url,s_bio) " +
 					"VALUES " +
-					"(?,?,?,?,?,NOW(),?,?,?,?,?,?,?)";
+					"(?,?,?,?,?,NOW(),?,?,?,?,?,?,?,?,?)";
 			try {
 				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 				SimpleDateFormat timeFormatter = new SimpleDateFormat("yyyy-MM-dd H:m");
@@ -253,6 +254,8 @@ public class AddColloquiumAction extends Action {
 				pstmt.setString(10, cqf.getUrl());
 				pstmt.setLong(11, ub.getUserID());
 				pstmt.setString(12, cqf.getVideo_url());
+				pstmt.setString(13, cqf.getSlide_url());
+				pstmt.setString(14, cqf.getS_bio());
 				pstmt.executeUpdate();
 				pstmt.close();
 				
@@ -273,15 +276,15 @@ public class AddColloquiumAction extends Action {
 			//Copy from colloquium tbl to col_bk tbl
 			sql = "INSERT INTO col_bk " +
 					"(timestamp,col_id,_date,begintime,endtime,location,detail,lastupdate," +
-					"title,user_id,speaker_id,host_id,url) " +
+					"title,user_id,speaker_id,host_id,url,video_url,slide_url,s_bio) " +
 					"SELECT NOW(),col_id,_date,begintime,endtime,location,detail,lastupdate," +
-					"title,user_id,speaker_id,host_id,url FROM colloquium WHERE col_id=" + cqf.getCol_id();
+					"title,user_id,speaker_id,host_id,url,video_url,slide_url,s_bio FROM colloquium WHERE col_id=" + cqf.getCol_id();
 			conn.executeUpdate(sql);
 			
 			//Edit talk
 			sql = "UPDATE colloquium  SET " +
 					"_date = ? ,begintime =?,endtime = ?,location = ?,detail = ?,lastupdate = NOW()," +
-					"title = ?,user_id = ?,speaker_id = ?,host_id = ?,url=?, video_url=? " +
+					"title = ?,user_id = ?,speaker_id = ?,host_id = ?,url=?, video_url=?, slide_url=?, s_bio=? " +
 					"WHERE col_id = ?";
 			try {
 				SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -300,16 +303,73 @@ public class AddColloquiumAction extends Action {
 				pstmt.setLong(9, host_id);
 				pstmt.setString(10, cqf.getUrl());
 				pstmt.setString(11, cqf.getVideo_url());
-				pstmt.setLong(12, cqf.getCol_id());
+				pstmt.setString(12, cqf.getSlide_url());
+				pstmt.setString(13, cqf.getS_bio());
+				pstmt.setLong(14, cqf.getCol_id());
 				pstmt.executeUpdate();
 				pstmt.close();
 				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				//e.printStackTrace();
-				session.setAttribute("SubmitTalkError", speaker_id + "Technical problem (DB Connection#4) occured. Please try again. " + e.getMessage());
+				session.setAttribute("SubmitTalkError", speaker_id + " Technical problem (DB Connection#4) occured. Please try again. " + e.getMessage());
 				return mapping.findForward("Failure");
 			}
+			
+			//Acknowledge bookmarked users
+			try {
+				int _updateno = 0;
+				sql = "SELECT COUNT(*) _no FROM col_bk WHERE col_id=?";
+				pstmt = conn.conn.prepareStatement(sql);
+				pstmt.setLong(1, cqf.getCol_id());
+				ResultSet rs = pstmt.executeQuery();
+				if(rs.next()){
+					_updateno = rs.getInt("_no");
+				}
+				
+				sql = "SELECT u.name,u.email FROM userinfo u JOIN userprofile up ON u.user_id=up.user_id WHERE up.col_id=? GROUP BY u.name,u.email";
+				pstmt = conn.conn.prepareStatement(sql);
+				pstmt.setLong(1, cqf.getCol_id());
+				rs = pstmt.executeQuery();
+				SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM d, yyyy");
+				SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
+				String _talkDate = dateFormatter.format(talkDate);
+				String _beginTime = timeFormatter.format(beginTime);
+				String _endTime = timeFormatter.format(endTime);
+				while(rs.next()){
+					String bname = rs.getString("name");
+					String[] bemail = new String[1];
+					bemail[0] = rs.getString("email");
+	
+					
+					String localhost= "halley.exp.sis.pitt.edu";
+					String mailhost= "smtp.gmail.com";
+					String mailuser= "NoReply";
+					MailNotifier mail = new MailNotifier(localhost,mailhost,mailuser,bemail);
+					String emailContent = "Dear " + bname + "\n\n" +
+					"Your bookmarked talk was updated as belows:\n\n" + 
+					"Title: " + cqf.getTitle() + "\n" +
+					"Speaker: " + cqf.getSpeaker() +  "\n" +
+					"Host: " + cqf.getHost() + "\n" + 
+					"Date: " + _talkDate + "\n" +
+					"Time: " + _beginTime + " - " + _endTime + "\n" +
+					"Location: " + cqf.getLocation() + "\n\n" +
+					"More detail please visit http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=" + cqf.getCol_id();
+					
+					try {
+						mail.send("CoMeT | [Update #" + _updateno + "] " + cqf.getTitle(), emailContent);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			/**
+			 * 		
+			 * */
 			
 		}
 		
@@ -376,7 +436,7 @@ public class AddColloquiumAction extends Action {
 		//Fetch Named Entity
 		FetchNE.getNameEntity(cqf.getCol_id());
 
-		session.setAttribute("Colloquium", "");
+		session.setAttribute("Colloquium", cqf);
 			
 		return mapping.findForward("Success");
 	}	

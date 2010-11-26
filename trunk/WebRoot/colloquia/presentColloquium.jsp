@@ -178,7 +178,7 @@
 					"date_format(c.begintime,_utf8'%l:%i %p') _begin," +
 					"date_format(c.endtime,_utf8'%l:%i %p') _end, " +
 					"c.detail,h.host_id,h.host,s.speaker_id,s.name,c.location," +
-					"c.user_id,c.url,u.name owner,c.owner_id,lc.abbr,c.video_url,s.affiliation " +
+					"c.user_id,c.url,u.name owner,c.owner_id,lc.abbr,c.video_url,s.affiliation,c.slide_url,c.s_bio " +
 					"FROM colloquium c JOIN speaker s ON c.speaker_id=s.speaker_id " +
 					"JOIN userinfo u ON c.owner_id = u.user_id " +
 					"LEFT OUTER JOIN host h ON c.host_id = h.host_id " +
@@ -212,6 +212,13 @@
 	};
 //-->
 </script>
+
+<logic:notPresent name="UserSession">
+<% 
+	session.setAttribute("redirect", "presentColloquium.do?col_id=" + col_id);
+%>
+</logic:notPresent>
+
 <table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
 		<td width="770" valign="top">
@@ -439,10 +446,48 @@
 				}
 			}
 %>
+<% 
+			String slide = rs.getString("slide_url");
+			if(slide!=null){
+				if(slide.length() > 0){
+%>
+				<tr>
+					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Slide:</td>
+					<td colspan="2" style="font-size: 0.75em;">
+<%
+					if(slide.length() > 7){
+%>
+						<a href="<%=slide%>"><%=slide%></a>
+<%					
+					}else{
+%>
+						<%=slide%>
+<%					
+					}
+%>
+					</td>
+				</tr>
+<%
+				}
+			}
+%>
 				<tr>
 					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Detail:</td>
 					<td colspan="2" style="font-size: 0.75em;"><%=rs.getString("detail")%></td>
 				</tr>
+<% 
+			String s_bio = rs.getString("s_bio");
+			if(s_bio!=null){
+				if(s_bio.length() > 0){
+%>
+				<tr>
+					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Bio:</td>
+					<td colspan="2" style="font-size: 0.75em;"><%=s_bio%></td>
+				</tr>
+<%
+				}
+			}
+%>
 <%
 		//Insert time log
 		long uid = 0;
