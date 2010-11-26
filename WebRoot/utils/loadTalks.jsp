@@ -342,7 +342,7 @@
 	String sql = "SELECT date_format(c._date,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 					"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
 					"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
-					"date_format(c._date,_utf8'%Y') _year " +
+					"date_format(c._date,_utf8'%Y') _year,c.slide_url " +
 					"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
 					"JOIN userinfo u ON c.owner_id = u.user_id ";// +
 					//"LEFT JOIN host h ON c.host_id = h.host_id " +
@@ -354,7 +354,7 @@
 		sql = "SELECT date_format(pt.posttime,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 				"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
 				"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
-				"date_format(c._date,_utf8'%Y') _year " +
+				"date_format(c._date,_utf8'%Y') _year,c.slide_url " +
 				"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
 				"JOIN userinfo u ON c.owner_id = u.user_id " +
 				"JOIN " +
@@ -648,6 +648,14 @@
 			if(video_url.length() > 7){
 %>
 							&nbsp;<a href="<%=video_url%>"><img alt="Video Link" src="images/video-icon.jpg" border="0" /></a>
+<%				
+			}
+		}
+		String slide_url = rs.getString("slide_url");
+		if(slide_url != null){
+			if(slide_url.length() > 7){
+%>
+							&nbsp;<a href="<%=slide_url%>"><img alt="Slide Link" src="images/Slide-Show-icon.jpg" border="0" /></a>
 <%				
 			}
 		}
