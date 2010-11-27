@@ -11,6 +11,7 @@
 	session=request.getSession(false);	
 	String redirect = (String)session.getAttribute("redirect");
 	if(redirect != null){
+		session.removeAttribute("redirect");
 %>
 	<script>
 		window.location="<%=redirect%>";

@@ -12,6 +12,16 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-nested" prefix="nested" %>
 
 
+<logic:notPresent name="UserSession">
+<% 
+	String pagePath = "community.do";
+	
+	if(request.getQueryString()!=null){
+		pagePath += "?" + request.getQueryString();
+	} 
+	session.setAttribute("before-login-redirect", pagePath);
+%>
+</logic:notPresent>
 <% 
 	String comm_id = (String)request.getParameter("comm_id");
 	if(comm_id == null){

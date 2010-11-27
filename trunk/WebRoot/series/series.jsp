@@ -11,6 +11,12 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-template" prefix="template" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-nested" prefix="nested" %>
 
+<logic:notPresent name="UserSession">
+<% 
+	session.setAttribute("before-login-redirect", 
+		"series.do" + (request.getQueryString()==null?"":"?" + request.getQueryString()));
+%>
+</logic:notPresent>
 <% 
 	String series_id = (String)request.getParameter("series_id");
 	if(series_id == null){

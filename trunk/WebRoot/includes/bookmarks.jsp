@@ -606,9 +606,35 @@
 </script>
 <% 
 	session=request.getSession(false);
+	String menu = (String)session.getAttribute("menu");
+%>
+<logic:notPresent name="UserSession">
+<% 
+	String pagePath = "";
+	if(menu.equalsIgnoreCase("calendar")){
+		pagePath = "calendar.do";
+	} 
+	if(menu.equalsIgnoreCase("myaccount")){
+		pagePath = "myaccount.do";
+	}
+	if(menu.equalsIgnoreCase("community")){
+		pagePath = "community.do";
+	}
+	if(menu.equalsIgnoreCase("series")){
+		pagePath = "series.do";
+	}
 	
+	if(request.getQueryString()!=null){
+		pagePath += "?" + request.getQueryString();
+	} 
+	session.setAttribute("before-login-redirect", pagePath);
+%>
+</logic:notPresent>
+
+<%	
 	String redirect = (String)session.getAttribute("redirect");
 	if(redirect != null){
+		session.removeAttribute("redirect");
 %>
 	<script>
 		window.location="<%=redirect%>";
@@ -620,7 +646,6 @@
 <div align="center">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <% 
-	String menu = (String)session.getAttribute("menu");
 	if(menu.equalsIgnoreCase("myaccount") || (request.getParameter("user_id") != null && menu.equalsIgnoreCase("calendar"))){
 %>
 		<tr>
