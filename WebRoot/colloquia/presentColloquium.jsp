@@ -212,13 +212,12 @@
 	};
 //-->
 </script>
-<%-- 
+
 <logic:notPresent name="UserSession">
 <% 
-	session.setAttribute("after-login-redirect", "presentColloquium.do?col_id=" + col_id);
+	session.setAttribute("before-login-redirect", "presentColloquium.do?col_id=" + col_id);
 %>
 </logic:notPresent>
---%>
 
 <table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
