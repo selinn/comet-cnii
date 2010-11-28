@@ -827,6 +827,7 @@ Questions can be directed to CoMeT via email at
 			<tr>
 				<td colspan="2"><font style="color: red;"><html:errors property="detail" /></font></td>
 			</tr>
+<%-- 
 			<tr>
 				<td valign="top" style="font-weight: bold;">Bio: (optional)</td>
 				<td>
@@ -846,9 +847,11 @@ Questions can be directed to CoMeT via email at
 				</script> 
 				</td>
 			</tr>
+--%>
       </table></td>
       </tr>
 </table>
+<input type="hidden" name="s_bio" value="" />
 <input type="hidden" name="col_id" value="<%=col_id %>" />
 <input type="submit" class="btn" value="Post Talk" />
 </html:form>
