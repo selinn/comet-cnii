@@ -63,7 +63,10 @@ public class ProfileAction extends Action {
 			session.removeAttribute("HideBar");
 		}
 		
-		//session.setAttribute("menu","profile");
+		String user_id = (String)request.getParameter("user_id");
+		if(user_id!=null){
+			session.setAttribute("menu","profile");
+		}
 		
 		return mapping.findForward("Success");			
 		

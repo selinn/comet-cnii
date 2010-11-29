@@ -55,7 +55,12 @@ public class ListMonthCalAction extends Action {
 		if(session.getAttribute("HideBar")!=null){
 			session.removeAttribute("HideBar");
 		}
-		session.setAttribute("menu","calendar");
+		String user_id = (String)request.getParameter("user_id");
+		if(user_id==null){
+			session.setAttribute("menu","calendar");
+		}else{
+			session.setAttribute("menu","profile");
+		}
 		return mapping.findForward("Success");			
 		
 	}
