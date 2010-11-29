@@ -7,8 +7,49 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
+<% 
+	session=request.getSession(false);
+	String menu = (String)session.getAttribute("menu");
+	String t = (String)request.getParameter("t");
+	String v = (String)request.getParameter("v");
+	String user_id = (String)request.getParameter("user_id");
+%>
 <script type="text/javascript">
-	var isBookmark = 1;//0: Post;1: Bookmark;2: Impact;3: Impact Summary
+	var isBookmark = 1;//0: Post;1: Bookmark;2: Impact;3: Impact Summary;4: Activity;5: Info
+<% 
+	if(v!=null){
+		if(v.equalsIgnoreCase("post")){
+%>
+	isBookmark = 0;
+<%			
+		}
+		if(v.equalsIgnoreCase("bookmark")){
+%>
+	isBookmark = 1;
+<%			
+		}
+		if(v.equalsIgnoreCase("impact")){
+%>
+	isBookmark = 2;
+<%			
+		}
+		if(v.equalsIgnoreCase("summary")){
+%>
+	isBookmark = 3;
+<%			
+		}
+		if(v.equalsIgnoreCase("activity")){
+%>
+	isBookmark = 4;
+<%			
+		}
+		if(v.equalsIgnoreCase("info")){
+%>
+	isBookmark = 5;
+<%			
+		}
+	}
+%>
 	var period = 1;//0: day; 1: week; 2: month
 	var queryString = window.location.search;
 	if(queryString!=null){
@@ -162,6 +203,84 @@
 	/***********************************************/
 	/* Account Navigation Script                   */
 	/***********************************************/
+	function flip2Activity(){
+		divBtnActivity.style.background = "#003399";
+		divBtnActivity.style.color = "#ffffff";
+		divBtnActivity.style.fontWeight = "bold";
+		divBtnActivity.onmouseover = "this.style.background='#003399';this.style.color='#ffffff';";
+		divBtnActivity.onmouseout = "this.style.background='#ffffff';this.style.color='#003399';";		
+	
+		divBtnInfo.style.background = "#ffffff";
+		divBtnInfo.style.color = "#003399";
+		divBtnInfo.style.fontWeight = "normal";
+		divBtnInfo.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnInfo.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
+		divBtnPost.style.background = "#ffffff";
+		divBtnPost.style.color = "#003399";
+		divBtnPost.style.fontWeight = "normal";
+		divBtnPost.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnPost.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
+		divBtnPost.style.background = "#ffffff";
+		divBtnPost.style.color = "#003399";
+		divBtnPost.style.fontWeight = "normal";
+		divBtnPost.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnPost.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+		
+		divBtnImpact.style.background = "#ffffff";
+		divBtnImpact.style.color = "#003399";
+		divBtnImpact.style.fontWeight = "normal";
+		divBtnImpact.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpact.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";		
+		
+		divBtnImpactSummary.style.background = "#ffffff";
+		divBtnImpactSummary.style.color = "#003399";
+		divBtnImpactSummary.style.fontWeight = "normal";
+		divBtnImpactSummary.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpactSummary.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";		
+
+		isBookmark = 4;
+	}
+	function flip2Info(){
+		divBtnActivity.style.background = "#ffffff";
+		divBtnActivity.style.color = "#003399";
+		divBtnActivity.style.fontWeight = "normal";
+		divBtnActivity.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnActivity.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+	
+		divBtnInfo.style.background = "#003399";
+		divBtnInfo.style.color = "#ffffff";
+		divBtnInfo.style.fontWeight = "bold";
+		divBtnInfo.onmouseover = "this.style.background='#003399';this.style.color='#ffffff';";
+		divBtnInfo.onmouseout = "this.style.background='#ffffff';this.style.color='#003399';";		
+
+		divBtnBookmark.style.background = "#ffffff";
+		divBtnBookmark.style.color = "#003399";
+		divBtnBookmark.style.fontWeight = "normal";
+		divBtnBookmark.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnBookmark.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+	
+		divBtnPost.style.background = "#ffffff";
+		divBtnPost.style.color = "#003399";
+		divBtnPost.style.fontWeight = "normal";
+		divBtnPost.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnPost.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+		
+		divBtnImpact.style.background = "#ffffff";
+		divBtnImpact.style.color = "#003399";
+		divBtnImpact.style.fontWeight = "normal";
+		divBtnImpact.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpact.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";		
+		
+		divBtnImpactSummary.style.background = "#ffffff";
+		divBtnImpactSummary.style.color = "#003399";
+		divBtnImpactSummary.style.fontWeight = "normal";
+		divBtnImpactSummary.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnImpactSummary.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";		
+
+		isBookmark = 5;
+	}
 	function flip2ImpactSummary(){
 		divBtnBookmark.style.background = "#ffffff";
 		divBtnBookmark.style.color = "#003399";
@@ -604,10 +723,6 @@
 		}
 	}
 </script>
-<% 
-	session=request.getSession(false);
-	String menu = (String)session.getAttribute("menu");
-%>
 <logic:notPresent name="UserSession">
 <% 
 	String pagePath = "";
@@ -646,12 +761,86 @@
 <div align="center">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <% 
+	if(request.getParameter("user_id") != null && menu.equalsIgnoreCase("profile")){
+%>
+<tr>
+	<td align="left">
+<% 
+		connectDB conn = new connectDB();
+		String sql = "SELECT name FROM userinfo WHERE user_id = " + (String)request.getParameter("user_id");
+		ResultSet rs = conn.getResultSet(sql);
+		if(rs.next()){
+%>
+		<div style="color: #003399;font-size: 0.9em;font-weight: bold;">User: <%=rs.getString("name")%></div>
+<%		
+		}else{
+%>
+		User Not Found
+<%		
+		}
+		conn.conn.close();
+		conn = null;
+	}
 	if(menu.equalsIgnoreCase("myaccount") || (request.getParameter("user_id") != null && menu.equalsIgnoreCase("calendar"))){
 %>
 		<tr>
 			<td>
 				<table width="100%" border="0" cellpadding="0" cellspacing="0">
 					<tr>
+						<td width="90">
+<% 
+		if(menu.equalsIgnoreCase("myaccount")){//Note: activate if also this user is friend.
+%>
+							<div id="divBtnActivity" 
+								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
+								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+								align="center"
+								onclick="flip2Activity();">
+								Activity
+							</div>
+<%			
+		}else{
+%>
+							<div id="divBtnActivity" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="flip2Activity();">
+								Activity
+							</div>
+<%			
+		}
+%>
+						</td>
+						<td width="90">
+<% 
+		if(request.getParameter("user_id") != null){
+%>
+							<div id="divBtnInfo" 
+								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
+								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+								align="center"
+								onclick="flip2Info();">
+								Info
+							</div>
+<%		
+		}else{
+%>
+							<div id="divBtnInfo" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="flip2Info();">
+								Info
+							</div>
+<%		
+		}
+%>
+						</td>
 						<td width="90">
 							<div id="divBtnBookmark" 
 								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
@@ -699,25 +888,6 @@
 		</tr>
 <%	
 	}
-	if(request.getParameter("user_id") != null && menu.equalsIgnoreCase("calendar")){
-%>
-<tr>
-	<td align="center">
-<% 
-		connectDB conn = new connectDB();
-		String sql = "SELECT name FROM userinfo WHERE user_id = " + (String)request.getParameter("user_id");
-		ResultSet rs = conn.getResultSet(sql);
-		if(rs.next()){
-%>
-		<div style="color: #003399;font-size: 0.9em;font-weight: bold;">User: <%=rs.getString("name")%></div>
-<%		
-		}else{
-%>
-		User Not Found
-<%		
-		}
-		conn.conn.close();
-		conn = null;
 %>		
 	</td>
 </tr>
@@ -725,9 +895,7 @@
 	<td>&nbsp;</td>
 </tr>
 <%	
-	}
-	
-	if(menu.equalsIgnoreCase("calendar") || menu.equalsIgnoreCase("myaccount")){	
+	if(menu.equalsIgnoreCase("calendar") || menu.equalsIgnoreCase("myaccount")&&t==null){	
 %>
 		<tr>
 			<td align="center">
@@ -753,8 +921,8 @@
 						</td>
 						<td width="90">
 							<div id="divBtnWeek" style="font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 1px;cursor: pointer;" 
-								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
-								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
+								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
 								align="center"
 								onclick="flip2Week();">
 								Week
@@ -762,8 +930,8 @@
 						</td>
 						<td width="90">
 							<div id="divBtnMonth" style="color: #003399;border: 1px #003399 solid;margin: 1px;cursor: pointer;" 
-								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
-								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
 								align="center"
 								onclick="flip2Month();">
 								Month
@@ -789,7 +957,23 @@
 			<td>
 				<div id="divTalks">
 					<script type="text/javascript">
+<% 
+	if(t!=null){
+		if(v.equalsIgnoreCase("info")){
+%>
+						var action = "profile/info.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+<%		
+		}else{
+%>
+						var action = "profile/activity.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+<%		
+		}
+	}else{
+%>
 						var action = "utils/loadTalks.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+<%		
+	}
+%>
 						window.setTimeout(function(){loadTalks(action);},50);
 					</script>
 				</div>

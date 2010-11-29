@@ -98,9 +98,14 @@
 		<put name="mainwindow" value="/colloquia/presentColloquium.jsp" />
 		<put name="title" value="CoMeT | Colloquium Detail" />
 	</definition>
+	<definition name="aaa.colloquia.profile" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/includes/bookmarks.jsp?t=profile&v=info" />
+		<put name="title" value="CoMeT | Profile" />
+	</definition>
 	<definition name="aaa.colloquia.MyAccount" 
 		extends="aaa.default.rightsidebar">
-		<put name="mainwindow" value="/includes/bookmarks.jsp" />
+		<put name="mainwindow" value="/includes/bookmarks.jsp?t=calendar" />
 		<put name="title" value="CoMeT | My Account" />
 	</definition>
 	<definition name="aaa.make.community" 
