@@ -107,6 +107,11 @@
 		 redirect="true"
 		 contextRelative="true" />  
 		<forward
+		 name="aaa.colloquia.profile"
+		 path="/profile.do"
+		 redirect="true"
+		 contextRelative="true" />  
+		<forward
 		 name="aaa.colloquia.MyAccount"
 		 path="/myaccount.do"
 		 redirect="true"
@@ -256,6 +261,12 @@
 		<forward name="Success" path="aaa.colloquia.presentColloquium" redirect="true" contextRelative="true" />
 		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
 		<forward name="Failure" path="aaa.calendar" redirect="true" contextRelative="true" />      
+		</action>              
+
+		<action forward="aaa.colloquia.profile" path="/profile" />         	  
+		<action path="/myaccount" scope="request" type="edu.pitt.sis.action.MyAccountAction">
+		<forward name="Success" path="aaa.colloquia.profile" redirect="false" contextRelative="true" />
+		<forward name="Failure" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
 		</action>              
 
 		<action forward="aaa.colloquia.MyAccount" path="/myaccount" />         	  
