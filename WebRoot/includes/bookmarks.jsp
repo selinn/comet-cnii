@@ -23,6 +23,9 @@
 		//This is ad-hoc page because we should choose v=activity if its user_id is friend of the user unless choosing v=info
 		v="info";
 	}
+	if(t==null&&v==null){
+		v="bookmark";
+	}
 %>
 <script type="text/javascript">
 	var isBookmark = 1;//0: Post;1: Bookmark;2: Impact;3: Impact Summary;4: Activity;5: Info
@@ -816,7 +819,7 @@
 	</td>
 </tr>
 <%
-	if(menu.equalsIgnoreCase("myaccount") || (request.getParameter("user_id") != null && menu.equalsIgnoreCase("calendar"))){
+	if(menu.equalsIgnoreCase("myaccount") || menu.equalsIgnoreCase("profile")){
 %>
 		<tr>
 			<td>
@@ -902,7 +905,7 @@
 						</td>
 						<td width="90">
 <% 
-		if(t==null){
+		if(t==null&&v.equalsIgnoreCase("bookmark")){
 %>
 							<div id="divBtnBookmark" 
 								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
@@ -912,7 +915,18 @@
 								onclick="flip2Bookmark();">
 								Bookmark
 							</div>
-<% 
+<%
+		}else if(t==null){
+%>
+							<div id="divBtnBookmark" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="flip2Bookmark();">
+								Bookmark
+							</div>
+<%
 		}else if(menu.equalsIgnoreCase("myaccount")){
 %>
 							<div id="divBtnBookmark" 
@@ -939,6 +953,20 @@
 %>
 						</td>
 						<td width="90">
+<% 
+		if(t==null&&v.equalsIgnoreCase("post")){
+%>
+							<div id="divBtnPost" 
+								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
+								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+								align="center"
+								onclick="flip2Post();">
+								Post
+							</div>
+<% 
+		}else if(t==null){
+%>
 							<div id="divBtnPost" 
 								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
 								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
@@ -947,6 +975,31 @@
 								onclick="flip2Post();">
 								Post
 							</div>
+<% 
+		}else if(menu.equalsIgnoreCase("myaccount")){
+%>
+							<div id="divBtnPost" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='myaccount.do?v=post<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Post
+							</div>
+<%		
+		}else{
+%>
+							<div id="divBtnPost" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='calendar.do?v=post<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Post
+							</div>
+<%		
+		}
+%>
 						</td>
 						<td width="90">
 							<div id="divBtnImpact" 
@@ -980,7 +1033,7 @@
 	<td>&nbsp;</td>
 </tr>
 <%	
-	if((menu.equalsIgnoreCase("calendar") || menu.equalsIgnoreCase("myaccount"))&&t==null){	
+	if((menu.equalsIgnoreCase("profile") || menu.equalsIgnoreCase("calendar") || menu.equalsIgnoreCase("myaccount"))&&t==null){	
 %>
 		<tr>
 			<td align="center">
