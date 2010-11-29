@@ -13,6 +13,12 @@
 	String t = (String)request.getParameter("t");
 	String v = (String)request.getParameter("v");
 	String user_id = (String)request.getParameter("user_id");
+	
+	if(t!=null&&menu!=null){
+		if(t.equalsIgnoreCase("profile")&&menu.equalsIgnoreCase("myaccount")&&v==null){
+			v="activity";
+		}
+	}
 %>
 <script type="text/javascript">
 	var isBookmark = 1;//0: Post;1: Bookmark;2: Impact;3: Impact Summary;4: Activity;5: Info
@@ -241,6 +247,8 @@
 		divBtnImpactSummary.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";		
 
 		isBookmark = 4;
+		
+		loadActivity();
 	}
 	function flip2Info(){
 		divBtnActivity.style.background = "#ffffff";
@@ -280,6 +288,8 @@
 		divBtnImpactSummary.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";		
 
 		isBookmark = 5;
+
+		loadInfo();
 	}
 	function flip2ImpactSummary(){
 		divBtnBookmark.style.background = "#ffffff";
@@ -412,6 +422,23 @@
 			case 1: flip2Week();break;
 			case 2: flip2Month();break;
 		}
+	}
+	/*************************************************/
+	/* User Profile Navigation Script                */
+	/*************************************************/
+	function loadActivity(){
+		var action = "profile/activity.jsp";
+		if(queryString){
+			action = action.concat('?',queryString);
+		}
+		loadTalks(action);
+	}
+	function loadinfo(){
+		var action = "profile/info.jsp";
+		if(queryString){
+			action = action.concat('?',queryString);
+		}
+		loadTalks(action);
 	}
 	/*************************************************/
 	/* Calendar Navigation Script                    */
@@ -761,7 +788,7 @@
 <div align="center">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <% 
-	if(request.getParameter("user_id") != null && menu.equalsIgnoreCase("profile")){
+	if(request.getParameter("user_id") != null){// && menu.equalsIgnoreCase("profile")){
 %>
 <tr>
 	<td align="left">
@@ -781,6 +808,10 @@
 		conn.conn.close();
 		conn = null;
 	}
+%>
+	</td>
+</tr>
+<%
 	if(menu.equalsIgnoreCase("myaccount") || (request.getParameter("user_id") != null && menu.equalsIgnoreCase("calendar"))){
 %>
 		<tr>
@@ -789,12 +820,24 @@
 					<tr>
 						<td width="90">
 <% 
-		if(menu.equalsIgnoreCase("myaccount")){//Note: activate if also this user is friend.
+		if(t!=null){
 %>
 							<div id="divBtnActivity" 
+<% 
+			if(v.equalsIgnoreCase("activity")){
+%>
 								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
 								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
 								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+<%			
+			}else{
+%>
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+<%			
+			}
+%>
 								align="center"
 								onclick="flip2Activity();">
 								Activity
@@ -807,7 +850,7 @@
 								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
 								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
 								align="center"
-								onclick="flip2Activity();">
+								onclick="window.location='profile.do?v=activity<%if(user_id!=null)out.print("&user_id="+user_id);%>'">
 								Activity
 							</div>
 <%			
@@ -816,12 +859,24 @@
 						</td>
 						<td width="90">
 <% 
-		if(request.getParameter("user_id") != null){
+		if(t!=null){
 %>
 							<div id="divBtnInfo" 
+<% 
+			if(v.equalsIgnoreCase("info")){
+%>
 								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
 								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
 								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+<%			
+			}else{
+%>
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+<%			
+			}
+%>
 								align="center"
 								onclick="flip2Info();">
 								Info
@@ -834,7 +889,7 @@
 								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
 								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
 								align="center"
-								onclick="flip2Info();">
+								onclick="window.location='profile.do?v=info<%if(user_id!=null)out.print("&user_id="+user_id);%>'">
 								Info
 							</div>
 <%		
@@ -842,6 +897,9 @@
 %>
 						</td>
 						<td width="90">
+<% 
+		if(t==null){
+%>
 							<div id="divBtnBookmark" 
 								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
 								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
@@ -850,6 +908,31 @@
 								onclick="flip2Bookmark();">
 								Bookmark
 							</div>
+<% 
+		}else if(menu.equalsIgnoreCase("myaccount")){
+%>
+							<div id="divBtnBookmark" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='myaccount.do?v=bookmark<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Bookmark
+							</div>
+<%		
+		}else{
+%>
+							<div id="divBtnBookmark" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='calendar.do?v=bookmark<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Bookmark
+							</div>
+<%		
+		}
+%>
 						</td>
 						<td width="90">
 							<div id="divBtnPost" 
@@ -889,13 +972,11 @@
 <%	
 	}
 %>		
-	</td>
-</tr>
 <tr>
 	<td>&nbsp;</td>
 </tr>
 <%	
-	if(menu.equalsIgnoreCase("calendar") || menu.equalsIgnoreCase("myaccount")&&t==null){	
+	if((menu.equalsIgnoreCase("calendar") || menu.equalsIgnoreCase("myaccount"))&&t==null){	
 %>
 		<tr>
 			<td align="center">
@@ -961,19 +1042,23 @@
 	if(t!=null){
 		if(v.equalsIgnoreCase("info")){
 %>
-						var action = "profile/info.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						var action = "profile/info.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
 <%		
 		}else{
 %>
-						var action = "profile/activity.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						var action = "profile/activity.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
 <%		
 		}
 	}else{
 %>
-						var action = "utils/loadTalks.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						var action = "utils/loadTalks.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						
 <%		
 	}
 %>
+						if(queryString){
+							action = action.concat('?',queryString);
+						}
 						window.setTimeout(function(){loadTalks(action);},50);
 					</script>
 				</div>
