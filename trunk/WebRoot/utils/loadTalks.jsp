@@ -569,7 +569,7 @@
 				long user_id = rsExt.getLong("user_id");
 				long _no = rsExt.getLong("_no");
 				if(user_name.length() > 0){
-					bookmarks += "&nbsp;<a href=\"calendar.do?user_id=" + user_id + "\">" + user_name + "</a>";
+					bookmarks += "&nbsp;<a href=\"profile.do?user_id=" + user_id + "\">" + user_name + "</a>";
 					bookmarkno++;				
 				}
 				if(ub != null){
@@ -778,7 +778,7 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 		}
 %>					
 							<br/>
-							<b>Posted By:</b> <a href="calendar.do?user_id=<%=owner_id%>"><%=owner%></a> <b>on</b>&nbsp; 
+							<b>Posted By:</b> <a href="profile.do?user_id=<%=owner_id%>"><%=owner%></a> <b>on</b>&nbsp; 
 <%
 		sql = "SELECT date_format(MIN(lastupdate),_utf8'%b %d %r') posttime " +
 				"FROM (SELECT lastupdate FROM colloquium WHERE col_id = "+col_id+" " +
