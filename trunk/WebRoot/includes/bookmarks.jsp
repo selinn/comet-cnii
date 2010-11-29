@@ -19,6 +19,10 @@
 			v="activity";
 		}
 	}
+	if(user_id!=null&v==null){
+		//This is ad-hoc page because we should choose v=activity if its user_id is friend of the user unless choosing v=info
+		v="info";
+	}
 %>
 <script type="text/javascript">
 	var isBookmark = 1;//0: Post;1: Bookmark;2: Impact;3: Impact Summary;4: Activity;5: Info
@@ -433,7 +437,7 @@
 		}
 		loadTalks(action);
 	}
-	function loadinfo(){
+	function loadInfo(){
 		var action = "profile/info.jsp";
 		if(queryString){
 			action = action.concat('?',queryString);
