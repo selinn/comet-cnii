@@ -1096,16 +1096,14 @@
 				<div id="divTalks">
 					<script type="text/javascript">
 <% 
-	if(t!=null){
-		if(v.equalsIgnoreCase("info")){
+	if(v.equalsIgnoreCase("info")){
 %>
 						var action = "profile/info.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
 <%		
-		}else{
+	}else if(v.equalsIgnoreCase("activity")){
 %>
 						var action = "profile/activity.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
 <%		
-		}
 	}else{
 %>
 						var action = "utils/loadTalks.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
