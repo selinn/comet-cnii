@@ -805,7 +805,7 @@
 		ResultSet rs = conn.getResultSet(sql);
 		if(rs.next()){
 %>
-		<div style="color: #003399;font-size: 0.9em;font-weight: bold;">User: <%=rs.getString("name")%></div>
+		<span style="color: #003399;font-size: 0.9em;font-weight: bold;"><%=rs.getString("name")%></span>&nbsp;<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" />
 <%		
 		}else{
 %>
@@ -814,11 +814,11 @@
 		}
 		conn.conn.close();
 		conn = null;
-	}
 %>
 	</td>
 </tr>
 <%
+	}
 	if(menu.equalsIgnoreCase("myaccount") || menu.equalsIgnoreCase("profile")){
 %>
 		<tr>
@@ -1002,6 +1002,20 @@
 %>
 						</td>
 						<td width="90">
+<% 
+		if(t==null&&v.equalsIgnoreCase("impact")){
+%>
+							<div id="divBtnImpact" 
+								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
+								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+								align="center"
+								onclick="flip2Impact();">
+								Impact
+							</div>
+<% 
+		}else if(t==null){
+%>
 							<div id="divBtnImpact" 
 								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
 								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
@@ -1010,8 +1024,47 @@
 								onclick="flip2Impact();">
 								Impact
 							</div>
+<% 
+		}else if(menu.equalsIgnoreCase("myaccount")){
+%>
+							<div id="divBtnImpact" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='myaccount.do?v=impact<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Impact
+							</div>
+<% 
+		}else{
+%>
+							<div id="divBtnImpact" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='calendar.do?v=impact<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Impact
+							</div>
+<% 
+		}
+%>
 						</td>
 						<td width="140">
+<% 
+		if(t==null&&v.equalsIgnoreCase("summary")){
+%>
+							<div id="divBtnImpactSummary" 
+								style="font-size: 0.9em;font-weight: bold;background: #003399;color: #ffffff;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#ffffff';this.style.color='#003399';"
+								onmouseout="this.style.background='#003399';this.style.color='#ffffff';"
+								align="center"
+								onclick="flip2ImpactSummary();">
+								Impact Summary
+							</div>
+<% 
+		}else if(t==null){
+%>
 							<div id="divBtnImpactSummary" 
 								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
 								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
@@ -1020,6 +1073,31 @@
 								onclick="flip2ImpactSummary();">
 								Impact Summary
 							</div>
+<% 
+		}else if(menu.equalsIgnoreCase("myaccount")){
+%>
+							<div id="divBtnImpactSummary" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='myaccount.do?v=summary<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Impact Summary
+							</div>
+<% 
+		}else{
+%>
+							<div id="divBtnImpactSummary" 
+								style="font-size: 0.9em;color: #003399;border: 1px #003399 solid;margin: 3px;cursor: pointer;" 
+								onmouseover="this.style.background='#003399';this.style.color='#ffffff';"
+								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
+								align="center"
+								onclick="window.location='calendar.do?v=summary<%if(request.getQueryString()!=null)out.print("&"+request.getQueryString());%>'">
+								Impact Summary
+							</div>
+<% 
+		}
+%>
 						</td>
 						<td>&nbsp;</td>
 					</tr>
@@ -1096,25 +1174,36 @@
 				<div id="divTalks">
 					<script type="text/javascript">
 <% 
-	if(v.equalsIgnoreCase("info")){
+	if(menu.equalsIgnoreCase("calendar")){
 %>
-						var action = "profile/info.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						window.setTimeout(function(){flip2Week();},50);
+<%		
+	}else if(v.equalsIgnoreCase("info")){
+%>
+						window.setTimeout(function(){flip2Info();},50);
 <%		
 	}else if(v.equalsIgnoreCase("activity")){
 %>
-						var action = "profile/activity.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						window.setTimeout(function(){flip2Activity();},50);
 <%		
-	}else{
+	}else if(v.equalsIgnoreCase("bookmark")){
 %>
-						var action = "utils/loadTalks.jsp";//<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
-						
+						window.setTimeout(function(){flip2Bookmark();},50);
+<%		
+	}else if(v.equalsIgnoreCase("post")){
+%>
+						window.setTimeout(function(){flip2Post();},50);
+<%		
+	}else if(v.equalsIgnoreCase("impact")){
+%>
+						window.setTimeout(function(){flip2Impact();},50);
+<%		
+	}else if(v.equalsIgnoreCase("summary")){
+%>
+						window.setTimeout(function(){flip2ImpactSummary();},50);
 <%		
 	}
 %>
-						if(queryString){
-							action = action.concat('?',queryString);
-						}
-						window.setTimeout(function(){loadTalks(action);},50);
 					</script>
 				</div>
 			</td>

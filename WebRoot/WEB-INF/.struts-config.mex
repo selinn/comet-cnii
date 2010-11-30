@@ -254,6 +254,14 @@
       <AbsolutePoint location="2449,946" />
     </AutomaticBendpoints>
   </StrutsTransition>
+  <StrutsTransition id="/youraccount.do,Success,aaa.colloquia.profile,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="1755,706" />
+      <AbsolutePoint location="1755,751" />
+      <AbsolutePoint location="2813,751" />
+      <AbsolutePoint location="2813,950" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
   <StrutsTransition id="/presentColloquium.do,null,aaa.colloquia.presentColloquium,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="2160,706" />
@@ -395,18 +403,18 @@
       <AbsolutePoint location="2407,618" />
     </AutomaticBendpoints>
   </StrutsTransition>
+  <StrutsTransition id="/youraccount.do,Failure,aaa.authentication.signin,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="1785,618" />
+      <AbsolutePoint location="1785,425" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
   <StrutsTransition id="/PostNewCommunity.do,Success,aaa.make.community,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="3050,618" />
       <AbsolutePoint location="3050,120" />
       <AbsolutePoint location="4093,120" />
       <AbsolutePoint location="4093,376" />
-    </AutomaticBendpoints>
-  </StrutsTransition>
-  <StrutsTransition id="/youraccount.do,Failure,aaa.authentication.signin,1" routingType="0">
-    <AutomaticBendpoints>
-      <AbsolutePoint location="1785,618" />
-      <AbsolutePoint location="1785,425" />
     </AutomaticBendpoints>
   </StrutsTransition>
   <StrutsTransition id="aaa.authentication.signin;6,null,/signin.do,1" routingType="0">
@@ -559,6 +567,12 @@
       <AbsolutePoint location="4545,175" />
     </AutomaticBendpoints>
   </StrutsTransition>
+  <StrutsTransition id="aaa.create.series;6,null,/CreateSeries.do,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="3769,75" />
+      <AbsolutePoint location="3769,188" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
   <StrutsTransition id="/profile.do,Success,aaa.colloquia.profile,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="2186,150" />
@@ -566,12 +580,6 @@
       <AbsolutePoint location="2571,45" />
       <AbsolutePoint location="2571,974" />
       <AbsolutePoint location="2750,974" />
-    </AutomaticBendpoints>
-  </StrutsTransition>
-  <StrutsTransition id="aaa.create.series;6,null,/CreateSeries.do,1" routingType="0">
-    <AutomaticBendpoints>
-      <AbsolutePoint location="3769,75" />
-      <AbsolutePoint location="3769,188" />
     </AutomaticBendpoints>
   </StrutsTransition>
   <StrutsTransition id="/rpx.do,null,aaa.authentication.rpx,1" routingType="0">
@@ -688,14 +696,6 @@
       <AbsolutePoint location="1409,1565" />
     </AutomaticBendpoints>
   </StrutsTransition>
-  <StrutsTransition id="/myaccount.do,Success,aaa.colloquia.profile,1" routingType="0">
-    <AutomaticBendpoints>
-      <AbsolutePoint location="5752,706" />
-      <AbsolutePoint location="5752,807" />
-      <AbsolutePoint location="2813,807" />
-      <AbsolutePoint location="2813,950" />
-    </AutomaticBendpoints>
-  </StrutsTransition>
   <StrutsTransition id="/popView.do,null,aaa.colloquia.view.popular,1" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="2128,1465" />
@@ -726,15 +726,6 @@
       <AbsolutePoint location="4883,338" />
       <AbsolutePoint location="4038,338" />
       <AbsolutePoint location="4038,376" />
-    </AutomaticBendpoints>
-  </StrutsTransition>
-  <StrutsTransition id="/profile.do,Failure,aaa.authentication.login,1" routingType="0">
-    <AutomaticBendpoints>
-      <AbsolutePoint location="2223,160" />
-      <AbsolutePoint location="3206,160" />
-      <AbsolutePoint location="3206,1074" />
-      <AbsolutePoint location="4066,1074" />
-      <AbsolutePoint location="4066,995" />
     </AutomaticBendpoints>
   </StrutsTransition>
   <StrutsTransition id="/entity.do,null,aaa.entity,1" routingType="0">
