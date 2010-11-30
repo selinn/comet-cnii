@@ -266,7 +266,7 @@
 		<action forward="aaa.colloquia.profile" path="/profile" />         	  
 		<action path="/profile" scope="request" type="edu.pitt.sis.action.ProfileAction">
 		<forward name="Success" path="aaa.colloquia.profile" redirect="false" contextRelative="true" />
-		<forward name="Failure" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
+		<forward name="Failure" path="aaa.index" redirect="true" contextRelative="true" />      
 		</action>              
 
 		<action forward="aaa.colloquia.MyAccount" path="/myaccount" />         	  
