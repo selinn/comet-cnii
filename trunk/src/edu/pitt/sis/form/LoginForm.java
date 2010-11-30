@@ -42,10 +42,16 @@ public class LoginForm extends ActionForm {
 		HttpServletRequest request) {
 		ActionErrors errors = new ActionErrors();
 		
-		if(password.trim().equalsIgnoreCase(""))
+		if(password==null){
 			errors.add("password", new ActionError("login.error.password.blank"));
-		if(userEmail.trim().equalsIgnoreCase(""))
+		}else if(password.trim().equalsIgnoreCase("")){
+			errors.add("password", new ActionError("login.error.password.blank"));
+		}
+		if(userEmail==null){
 			errors.add("userEmail", new ActionError("login.error.email.blank"));
+		}else if(userEmail.trim().equalsIgnoreCase("")){
+			errors.add("userEmail", new ActionError("login.error.email.blank"));
+		}
 		
 		return errors;
 	}	

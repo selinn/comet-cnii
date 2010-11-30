@@ -187,6 +187,12 @@
       <AbsolutePoint location="4119,946" />
     </AutomaticBendpoints>
   </StrutsTransition>
+  <StrutsTransition id="/profile.do,Failure,aaa.index,1" routingType="0">
+    <AutomaticBendpoints>
+      <AbsolutePoint location="2186,181" />
+      <AbsolutePoint location="1634,970" />
+    </AutomaticBendpoints>
+  </StrutsTransition>
   <StrutsTransition id=",null,/.do,2" routingType="0">
     <AutomaticBendpoints>
       <AbsolutePoint location="223,1734" />

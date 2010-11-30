@@ -53,19 +53,13 @@ public class ProfileAction extends Action {
 		
 		HttpSession session = request.getSession();
 		
-		if(session.getAttribute("UserSession")==null){
-			session.setAttribute("HideBar", "");
-			session.removeAttribute("redirect");
-			return mapping.findForward("Failure");
+		String user_id = (String)request.getParameter("user_id");
+		if(user_id!=null){
+			session.setAttribute("menu","profile");
 		}
 		
 		if(session.getAttribute("HideBar")!=null){
 			session.removeAttribute("HideBar");
-		}
-		
-		String user_id = (String)request.getParameter("user_id");
-		if(user_id!=null){
-			session.setAttribute("menu","profile");
 		}
 		
 		return mapping.findForward("Success");			
