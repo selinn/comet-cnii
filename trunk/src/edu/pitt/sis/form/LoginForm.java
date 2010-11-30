@@ -4,6 +4,7 @@
 package edu.pitt.sis.form;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.ActionError;
 import org.apache.struts.action.ActionErrors;
@@ -41,6 +42,11 @@ public class LoginForm extends ActionForm {
 		ActionMapping mapping,
 		HttpServletRequest request) {
 		ActionErrors errors = new ActionErrors();
+		
+		HttpSession session = request.getSession();
+		if(session.getAttribute("UserSession")!=null){
+			return errors;
+		}
 		
 		if(password==null){
 			errors.add("password", new ActionError("login.error.password.blank"));

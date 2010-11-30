@@ -52,6 +52,8 @@ public class LoginAction extends Action {
 		HttpServletRequest request,
 		HttpServletResponse response) {
 		
+		HttpSession session = request.getSession();
+		if(session.getAttribute("UserSession")!=null){return mapping.findForward("Success");}
 		if (this.isCancelled(request)){ return(mapping.findForward("Failure"));}
 		
 		ResultSet rs = null;
@@ -118,13 +120,11 @@ public class LoginAction extends Action {
 				e1.printStackTrace();
 			}
 			System.out.println(e.getMessage().toString());
-			HttpSession session = request.getSession();
 			LoginErrorBean leb = new LoginErrorBean();
 			leb.setErrorDescription("System failure! Please try next time.");
 			session.setAttribute("LoginError",leb);
 			return mapping.findForward("Failure");
 		}
-		HttpSession session = request.getSession();
 		if(userID<0){
 			LoginErrorBean leb = new LoginErrorBean();
 			leb.setErrorDescription("Your email or password is not correct!");

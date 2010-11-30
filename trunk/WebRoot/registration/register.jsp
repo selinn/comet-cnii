@@ -11,7 +11,7 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-nested" prefix="nested" %>
 
 
-<html:form action="/registration">
+<html:form action="/registration" method="post">
 	<table border="0" width="100%" cellpadding="0" cellspacing="0">
 		<tr>
 			<td colspan="3" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
