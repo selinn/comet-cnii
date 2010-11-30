@@ -56,6 +56,8 @@ public class ProfileAction extends Action {
 		String user_id = (String)request.getParameter("user_id");
 		if(user_id!=null){
 			session.setAttribute("menu","profile");
+		}else{
+			session.setAttribute("menu","myaccount");
 		}
 		
 		if(session.getAttribute("HideBar")!=null){

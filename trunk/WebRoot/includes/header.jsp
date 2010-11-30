@@ -313,12 +313,12 @@ input.btn {
 				if(menu.equalsIgnoreCase("myaccount")){
 			%>
 				<td align="center" width="20%" bgcolor="#003399">
-					<div style="color:#fff;cursor:pointer;" onclick="window.location='myaccount.do<%if(affiliate_id!=null)out.print("?affiliate_id=" + affiliate_id);%>'"><b>My Account</b></div>
+					<div style="color:#fff;cursor:pointer;" onclick="window.location='profile.do<%if(affiliate_id!=null)out.print("?affiliate_id=" + affiliate_id);%>'"><b>My Account</b></div>
 			<%		
 				}else{
 			%>
 				<td align="center" width="20%" style = "border:1px solid #003399;">
-					<div style="color:#003399;cursor:pointer;" onclick="window.location='myaccount.do<%if(affiliate_id!=null)out.print("?affiliate_id=" + affiliate_id);%>'">My Account</div>
+					<div style="color:#003399;cursor:pointer;" onclick="window.location='profile.do<%if(affiliate_id!=null)out.print("?affiliate_id=" + affiliate_id);%>'">My Account</div>
 			<%	
 				}
 			%>	
