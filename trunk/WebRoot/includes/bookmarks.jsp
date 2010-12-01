@@ -1178,6 +1178,11 @@
 %>
 						window.setTimeout(function(){flip2Week();},50);
 <%		
+	}else if(menu.equalsIgnoreCase("community")||menu.equalsIgnoreCase("series")){
+%>
+						var action = "utils/loadTalks.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						window.setTimeout(function(){loadTalks(action);},50);
+<%		
 	}else if(v.equalsIgnoreCase("info")){
 %>
 						window.setTimeout(function(){flip2Info();},50);
@@ -1201,6 +1206,11 @@
 	}else if(v.equalsIgnoreCase("summary")){
 %>
 						window.setTimeout(function(){flip2ImpactSummary();},50);
+<%		
+	}else{
+%>
+						var action = "utils/loadTalks.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						window.setTimeout(function(){loadTalks(action);},50);
 <%		
 	}
 %>
