@@ -136,7 +136,7 @@ public class LoginAction extends Action {
 				session.removeAttribute("HideBar");
 			}
 
-			if(session.getAttribute("before-login-redirect") != null){
+			if(session.getAttribute("before-login-redirect") != null&&session.getAttribute("redirect") == null){
 				session.setAttribute("redirect",session.getAttribute("before-login-redirect"));
 				session.removeAttribute("before-login-redirect");
 			}

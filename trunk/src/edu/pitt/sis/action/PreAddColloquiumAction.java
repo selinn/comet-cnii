@@ -50,7 +50,7 @@ public class PreAddColloquiumAction extends Action {
 		
 		if(session.getAttribute("UserSession")==null){
 			session.setAttribute("HideBar", "");
-			session.setAttribute("redirect", "PreColloquiumEntry.do");
+			session.setAttribute("before-login-redirect", "PreColloquiumEntry.do");
 			return mapping.findForward("Login");
 		}
 		if(session.getAttribute("HideBar")!=null){
