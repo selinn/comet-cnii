@@ -85,7 +85,7 @@
 %>
 				<tr> 
 					<td valign="top" style="font-weight: bold;"><%=name %></td>
-			  		<td>joined CoMeT on <%=_day %> at <%=_time %></td>
+			  		<td valign="top" >joined CoMeT on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
 			}
@@ -98,7 +98,7 @@
 %>
 				<tr> 
 					<td valign="top" style="font-weight: bold;"><%=name %></td>
-			  		<td>posted <a href="presentColloquium.do?col_id=<%=activity_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
+			  		<td valign="top" >posted <a href="presentColloquium.do?col_id=<%=activity_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
 				}
@@ -112,7 +112,7 @@
 %>
 				<tr> 
 					<td valign="top" style="font-weight: bold;"><%=name %></td>
-			  		<td>bookmarked <a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
+			  		<td valign="top" >bookmarked <a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
 				}
