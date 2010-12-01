@@ -791,6 +791,9 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 							<%=posttime%>
 <%
 		}
+%>
+		<logic:present name="UserSession">
+<%
 		//Tags
 		sql = "SELECT t.tag_id,t.tag,COUNT(*) _no FROM tag t,tags tt,userprofile u " +
 				"WHERE t.tag_id = tt.tag_id AND " +
@@ -836,7 +839,7 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 			}
 			if(communities.length() > 0){
 %>
-							<br/><b>Posted to communities:</b><%=communities%>
+							<br/><b>Posted to groups:</b><%=communities%>
 <%			
 			}
 		}
@@ -846,6 +849,9 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 <%			
 		}
 %>
+
+		</logic:present>
+
 							</span>
 
 									</td>

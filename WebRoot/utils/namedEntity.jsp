@@ -76,7 +76,7 @@
 				
 				sql = "SELECT e._type,e.entity,e.normalized " +
 						"FROM entity e " +
-						"WHERE e.entity_id = ?";// + entity_id;
+						"WHERE e.entity_id = ? AND e._type <> 'URL'";// + entity_id;
 			    try{
 			    	PreparedStatement pstmt = conn.conn.prepareStatement(sql);
 			    	pstmt.setInt(1,entity_id);
@@ -365,7 +365,7 @@
 		sql+="AND e._type NOT IN (" + type_list + ") " +
 				"JOIN entities e3 ON ee.col_id=e3.col_id JOIN entity e2 ON e3.entity_id=e2.entity_id AND e2._type IN (" + type_list + ")";
 	}
-	sql += " GROUP BY e._type,e.entity_id,e.entity,e.normalized";
+	sql += " WHERE e._type <> 'URL' GROUP BY e._type,e.entity_id,e.entity,e.normalized";
 	
     try{
     	rs = conn.getResultSet(sql);

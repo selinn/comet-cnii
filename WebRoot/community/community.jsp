@@ -81,14 +81,16 @@
 			<div id="divFeed">
 				<tiles:insert template="/utils/feed.jsp" />
 			</div>
-			<br/>
-			<div id="divTag">
-				<tiles:insert template="/utils/tagCloud.jsp" />
-			</div>
-			<br/>
-			<div id="divFacet">
-				<tiles:insert template="/utils/namedEntity.jsp" />
-			</div>
+			<logic:present name="UserSession">
+				<br/>
+				<div id="divTag">
+					<tiles:insert template="/utils/tagCloud.jsp" />
+				</div>
+				<br/>
+				<div id="divFacet">
+					<tiles:insert template="/utils/namedEntity.jsp" />
+				</div>
+			</logic:present>
         </td>
 	</tr>
 </table>

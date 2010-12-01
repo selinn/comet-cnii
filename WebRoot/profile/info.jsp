@@ -9,7 +9,9 @@
 
 
 <%@page import="edu.pitt.sis.db.connectDB"%>
-<%@page import="edu.pitt.sis.beans.UserBean"%><div id="divUserInfoContent">
+<%@page import="edu.pitt.sis.beans.UserBean"%>
+
+<div id="divUserInfoContent">
 <% 
 	final String[] months = {"January","Febuary","March",
 		    "April","May","June",
@@ -53,9 +55,9 @@
 			interests = rs.getString("interests");
 			
 %>
-<table width="100%" border="0" cellspacing="0" cellpadding="2" >
+<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 	<tr>
-		<td width="85%" valign="top">
+		<td width="75%" valign="top">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 				<tr>
 					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
@@ -69,37 +71,37 @@
 					<td>
 						<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
 							<tr> 
-								<td width="20%" valign="top" style="font-weight: bold;">Name:</td>
+								<td width="15%" valign="top" style="font-weight: bold;">Name:</td>
 						  		<td><%if(name==null){out.print("Not specified");}else{out.print(name);} %></td>
 							</tr>
 <% 
 			if(user_id==null){
 %>
 							<tr> 
-								<td width="20%" valign="top" style="font-weight: bold;">Email:</td>
-						  		<td><%if(email==null){out.print("Not specified");}else{out.print(email + "&nbsp;<i>(only you can see this)</i>");} %></td>
+								<td width="15%" valign="top" style="font-weight: bold;">Email:</td>
+						  		<td><%if(email==null){out.print("Not specified");}else{out.print(email + "&nbsp;<span style=\"color: red;font-style: italic;\">(only you can see this)</span>");} %></td>
 							</tr>
 <%				
 			}
 %>
 							<tr> 
-								<td width="20%" valign="top" style="font-weight: bold;">Job Title:</td>
+								<td width="15%" valign="top" style="font-weight: bold;">Job Title:</td>
 						  		<td><%if(job==null){out.print("Not specified");}else{out.print(job);} %></td>
 							</tr>
 							<tr> 
-								<td width="20%" valign="top" style="font-weight: bold;">Affiliation:</td>
+								<td width="15%" valign="top" style="font-weight: bold;">Affiliation:</td>
 						  		<td><%if(affiliation==null){out.print("Not specified");}else{out.print(affiliation);} %></td>
 							</tr>
 							<tr> 
-								<td width="20%" valign="top" style="font-weight: bold;">Website:</td>
+								<td width="15%" valign="top" style="font-weight: bold;">Website:</td>
 						  		<td><%if(website==null){out.print("Not specified");}else{out.print(website);} %></td>
 							</tr>
 							<tr> 
-								<td width="20%" valign="top" style="font-weight: bold;">About me:</td>
+								<td width="15%" valign="top" style="font-weight: bold;">About me:</td>
 						  		<td><%if(aboutme==null){out.print("Not specified");}else{out.print(aboutme);} %></td>
 							</tr>
 							<tr> 
-								<td width="20%" valign="top" style="font-weight: bold;">Interests:</td>
+								<td width="15%" valign="top" style="font-weight: bold;">Interests:</td>
 						  		<td><%if(interests==null){out.print("Not specified");}else{out.print(interests);} %></td>
 							</tr>
 						
@@ -109,26 +111,8 @@
 			</table>
 		</td>
 		<td>&nbsp;</td>
-		<td width="15%" valign="top">
-			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
-				<tr>
-					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
-				</tr>
-				<tr>
-					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
-					Friends
-					</td>
-				</tr>
-				<tr>
-					<td>
-					<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
-						<tr>
-							<td>No friend</td>
-						</tr>
-					</table>
-					</td>
-				</tr>
-			</table>
+		<td width="25%" valign="top">
+			<tiles:insert template="/profile/basicInfo.jsp" />
 		</td>
 	</tr>
 </table>	

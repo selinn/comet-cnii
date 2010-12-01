@@ -281,18 +281,19 @@
 						<input type="button" class="btn" name="btnEditTalk" value="Edit" onclick="redirect('PreColloquiumEntry.do?col_id=<%=col_id%>');">
 <%			
 			}
+			ResultSet rsExt;
 %>
 					</td>
 				</tr>
-				<tr>
-					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Posted:</td>
-					<td colspan="2" style="font-size: 0.75em;"><a href="calendar.do?user_id=<%=rs.getString("owner_id")%>"><%=rs.getString("owner")%></a> <b>on</b>&nbsp;
+					<tr>
+						<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Posted:</td>
+						<td colspan="2" style="font-size: 0.75em;"><a href="calendar.do?user_id=<%=rs.getString("owner_id")%>"><%=rs.getString("owner")%></a> <b>on</b>&nbsp;
 <% 
 			sql = "SELECT date_format(MIN(lastupdate),_utf8'%b %d %r') posttime " +
 					"FROM (SELECT lastupdate FROM colloquium WHERE col_id = "+col_id+" " +
 					"UNION " +
 					"SELECT MIN(lastupdate) lastupdate FROM col_bk WHERE col_id = "+col_id+") ptime";
-			ResultSet rsExt = conn.getResultSet(sql);
+			rsExt = conn.getResultSet(sql);
 			if(rsExt.next()){
 				String posttime = rsExt.getString("posttime");
 %>
@@ -300,8 +301,9 @@
 <%							
 			}
 %>
-					</td>
-				</tr>
+						</td>
+					</tr>
+
 				<tr>
 					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Title:</td>
 					<td colspan="2" style="font-size: 0.9em;font-weight: bold;"><%=title%></td>
@@ -722,75 +724,74 @@
 					</td>
 				</tr>
 <%		
-		}
 
-		//Tags
-		String tags = "";
-		sql = "SELECT t.tag_id,t.tag,COUNT(*) _no FROM tag t,tags tt,userprofile u " +
-				"WHERE t.tag_id = tt.tag_id AND " +
-				"tt.userprofile_id = u.userprofile_id AND " +
-				"u.col_id = " + col_id;
-		if(ub != null){
-			sql += " AND u.user_id <> " + ub.getUserID();
-		}
-		sql +=	" GROUP BY t.tag_id,t.tag " +
-				"ORDER BY t.tag";
-		rsExt = conn.getResultSet(sql);
-		if(rsExt != null){
-			while(rsExt.next()){
-				String tag = rsExt.getString("tag");
-				long tag_id = rsExt.getLong("tag_id");
-				long _no = rsExt.getLong("_no");
-				if(tag.length() > 0){
-					tags +=	"&nbsp;<a href=\"tag.do?tag_id=" + tag_id + "\">" + tag + "</a>";
+			//Tags
+			tags = "";
+			sql = "SELECT t.tag_id,t.tag,COUNT(*) _no FROM tag t,tags tt,userprofile u " +
+					"WHERE t.tag_id = tt.tag_id AND " +
+					"tt.userprofile_id = u.userprofile_id AND " +
+					"u.col_id = " + col_id;
+			if(ub != null){
+				sql += " AND u.user_id <> " + ub.getUserID();
+			}
+			sql +=	" GROUP BY t.tag_id,t.tag " +
+					"ORDER BY t.tag";
+			rsExt = conn.getResultSet(sql);
+			if(rsExt != null){
+				while(rsExt.next()){
+					String tag = rsExt.getString("tag");
+					long tag_id = rsExt.getLong("tag_id");
+					long _no = rsExt.getLong("_no");
+					if(tag.length() > 0){
+						tags +=	"&nbsp;<a href=\"tag.do?tag_id=" + tag_id + "\">" + tag + "</a>";
+					}
 				}
 			}
-		}
-		
-		String communities = "";		
-		sql = "SELECT c.comm_id,c.comm_name,COUNT(*) _no FROM community c,contribute ct,userprofile u " +
-				"WHERE c.comm_id = ct.comm_id AND " +
-				"ct.userprofile_id = u.userprofile_id AND " + 
-				"u.col_id = " + col_id;
-		if(ub != null){
-			sql += " AND u.user_id <> " + ub.getUserID();
-		}
-		sql +=	" GROUP BY c.comm_id,c.comm_name " +
-				"ORDER BY c.comm_name";
-		rsExt.close();
-		rsExt = conn.getResultSet(sql);
-		if(rsExt != null){
-			while(rsExt.next()){
-				String comm_name = rsExt.getString("comm_name");
-				long comm_id = rsExt.getLong("comm_id");
-				long _no = rsExt.getLong("_no");
-				if(comm_name.length() > 0){
-					communities += "&nbsp;<a href=\"community.do?comm_id=" + comm_id + "\">" + comm_name + "</a>"; 
+			
+			String communities = "";		
+			sql = "SELECT c.comm_id,c.comm_name,COUNT(*) _no FROM community c,contribute ct,userprofile u " +
+					"WHERE c.comm_id = ct.comm_id AND " +
+					"ct.userprofile_id = u.userprofile_id AND " + 
+					"u.col_id = " + col_id;
+			if(ub != null){
+				sql += " AND u.user_id <> " + ub.getUserID();
+			}
+			sql +=	" GROUP BY c.comm_id,c.comm_name " +
+					"ORDER BY c.comm_name";
+			rsExt.close();
+			rsExt = conn.getResultSet(sql);
+			if(rsExt != null){
+				while(rsExt.next()){
+					String comm_name = rsExt.getString("comm_name");
+					long comm_id = rsExt.getLong("comm_id");
+					long _no = rsExt.getLong("_no");
+					if(comm_name.length() > 0){
+						communities += "&nbsp;<a href=\"community.do?comm_id=" + comm_id + "\">" + comm_name + "</a>"; 
+					}
 				}
 			}
-		}
-		//Bookmark by
-		String bookmarks = "";
-		sql = "SELECT u.user_id,u.name,COUNT(*) _no FROM userinfo u,userprofile up " +
-				"WHERE u.user_id = up.user_id AND up.col_id = " + col_id;
-		if(ub != null){
-			sql += " AND u.user_id <> " + ub.getUserID();
-		}
-		sql +=	" GROUP BY u.user_id,u.name ORDER BY u.name";
-		rsExt.close();
-		rsExt = conn.getResultSet(sql);
-		if(rsExt!=null){
-			while(rsExt.next()){
-				String user_name = rsExt.getString("name");
-				long user_id = rsExt.getLong("user_id");
-				long _no = rsExt.getLong("_no");
-				if(user_name.length() > 0){
-					bookmarks += "&nbsp;<a href=\"calendar.do?user_id=" + user_id + "\">" + user_name + "</a>";				
+			//Bookmark by
+			String bookmarks = "";
+			sql = "SELECT u.user_id,u.name,COUNT(*) _no FROM userinfo u,userprofile up " +
+					"WHERE u.user_id = up.user_id AND up.col_id = " + col_id;
+			if(ub != null){
+				sql += " AND u.user_id <> " + ub.getUserID();
+			}
+			sql +=	" GROUP BY u.user_id,u.name ORDER BY u.name";
+			rsExt.close();
+			rsExt = conn.getResultSet(sql);
+			if(rsExt!=null){
+				while(rsExt.next()){
+					String user_name = rsExt.getString("name");
+					long user_id = rsExt.getLong("user_id");
+					long _no = rsExt.getLong("_no");
+					if(user_name.length() > 0){
+						bookmarks += "&nbsp;<a href=\"calendar.do?user_id=" + user_id + "\">" + user_name + "</a>";				
+					}
 				}
 			}
-		}
-		
-		if(tags.length() + communities.length() + bookmarks.length() > 0){
+			
+			if(tags.length() + communities.length() + bookmarks.length() > 0){
 %>
 				<tr>
 					<td colspan="3">&nbsp;</td>
@@ -807,35 +808,38 @@
 					<td colspan="3">
 							<table cellspacing="0" cellpadding="0" width="100%" align="center">
 <% 
-			if(tags.length() > 0){
+				if(tags.length() > 0){
 %>
 								<tr>
 									<td style="font-size: 0.75em;font-weight: bold;" width="20%">Tags:</td>
 									<td style="font-size: 0.75em;"><%=tags%></td>
 								</tr>
 <%
-			}
-			if(communities.length() > 0){
+				}
+				if(communities.length() > 0){
 %>
 								<tr>
 									<td valign="top" style="font-size: 0.75em;font-weight: bold;" width="20%">Post to communities:</td>
 									<td style="font-size: 0.75em;"><%=communities%></td>
 								</tr>
 <%			
-			}
-			if(bookmarks.length() > 0){
+				}
+				if(bookmarks.length() > 0){
 %>
 								<tr>
 									<td style="font-size: 0.75em;font-weight: bold;" width="20%">Bookmarked by:</td>
 									<td style="font-size: 0.75em;"><%=bookmarks%></td>
 								</tr>
 <%			
-			}
+				}
 %>
+			
+			
 							</table>
 					</td>
 				</tr>
 <%		
+			}
 		}
 %>
 			</table>
@@ -850,7 +854,9 @@
 				<tr>
 					<td>
 						<tiles:insert template="/utils/feed.jsp" />
-						<tiles:insert template="/utils/tagCloud.jsp" />
+						<logic:present name="UserSession">
+							<tiles:insert template="/utils/tagCloud.jsp" />
+						</logic:present>
 					</td>
 				</tr>
 <%-- 
@@ -863,11 +869,13 @@
 					<td>&nbsp;</td>
 				</tr>
 --%>
-				<tr>
-					<td valign="top">
-						<tiles:insert template="/utils/namedEntity.jsp" />
-					</td>
-				</tr>
+				<logic:present name="UserSession">
+					<tr>
+						<td valign="top">
+							<tiles:insert template="/utils/namedEntity.jsp" />
+						</td>
+					</tr>
+				</logic:present>
 			</table>
 		</td>
 	</tr>
