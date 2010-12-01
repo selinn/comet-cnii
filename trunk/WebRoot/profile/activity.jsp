@@ -91,12 +91,11 @@
 				sql = "SELECT a.title FROM activitypost a WHERE activity_id=" + activity_id;
 				rsExt = conn.getResultSet(sql);
 				if(rsExt.next()){
-					String col_id = rsExt.getString("col_id");
 					String title = rsExt.getString("title");
 %>
 				<tr> 
 					<td width="10%" valign="top" style="font-weight: bold;"><%=ub.getName() %></td>
-			  		<td>posted <a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
+			  		<td>posted <a href="presentColloquium.do?col_id=<%=activity_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
 				}
