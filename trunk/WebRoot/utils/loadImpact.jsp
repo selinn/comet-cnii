@@ -378,7 +378,7 @@ final String[] months = {"January","Febuary","March",
 						for(Iterator<String> it=senderList.iterator();it.hasNext();){
 							String sender = it.next();
 							int user_id = senderMap.get(sender);
-							senders += " <a href=\"calendar.do?user_id=" + user_id + "\">" + sender + "</a>";
+							senders += " <a href=\"profile.do?user_id=" + user_id + "\">" + sender + "</a>";
 						}
 						emailSenderMap.put(_old_col_id,senders);
 					}
@@ -410,7 +410,7 @@ final String[] months = {"January","Febuary","March",
 				for(Iterator<String> it=senderList.iterator();it.hasNext();){
 					String sender = it.next();
 					int user_id = senderMap.get(sender);
-					senders += " <a href=\"calendar.do?user_id=" + user_id + "\">" + sender + "</a>";
+					senders += " <a href=\"profile.do?user_id=" + user_id + "\">" + sender + "</a>";
 				}
 				emailSenderMap.put(_old_col_id,senders);
 			}
@@ -508,7 +508,7 @@ final String[] months = {"January","Febuary","March",
 				if(bookmarkerMap.containsKey(col_id)){
 					bookmarker = bookmarkerMap.get(col_id);
 				}
-				bookmarker += " <a href=\"calendar.do?user_id=" + user_id + "\">" + user_name + "</a>";
+				bookmarker += " <a href=\"profile.do?user_id=" + user_id + "\">" + user_name + "</a>";
 				bookmarkerMap.put(col_id,bookmarker);
 			}
 		}
