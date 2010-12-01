@@ -535,7 +535,7 @@
 						<table width="100%" cellpadding="0" cellspacing="1" border="0" style="font-size: 0.8em;">
 							<tr>
 								<td valign="bottom">
-									<a href="calendar.do?user_id=<%=user_id%>"><%=username%></a>
+									<a href="profile.do?user_id=<%=user_id%>"><%=username%></a>
 								</td>
 <% 
 				if(strBookmark.length() > 0){
