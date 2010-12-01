@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
-    pageEncoding="ISO-8859-1"%>
+<%@ page language="java"%>
+<%@ page import="java.sql.*" %>
+<%@ page import="edu.pitt.sis.db.*" %>
 
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html" prefix="html" %>
@@ -7,12 +8,11 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
 <%@page import="edu.pitt.sis.beans.UserBean"%>
-<%@page import="edu.pitt.sis.db.connectDB"%>
-<%@page import="java.sql.ResultSet"%>
 <%@page import="java.util.Date"%>
 
 <%@page import="java.util.Calendar"%>
-<%@page import="java.util.GregorianCalendar"%><div id="divUserActivityContent">
+<%@page import="java.util.GregorianCalendar"%>
+<div id="divUserActivityContent">
 <% 
 	final String[] months = {"January","Febuary","March",
 		    "April","May","June",
@@ -51,13 +51,15 @@
 						<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
 <%
 		connectDB conn = new connectDB();
-		String sql = "SELECT activity,activity_id,activitytime,day,_year,_time FROM activities WHERE user_id=";
+		String sql = "SELECT u.name,a.activity,a.activity_id,a.activitytime,a.day,a._year,a._time " +
+						"FROM activities a JOIN userinfo u ON a.user_id=u.user_id WHERE a.user_id=";
 		if(user_id==null){
 			sql += ub.getUserID();
 		}else{
 			sql += user_id;
 		}
 		sql += " LIMIT 0,100";
+		String name=null;
 		String activity=null;
 		String activity_id=null;
 		Date activitytime=null;
@@ -67,6 +69,7 @@
 		ResultSet rsExt;
 		ResultSet rs = conn.getResultSet(sql);
 		while(rs.next()){
+			name = rs.getString("name");
 			activity = rs.getString("activity");
 			activity_id = rs.getString("activity_id");
 			activitytime = rs.getDate("activitytime");
@@ -81,7 +84,7 @@
 			if(activity.equalsIgnoreCase("joined")){
 %>
 				<tr> 
-					<td width="10%" valign="top" style="font-weight: bold;"><%=ub.getName() %></td>
+					<td valign="top" style="font-weight: bold;"><%=name %></td>
 			  		<td>joined CoMeT on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
@@ -94,7 +97,7 @@
 					String title = rsExt.getString("title");
 %>
 				<tr> 
-					<td width="10%" valign="top" style="font-weight: bold;"><%=ub.getName() %></td>
+					<td valign="top" style="font-weight: bold;"><%=name %></td>
 			  		<td>posted <a href="presentColloquium.do?col_id=<%=activity_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
@@ -108,7 +111,7 @@
 					String title = rsExt.getString("title");
 %>
 				<tr> 
-					<td width="10%" valign="top" style="font-weight: bold;"><%=ub.getName() %></td>
+					<td valign="top" style="font-weight: bold;"><%=name %></td>
 			  		<td>bookmarked <a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
