@@ -136,7 +136,7 @@ public class MailNotifier {
 		ResultSet rs = con.getResultSet(sql);
 		try {
 			if(rs.next()){
-				String content = "Dear my friend,\n\n" + 
+				String content = //"Dear my friend,\n\n" + 
 								//"This e-mail is on behalf of the CoMeT Sysytem:\n\n" + 
 								sender_name + "(" + sender_email + ") sugguest this colloquium to you as follows.\n\n" + 
 								"Title: " + rs.getString("title") + "\n" +

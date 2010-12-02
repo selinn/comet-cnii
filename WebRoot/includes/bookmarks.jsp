@@ -10,6 +10,7 @@
 <% 
 	session=request.getSession(false);
 	String menu = (String)session.getAttribute("menu");
+	String _v = (String)session.getAttribute("v");
 	String t = (String)request.getParameter("t");
 	String v = (String)request.getParameter("v");
 	String user_id = (String)request.getParameter("user_id");
@@ -19,11 +20,12 @@
 			v="activity";
 		}
 	}
-	if(user_id!=null&&menu!=null&&v==null){
-		if(menu.equalsIgnoreCase("calendar")){
-			v="bookmark";
-		}
+	
+	if(_v!=null){
+		v = _v;
+		session.removeAttribute("v");
 	}
+	
 	if(user_id!=null&&v==null){
 		//This is ad-hoc page because we should choose v=activity if its user_id is friend of the user unless choosing v=info
 		v="info";
@@ -1183,7 +1185,7 @@
 %>
 						window.setTimeout(function(){flip2Week();},50);
 <%		
-	}else if(menu.equalsIgnoreCase("community")||menu.equalsIgnoreCase("series")){
+	}else if(menu.equalsIgnoreCase("community")||menu.equalsIgnoreCase("series")||menu.equalsIgnoreCase("tag")||menu.equalsIgnoreCase("entity")){
 %>
 						var action = "utils/loadTalks.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
 						window.setTimeout(function(){loadTalks(action);},50);
