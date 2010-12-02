@@ -189,6 +189,7 @@ input.btn {
 		if(rs.next()){
 			affiliate = rs.getString("affiliate");
 %>
+<%-- 
 			<tr>
 				<td align="left" colspan="3">
 					<span style="color:#0080ff;cursor:pointer;font-size: 1.5em;" 
@@ -196,6 +197,7 @@ input.btn {
 					</span>
 				</td>
 			</tr>
+--%>
 <%	
 			sql = "SELECT r.path FROM relation r WHERE r.child_id = " + affiliate_id;
 			ResultSet rsSponsor = conn.getResultSet(sql);
@@ -243,7 +245,7 @@ input.btn {
 			}
 			rsSponsor.close();
 			
-			if(relationList.size()>0){
+			/*if(relationList.size()>0){
 
 				for(int ii=0;ii<relationList.size();ii++){
 					String[] parents = relationList.get(ii).split(",");
@@ -269,7 +271,7 @@ input.btn {
 				</tr>
 <%	
 				}
-			}
+			}*/
 		}
 		rs.close();
 	}

@@ -103,16 +103,67 @@
 <%			
 				}
 			}
-			if(activity.equalsIgnoreCase("bookmarked")){
-				sql = "SELECT a.col_id,a.title FROM activitybookmark a WHERE activity_id=" + activity_id;
+			if(activity.equalsIgnoreCase("updated")){
+				sql = "SELECT a.title FROM activitypost a WHERE activity_id=" + activity_id;
 				rsExt = conn.getResultSet(sql);
 				if(rsExt.next()){
-					String col_id = rsExt.getString("col_id");
 					String title = rsExt.getString("title");
 %>
 				<tr> 
 					<td valign="top" style="font-weight: bold;"><%=name %></td>
-			  		<td valign="top" >bookmarked <a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
+			  		<td valign="top" >updated <a href="presentColloquium.do?col_id=<%=activity_id %>"><%=title %></a> on <%=_day %> at <%=_time %></td>
+				</tr>
+<%			
+				}
+			}
+			if(activity.equalsIgnoreCase("bookmarked")){
+				sql = "SELECT a.col_id,a.title FROM activitybookmark a WHERE activity_id=" + activity_id;//It's userprofile_id
+				rsExt = conn.getResultSet(sql);
+				if(rsExt.next()){
+					String col_id = rsExt.getString("col_id");
+					String title = rsExt.getString("title");
+					
+					String tags = "";
+					sql = "SELECT t.tag,t.tag_id FROM tags tt JOIN tag t ON tt.tag_id=t.tag_id WHERE tt.userprofile_id=" + activity_id;
+					rsExt.close();
+					rsExt = conn.getResultSet(sql);
+					while(rsExt.next()){
+						String tag = rsExt.getString("tag");
+						String tag_id = rsExt.getString("tag_id");
+						
+						if(tags.length() > 0){
+							tags += ", ";
+						}
+						
+						tags += "<a href=\"tag.do?tag_id=" + tag_id + "\">" + tag + "</a>";
+					}
+					
+					String groups = "";
+					sql = "SELECT c.comm_id,c.comm_name FROM community c JOIN contribute ct ON c.comm_id=ct.comm_id WHERE ct.userprofile_id=" + activity_id;
+					rsExt.close();
+					rsExt = conn.getResultSet(sql);
+					while(rsExt.next()){
+						String comm_id = rsExt.getString("comm_id");
+						String comm_name = rsExt.getString("comm_name");
+						
+						if(groups.length() > 0){
+							groups += ", ";
+						}
+						
+						groups += "<a href=\"community.do?comm_id=" + comm_id + "\">" + comm_name + "</a>";
+					}
+					
+					String extraAct = "";
+					if(tags.length() > 0){
+						extraAct += ", and tagged with " + tags;
+					}
+					if(groups.length() > 0){
+						extraAct += ", and  contributed to " + groups;
+					}
+%>
+				<tr> 
+					<td valign="top" style="font-weight: bold;"><%=name %></td>
+			  		<td valign="top" >bookmarked <a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> <%=extraAct %> on <%=_day %> at <%=_time %></td>
 				</tr>
 <%			
 				}

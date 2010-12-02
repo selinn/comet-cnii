@@ -58,9 +58,19 @@ public class ListMonthCalAction extends Action {
 		String user_id = (String)request.getParameter("user_id");
 		if(user_id==null){
 			session.setAttribute("menu","calendar");
+			session.removeAttribute("v");
 		}else{
 			session.setAttribute("menu","profile");
+			String v = (String)request.getParameter("v");
+			if(v==null){
+				session.setAttribute("v","bookmark");
+			}else if(v.equalsIgnoreCase("activity")||v.equalsIgnoreCase("info")){
+				session.setAttribute("v","bookmark");
+			}else{
+				session.removeAttribute("v");
+			}
 		}
+		
 		return mapping.findForward("Success");			
 		
 	}

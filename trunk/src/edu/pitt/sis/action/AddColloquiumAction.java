@@ -276,9 +276,9 @@ public class AddColloquiumAction extends Action {
 			//Copy from colloquium tbl to col_bk tbl
 			sql = "INSERT INTO col_bk " +
 					"(timestamp,col_id,_date,begintime,endtime,location,detail,lastupdate," +
-					"title,user_id,speaker_id,host_id,url,video_url,slide_url,s_bio) " +
+					"title,user_id,owner_id,speaker_id,host_id,url,video_url,slide_url,s_bio) " +
 					"SELECT NOW(),col_id,_date,begintime,endtime,location,detail,lastupdate," +
-					"title,user_id,speaker_id,host_id,url,video_url,slide_url,s_bio FROM colloquium WHERE col_id=" + cqf.getCol_id();
+					"title,user_id,owner_id,speaker_id,host_id,url,video_url,slide_url,s_bio FROM colloquium WHERE col_id=" + cqf.getCol_id();
 			conn.executeUpdate(sql);
 			
 			//Edit talk
