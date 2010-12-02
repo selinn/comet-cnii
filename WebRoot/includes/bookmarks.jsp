@@ -19,7 +19,12 @@
 			v="activity";
 		}
 	}
-	if(user_id!=null&v==null){
+	if(user_id!=null&&menu!=null&&v==null){
+		if(menu.equalsIgnoreCase("calendar")){
+			v="bookmark";
+		}
+	}
+	if(user_id!=null&&v==null){
 		//This is ad-hoc page because we should choose v=activity if its user_id is friend of the user unless choosing v=info
 		v="info";
 	}
