@@ -56,10 +56,29 @@ ul li{
 	//"WHERE semester = (SELECT currsemester FROM sys_config) " + 
 	"ORDER BY name";
 	ResultSet rs = conn.getResultSet(sql);
+	if(seriesSet.size()==0){
 %>
-	<input type="button" class="btn" onclick='showChildren($("1"),this);' value='Show Series' />
+<input type="button" class="btn" onclick='showChildren($("tree_series"),this);' value='Show Series' />
+<%		
+	}
+%>
+<span id="tree_series">
+	<ul style="display: <%=seriesSet.size()==0?"none":"block" %>;">
 <% 
 	while(rs.next()){
-		
+		String series_id = rs.getString("series_id");
+		String name = rs.getString("name");
+		String checked="";
+		if(seriesSet.contains(series_id)){
+			checked = "checked='checked'";
+		}
+%>
+	<li>
+		<input type="checkbox" name="series_id" value="<%=series_id%>" <%=checked%>/>&nbsp;<%=name%><br/>
+	</li>
+<%
 	}
-%>	
+%>
+	</ul>
+</span>
+	
