@@ -50,7 +50,7 @@
  }
  </style>
  <ul style="display:block">
-     <li id="1"><input type='checkbox' name='f_1' onclick='checkChildren($("1"),this);'><a href='javascript:void(0);' onclick='showChildren($("1"));'>Web Development</a>
+     <li id="1"><input type='checkbox' name='f_1'>Web Development<input type="button" onclick='showChildren($("1"));this.style.width="0px";this.style.display="none";' value='Show Children'  />
          <ul style="display:none">
              <li id="2"><input type='checkbox' name='f_2' onclick='checkChildren($("2"),this);'><a href='javascript:void(0);' onclick='showChildren($("2"));'>PHP</a></li>
              <li id="3"><input type='checkbox' name='f_3' onclick='checkChildren($("3"),this);'><a href='javascript:void(0);' onclick='showChildren($("3"));'>ASP</a></li>
