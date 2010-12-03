@@ -18,8 +18,8 @@
 //<!--
     $(document).ready(function() {
         $('#tree').checkboxTree({
-        	initializeChecked: 'expand',
-        	initializeUnchecked: 'collapse',
+        	initializeChecked: 'expanded',
+        	initializeUnchecked: 'collapsed',
         	onCheck: {
 			    ancestors: '', //or 'check', 'uncheck'
 			    descendants: '', //or 'check', 'uncheck'
