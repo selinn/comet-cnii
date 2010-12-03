@@ -18,8 +18,8 @@
 //<!--
     $(document).ready(function() {
         $('#tree').checkboxTree({
-        	//initializeChecked: 'expanded',
-        	//initializeUnchecked: 'collapsed',
+        	initializeChecked: 'expand',
+        	initializeUnchecked: 'collapse',
         	onCheck: {
 			    ancestors: '', //or 'check', 'uncheck'
 			    descendants: '', //or 'check', 'uncheck'
@@ -29,7 +29,7 @@
 			    ancestors: '', //or 'check', 'uncheck'
 			    descendants: '', //or 'check', 'uncheck'
 			    node: 'collapse' // or '', 'expand'
-        	},
+        	}
         });
     });
 //-->
