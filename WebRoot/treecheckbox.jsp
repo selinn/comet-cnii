@@ -18,9 +18,16 @@
 //<!--
     $(document).ready(function() {
         $('#tree').checkboxTree({
-        /*
-            specify here your options
-        */
+        	checkChildren: false,
+        	checkParents: false,
+        	initializeChecked: 'expanded',
+        	initializeUnchecked: 'collapse',
+        	onCheck: {
+        		node: 'expand'
+        	},
+        	onUncheck: {
+        		node: 'collapse'
+        	},
         });
     });
 //-->
