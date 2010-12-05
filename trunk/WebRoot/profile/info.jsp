@@ -57,6 +57,11 @@
 %>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
 	<tr>
+		<td colspan="2">
+			<iframe id="infoFrame" name="infoFrame" style="width: 100%;height: 100%;border: 1px;" src="profile/infoEntry.jsp"></iframe>
+		</td>
+	</tr>
+	<tr>
 		<td width="75%" valign="top">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 				<tr>
@@ -104,7 +109,11 @@
 								<td width="15%" valign="top" style="font-weight: bold;">Interests:</td>
 						  		<td><%if(interests==null){out.print("Not specified");}else{out.print(interests);} %></td>
 							</tr>
-						
+							
+							<tr>
+								<td>&nbsp;</td>
+								<td><input id="btnFillInfo" type="button" value="Fill Info" onclick="fillInfo();" /></td>
+							</tr>
 						</table>
 					</td>
 				</tr>
@@ -128,5 +137,12 @@
 				}
 			}
 		}
+		function fillInfo(){
+			var infoFrame = document.infoFrame;
+			if(infoFrame){
+				alert("Found infoFrame");
+				infoFrame.document.forms[0].elements["name"].value = "somename";	
+			}
+		}	
 	</script>	
 </div>

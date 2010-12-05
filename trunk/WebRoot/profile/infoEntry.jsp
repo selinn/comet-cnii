@@ -9,8 +9,15 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
-
-
+<script type="text/javascript">
+function fillinputvalue(objName,value){
+	var obj = document.getElementById(objName);
+	if(obj){
+		alert("Found " + objName);
+		obj.value = value;
+	}		
+}
+</script>
 <form action="profile/infoEntry.jsp" method="post">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
 	<tr> 
