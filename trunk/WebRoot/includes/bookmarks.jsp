@@ -7,6 +7,23 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
+<!-- calendar stylesheet -->
+<link rel="stylesheet" type="text/css" media="all" href="css/calendar-win2k-cold-1.css" title="win2k-cold-1" />
+
+<!-- main calendar program -->
+<script type="text/javascript" src="scripts/calendar.js"></script>
+
+<!-- language for the calendar -->
+<script type="text/javascript" src="scripts/calendar-en.js"></script>
+
+<!-- the following script defines the Calendar.setup helper function, which makes
+     adding a calendar a matter of 1 or 2 lines of code. -->
+<script type="text/javascript" src="scripts/calendar-setup.js"></script>
+
+<script type="text/javascript" src="ckeditor/ckeditor.js"></script>	
+<script src="ckeditor/sample.js" type="text/javascript"></script> 
+<link href="ckeditor/sample.css" rel="stylesheet" type="text/css"/>		
+
 <% 
 	session=request.getSession(false);
 	String menu = (String)session.getAttribute("menu");
@@ -763,6 +780,55 @@
 			case 2: flip2Month();break;
 		}
 	}
+	function fillInfo(){
+		//alert("fillInfo()");
+		var infoFrame = top.infoFrame;
+		if(infoFrame){
+			//alert("Found infoFrame");
+			infoFrame.document.forms[0].elements["user_id"].value = document.getElementById("user_id").value;	
+			infoFrame.document.forms[0].elements["name"].value = document.getElementById("name").value;	
+			infoFrame.document.forms[0].elements["email"].value = document.getElementById("email").value;	
+			infoFrame.document.forms[0].elements["job"].value = document.getElementById("job").value;	
+		}
+	}
+	function editInfo(){
+		if(btnEditInfo.value == "Update"){
+			updateInfo();
+			return;
+		}
+		btnEditInfo.value = "Update";
+		if(divInfo){
+			divInfo.style.height = "0px";
+			divInfo.style.overflow = "hidden";
+		}
+		if(divEditInfo){
+			divEditInfo.style.height = "auto";
+			divEditInfo.style.overflow = "visible";
+		}
+		btnCancelEditInfo.style.width = "auto";
+		btnCancelEditInfo.style.visibility = "visible";
+		btnCancelEditInfo.style.display = "inline";
+		btnCancelEditInfo.style.overflow = "visible";
+	}
+	function cancelEditInfo(){
+		btnEditInfo.value = "Edit";
+		if(divEditInfo){
+			divEditInfo.style.height = "0px";
+			divEditInfo.style.overflow = "hidden";
+		}
+		if(divInfo){
+			divInfo.style.height = "auto";
+			divInfo.style.overflow = "visible";
+		}
+		btnCancelEditInfo.style.width = "0px";
+		btnCancelEditInfo.style.visibility = "hidden";
+		btnCancelEditInfo.style.display = "none";
+		btnCancelEditInfo.style.overflow = "hidden";
+	}	
+	function updateInfo(){
+		fillInfo();
+		
+	}	
 </script>
 <logic:notPresent name="UserSession">
 <% 
