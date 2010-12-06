@@ -172,7 +172,6 @@
 							<td width="20%" valign="top"><b>Your comment:</b></td>
 							<td>
 								<textarea name="comment" rows="5" cols="45"></textarea>
-<%-- 
 									<script type="text/javascript"> 
 									//<![CDATA[
 					 
@@ -186,7 +185,6 @@
 					 
 									//]]>
 									</script> 
---%>
 							</td>
 						</tr>
 						<tr>
