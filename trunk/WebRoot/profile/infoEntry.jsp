@@ -21,8 +21,8 @@ function fillinputvalue(objName,value){
 <form action="profile/infoEntry.jsp" method="post">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
 	<tr> 
-		<td width="15%" valign="top" style="font-weight: bold;">col_id:</td>
-	 	<td><input type="text" id="col_id" /></td>
+		<td width="15%" valign="top" style="font-weight: bold;">user_id:</td>
+	 	<td><input type="text" id="user_id" /></td>
 	</tr>
 	<tr> 
 		<td width="15%" valign="top" style="font-weight: bold;">Name:</td>
