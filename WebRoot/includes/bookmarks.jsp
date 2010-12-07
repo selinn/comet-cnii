@@ -795,54 +795,50 @@
 			infoFrame.document.forms[0].submit();
 		}
 	}
-	function editInfo(){
-		if(btnEditInfo.value == "Update"){
-			updateInfo();
-			return;
-		}
-		btnEditInfo.value = "Update";
-		if(divInfo){
-			divInfo.style.height = "0px";
-			divInfo.style.overflow = "hidden";
-		}
-		if(divEditInfo){
-			divEditInfo.style.height = "auto";
-			divEditInfo.style.overflow = "visible";
-		}
-		btnCancelEditInfo.style.width = "auto";
-		btnCancelEditInfo.style.visibility = "visible";
-		btnCancelEditInfo.style.display = "inline";
-		btnCancelEditInfo.style.overflow = "visible";
-
-		var infoFrame = top.infoFrame;
-		if(!infoFrame.document.forms[0]){
-			infoFrame.location = "profile/infoEntry.jsp";
-		}
-
-		displayUpdatingInfo();
-		
-		updateError.innerHTML = "";
-		nameError.innerHTML = "";
-		emailError.innerHTML = "";
-	}
 	function cancelEditInfo(){
-		btnEditInfo.value = "Edit";
-		btnEditInfo.disabled = false;
-		btnCancelEditInfo.disabled = false;
-		if(divEditInfo){
-			divEditInfo.style.height = "0px";
-			divEditInfo.style.overflow = "hidden";
-		}
-		if(divInfo){
-			divInfo.style.height = "auto";
-			divInfo.style.overflow = "visible";
-		}
-		btnCancelEditInfo.style.width = "0px";
-		btnCancelEditInfo.style.visibility = "hidden";
-		btnCancelEditInfo.style.display = "none";
-		btnCancelEditInfo.style.overflow = "hidden";
+		if(btnCancelEditInfo.value == "Edit"){
+			if(divInfo){
+				divInfo.style.height = "0px";
+				divInfo.style.overflow = "hidden";
+			}
+			if(divEditInfo){
+				divEditInfo.style.height = "auto";
+				divEditInfo.style.overflow = "visible";
+			}
+			btnEditInfo.style.width = "auto";
+			btnEditInfo.style.visibility = "visible";
+			btnEditInfo.style.display = "inline";
+			btnEditInfo.style.overflow = "visible";
 
-		infoDesc.innerHTML = "";	
+			var infoFrame = top.infoFrame;
+			if(!infoFrame.document.forms[0]){
+				infoFrame.location = "profile/infoEntry.jsp";
+			}
+
+			displayUpdatingInfo();
+			
+			updateError.innerHTML = "";
+			nameError.innerHTML = "";
+			emailError.innerHTML = "";
+		}else{
+			btnCancelEditInfo.value = "Edit";
+			btnEditInfo.disabled = false;
+			btnCancelEditInfo.disabled = false;
+			if(divEditInfo){
+				divEditInfo.style.height = "0px";
+				divEditInfo.style.overflow = "hidden";
+			}
+			if(divInfo){
+				divInfo.style.height = "auto";
+				divInfo.style.overflow = "visible";
+			}
+			btnEditInfo.style.width = "0px";
+			btnEditInfo.style.visibility = "hidden";
+			btnEditInfo.style.display = "none";
+			btnEditInfo.style.overflow = "hidden";
+
+			infoDesc.innerHTML = "";	
+		}	
 	}	
 	function updateInfo(){
 		var infoFrame = top.infoFrame;
