@@ -48,6 +48,30 @@
 					</td>
 				</tr>
 				<tr><td>&nbsp;</td></tr>
+<%
+		if(user_id==null){
+%>
+				<tr>
+					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
+				</tr>
+				<tr>
+					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+					External Email Contacts
+					</td>
+				</tr>
+				<tr>
+					<td style="border: 1px #EFEFEF solid;">
+					<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
+						<tr>
+							<td>No contact</td>
+						</tr>
+					</table>
+					</td>
+				</tr>
+				<tr><td>&nbsp;</td></tr>
+<%			
+		}
+%>
 				<tr>
 					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
