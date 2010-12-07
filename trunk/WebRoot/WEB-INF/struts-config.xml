@@ -107,6 +107,21 @@
 		 redirect="true"
 		 contextRelative="true" />  
 		<forward
+		 name="aaa.colloquia.groups"
+		 path="/groups.do"
+		 redirect="true"
+		 contextRelative="true" />  
+		<forward
+		 name="aaa.colloquia.contacts"
+		 path="/contacts.do"
+		 redirect="true"
+		 contextRelative="true" />  
+		<forward
+		 name="aaa.colloquia.friends"
+		 path="/friends.do"
+		 redirect="true"
+		 contextRelative="true" />  
+		<forward
 		 name="aaa.colloquia.request"
 		 path="/request.do"
 		 redirect="true"
@@ -266,6 +281,27 @@
 		<forward name="Success" path="aaa.colloquia.presentColloquium" redirect="true" contextRelative="true" />
 		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
 		<forward name="Failure" path="aaa.calendar" redirect="true" contextRelative="true" />      
+		</action>              
+
+		<action forward="aaa.colloquia.contacts" path="/contacts" />         	  
+		<action path="/contacts" scope="request" type="edu.pitt.sis.action.ContactsAction">
+		<forward name="Success" path="aaa.colloquia.contacts" redirect="false" contextRelative="true" />
+		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
+		<forward name="Failure" path="aaa.index" redirect="true" contextRelative="true" />      
+		</action>              
+
+		<action forward="aaa.colloquia.groups" path="/groups" />         	  
+		<action path="/groups" scope="request" type="edu.pitt.sis.action.GroupsAction">
+		<forward name="Success" path="aaa.colloquia.groups" redirect="false" contextRelative="true" />
+		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
+		<forward name="Failure" path="aaa.index" redirect="true" contextRelative="true" />      
+		</action>              
+
+		<action forward="aaa.colloquia.friends" path="/friends" />         	  
+		<action path="/friends" scope="request" type="edu.pitt.sis.action.FriendsAction">
+		<forward name="Success" path="aaa.colloquia.friends" redirect="false" contextRelative="true" />
+		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
+		<forward name="Failure" path="aaa.index" redirect="true" contextRelative="true" />      
 		</action>              
 
 		<action forward="aaa.colloquia.request" path="/request" />         	  

@@ -31,7 +31,7 @@ import org.apache.struts.action.ActionMapping;
  * XDoclet definition:
  * @struts:action validate="true"
  */
-public class RequestAction extends Action {
+public class FriendsAction extends Action {
 
 	// --------------------------------------------------------- Instance Variables
 
@@ -54,11 +54,11 @@ public class RequestAction extends Action {
 		HttpSession session = request.getSession();
 		
 		
-		session.setAttribute("menu","request");
+		session.setAttribute("menu","friends");
 
 		if(session.getAttribute("UserSession")==null){
 			session.removeAttribute("HideBar");
-			session.setAttribute("before-login-redirect", "request.do");
+			session.setAttribute("before-login-redirect", "friends.do");
 			return mapping.findForward("Login");
 		}
 		

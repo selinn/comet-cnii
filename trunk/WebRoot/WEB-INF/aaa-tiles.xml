@@ -98,10 +98,25 @@
 		<put name="mainwindow" value="/colloquia/presentColloquium.jsp" />
 		<put name="title" value="CoMeT | Colloquium Detail" />
 	</definition>
+	<definition name="aaa.colloquia.groups" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/profile/groups.jsp" />
+		<put name="title" value="CoMeT | Groups" />
+	</definition>
+	<definition name="aaa.colloquia.contacts" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/profile/contacts.jsp" />
+		<put name="title" value="CoMeT | External Email Contacts" />
+	</definition>
+	<definition name="aaa.colloquia.friends" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/profile/friends.jsp" />
+		<put name="title" value="CoMeT | Friends" />
+	</definition>
 	<definition name="aaa.colloquia.request" 
 		extends="aaa.default.nosidebar">
 		<put name="mainwindow" value="/profile/request.jsp" />
-		<put name="title" value="CoMeT | Request" />
+		<put name="title" value="CoMeT | Requests" />
 	</definition>
 	<definition name="aaa.colloquia.profile" 
 		extends="aaa.default.nosidebar">
