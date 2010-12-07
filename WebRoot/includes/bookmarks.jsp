@@ -781,14 +781,18 @@
 		}
 	}
 	function fillInfo(){
-		//alert("fillInfo()");
 		var infoFrame = top.infoFrame;
 		if(infoFrame){
-			//alert("Found infoFrame");
 			infoFrame.document.forms[0].elements["user_id"].value = document.getElementById("user_id").value;	
 			infoFrame.document.forms[0].elements["name"].value = document.getElementById("name").value;	
 			infoFrame.document.forms[0].elements["email"].value = document.getElementById("email").value;	
-			infoFrame.document.forms[0].elements["job"].value = document.getElementById("job").value;	
+			infoFrame.document.forms[0].elements["location"].value = document.getElementById("location").value;
+			infoFrame.document.forms[0].elements["job"].value = document.getElementById("job").value;
+			infoFrame.document.forms[0].elements["affiliation"].value = document.getElementById("affiliation").value;
+			infoFrame.document.forms[0].elements["website"].value = document.getElementById("website").value;
+			infoFrame.document.forms[0].elements["aboutme"].value = document.getElementById("aboutme").value;
+			infoFrame.document.forms[0].elements["interests"].value = document.getElementById("interests").value;
+			infoFrame.document.forms[0].submit();
 		}
 	}
 	function editInfo(){
@@ -809,9 +813,22 @@
 		btnCancelEditInfo.style.visibility = "visible";
 		btnCancelEditInfo.style.display = "inline";
 		btnCancelEditInfo.style.overflow = "visible";
+
+		var infoFrame = top.infoFrame;
+		if(!infoFrame.document.forms[0]){
+			infoFrame.location = "profile/infoEntry.jsp";
+		}
+
+		displayUpdatingInfo();
+		
+		updateError.innerHTML = "";
+		nameError.innerHTML = "";
+		emailError.innerHTML = "";
 	}
 	function cancelEditInfo(){
 		btnEditInfo.value = "Edit";
+		btnEditInfo.disabled = false;
+		btnCancelEditInfo.disabled = false;
 		if(divEditInfo){
 			divEditInfo.style.height = "0px";
 			divEditInfo.style.overflow = "hidden";
@@ -824,11 +841,56 @@
 		btnCancelEditInfo.style.visibility = "hidden";
 		btnCancelEditInfo.style.display = "none";
 		btnCancelEditInfo.style.overflow = "hidden";
+
+		infoDesc.innerHTML = "";	
 	}	
 	function updateInfo(){
+		var infoFrame = top.infoFrame;
+		if(!infoFrame.document.forms[0]){
+			infoFrame.location = "profile/infoEntry.jsp";
+			window.setTimeout(function(){updateInfo();},100);
+		}
+		btnEditInfo.disabled = true;
+		btnCancelEditInfo.disabled = true;
 		fillInfo();
-		
-	}	
+	}
+	function displayUpdateInfoError(error){
+		updateError.innerHTML = error;
+		btnEditInfo.disabled = false;
+		btnCancelEditInfo.disabled = false;
+	}
+	function displayNameInfoError(error){
+		nameError.innerHTML = error;
+		btnEditInfo.disabled = false;
+		btnCancelEditInfo.disabled = false;
+	}
+	function displayEmailInfoError(error){
+		emailError.innerHTML = error;
+		btnEditInfo.disabled = false;
+		btnCancelEditInfo.disabled = false;
+	}
+	function displayUpdatedInfo(){
+		document.getElementById("infoName").innerHTML = document.getElementById("name").value;	
+		document.getElementById("infoEmail").innerHTML = document.getElementById("email").value;	
+		document.getElementById("infoLocation").innerHTML = document.getElementById("location").value;	
+		document.getElementById("infoJob").innerHTML = document.getElementById("job").value;	
+		document.getElementById("infoAffiliation").innerHTML = document.getElementById("affiliation").value;	
+		document.getElementById("infoWebsite").innerHTML = document.getElementById("website").value;	
+		document.getElementById("infoAboutme").innerHTML = document.getElementById("aboutme").value;	
+		document.getElementById("infoInterests").innerHTML = document.getElementById("interests").value;
+		cancelEditInfo();
+		infoDesc.innerHTML = "Update your information successfully";	
+	}
+	function displayUpdatingInfo(){
+		document.getElementById("name").value = document.getElementById("infoName").innerHTML;	
+		document.getElementById("email").value = document.getElementById("infoEmail").innerHTML;	
+		document.getElementById("location").value = document.getElementById("infoLocation").innerHTML;	
+		document.getElementById("job").value = document.getElementById("infoJob").innerHTML;	
+		document.getElementById("affiliation").value = document.getElementById("infoAffiliation").innerHTML;	
+		document.getElementById("website").value = document.getElementById("infoWebsite").innerHTML;	
+		document.getElementById("aboutme").value = document.getElementById("infoAboutme").innerHTML;	
+		document.getElementById("interests").value = document.getElementById("infoInterests").innerHTML;
+	}
 </script>
 <logic:notPresent name="UserSession">
 <% 
