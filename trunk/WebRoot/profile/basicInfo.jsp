@@ -21,12 +21,16 @@
 	String user_id = (String)request.getParameter("user_id");
 	if(user_id==null&&ub==null){
 %>
-	<script type="text/javascript">
+	
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Iterator"%><script type="text/javascript">
 		window.setTimeout(function(){window.location="login.do";},50);
 	</script>
 <%		
 	}else{
 		connectDB conn = new connectDB();
+		ResultSet rs;
+		String sql;
 %>
 
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
@@ -40,7 +44,7 @@
 				</tr>
 				<tr>
 					<td style="border: 1px #EFEFEF solid;">
-					<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
+					<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
 						<tr>
 							<td>No friend</td>
 						</tr>
@@ -61,10 +65,53 @@
 				</tr>
 				<tr>
 					<td style="border: 1px #EFEFEF solid;">
-					<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
+					<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
+<% 
+			sql = "SELECT emails FROM emailfriends WHERE user_id=" + ub.getUserID() + " GROUP BY emails";
+			rs = conn.getResultSet(sql);
+			if(rs!=null){
+				HashSet<String> emailSet = new HashSet<String>();
+				while(rs.next()){				
+					String[] email = rs.getString("emails").trim().split(",");
+					if(email!=null){
+						for(int i=0;i<email.length;i++){
+							emailSet.add(email[i].trim().toLowerCase());
+						}
+					}
+				}
+				if(emailSet.size() > 0){
+					int i=0;
+					for(Iterator<String> it=emailSet.iterator();it.hasNext();){
+						if(i%3==0){
+							out.println("<tr>");
+						}
+						out.print("<td>" + it.next() + "</td>");
+						if(i%3==2){
+							out.println("</tr>");
+						}
+						i++;
+					}
+					if(i%3==1){
+						out.println("<td colspan=\"2\">&nbsp;</td></tr>");	
+					}
+					if(i%3==2){
+						out.println("<td>&nbsp;</td></tr>");	
+					}
+				}else{
+					%>
+					<tr>
+						<td>No contact</td>
+					</tr>
+<%				
+				}
+			}else{
+%>
 						<tr>
 							<td>No contact</td>
 						</tr>
+<%				
+			}
+%>
 					</table>
 					</td>
 				</tr>
@@ -82,7 +129,7 @@
 				</tr>
 				<tr>
 					<td style="border: 1px #EFEFEF solid;">
-					<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
+					<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
 						<tr>
 							<td>No group</td>
 						</tr>
