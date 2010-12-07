@@ -77,7 +77,9 @@
 			if(ub!=null){
 				if(user_id==null||user_id==String.valueOf(ub.getUserID())){
 %>
-						<input class="btn" style="width: 0px;visibility: hidden;display: none;overflow: hidden;" id="btnEditInfo" type="button" value="Update" onclick="updateInfo()" />&nbsp;<input class="btn" id="btnCancelEditInfo" type="button" value="Edit" onclick="cancelEditInfo()" />
+						<input class="btn" style="width: 0px;visibility: hidden;display: none;overflow: hidden;" id="btnEditInfo" type="button" value="Update" onclick="updateInfo()" />
+						&nbsp;
+						<input class="btn" id="btnCancelEditInfo" type="button" value="Edit" onclick="cancelEditInfo()" />
 <%				
 				}
 			}
