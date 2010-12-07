@@ -129,6 +129,17 @@
 	ResultSet rs = conn.getResultSet(sql);
 %>
 <table border="0" cellspacing="0" cellpadding="0" width="100%" align="left">
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	<tr>
+		<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
+	</tr>
+	<tr>
+		<td colspan="2" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+			Comments
+		</td>
+	</tr>
 <%	
 	if(rs != null){
 		while(rs.next()){
@@ -140,13 +151,16 @@
 %>
 	<tr>
 		<td width="20%" valign="top" style="font-size: 0.75em;">
-			<a href="calendar.do?user_id=<%=user_id%>"><%=name %></a><br/>
+			<a href="profile.do?user_id=<%=user_id%>"><%=name %></a><br/>
 			<span style="color: #bebebe;font-size: 0.75em;"><%=commenttime %></span>
 			<a name="comment<%=comment_id %>"></a>
 		</td>
 		<td width="80%" valign="top" style="font-size: 0.75em;">
 			<%=comment %>
 		</td>
+	</tr>
+	<tr>
+		<td colspan="2">&nbsp;</td>
 	</tr>
 	<tr>
 		<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
@@ -172,6 +186,7 @@
 							<td width="20%" valign="top"><b>Your comment:</b></td>
 							<td>
 								<textarea name="comment" rows="5" cols="45"></textarea>
+<%-- 
 									<script type="text/javascript"> 
 									//<![CDATA[
 					 
@@ -185,6 +200,7 @@
 					 
 									//]]>
 									</script> 
+--%>
 							</td>
 						</tr>
 						<tr>
