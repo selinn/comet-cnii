@@ -61,7 +61,7 @@ public class ProfileAction extends Action {
 			session.setAttribute("menu","myaccount");
 		}
 
-		if(session.getAttribute("UserSession")==null&&user_id!=null){
+		if(session.getAttribute("UserSession")==null&&user_id==null){
 			session.removeAttribute("HideBar");
 			session.setAttribute("before-login-redirect", "profile.do");
 			return mapping.findForward("Login");
