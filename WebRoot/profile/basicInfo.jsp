@@ -65,7 +65,7 @@
 				</tr>
 				<tr>
 					<td style="border: 1px #EFEFEF solid;">
-					<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
+						<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
 <% 
 			sql = "SELECT emails FROM emailfriends WHERE user_id=" + ub.getUserID() + " GROUP BY emails";
 			rs = conn.getResultSet(sql);
@@ -96,20 +96,20 @@
 					}
 				}else{
 					%>
-					<tr>
-						<td>No contact</td>
-					</tr>
+							<tr>
+								<td>No contact</td>
+							</tr>
 <%				
 				}
 			}else{
 %>
-						<tr>
-							<td>No contact</td>
-						</tr>
+							<tr>
+								<td>No contact</td>
+							</tr>
 <%				
 			}
 %>
-					</table>
+						</table>
 					</td>
 				</tr>
 				<tr><td>&nbsp;</td></tr>
