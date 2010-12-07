@@ -797,6 +797,7 @@
 	}
 	function cancelEditInfo(){
 		if(btnCancelEditInfo.value == "Edit"){
+			btnCancelEditInfo.value = "Cancel";
 			if(divInfo){
 				divInfo.style.height = "0px";
 				divInfo.style.overflow = "hidden";
