@@ -840,6 +840,13 @@
 				</tr>
 <%		
 			}
+%>
+				<tr>
+					<td colspan="3">
+						<tiles:insert template="/utils/postComments.jsp" />
+					</td>
+				</tr>
+<%
 		}
 %>
 			</table>
