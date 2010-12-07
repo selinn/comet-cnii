@@ -72,12 +72,12 @@
 					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
 					Info
 					</td>
-					<td width="20%" align="right" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+					<td width="120" align="right" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
 <% 
 			if(ub!=null){
 				if(user_id==null||user_id==String.valueOf(ub.getUserID())){
 %>
-						<input class="btn" id="btnEditInfo" type="button" value="Edit" onclick="editInfo()" />&nbsp;<input class="btn" style="width: 0px;visibility: hidden;display: none;overflow: hidden;" id="btnCancelEditInfo" type="button" value="Cancel" onclick="cancelEditInfo()" />
+						<input class="btn" style="width: 0px;visibility: hidden;display: none;overflow: hidden;" id="btnEditInfo" type="button" value="Update" onclick="updateInfo()" />&nbsp;<input class="btn" id="btnCancelEditInfo" type="button" value="Edit" onclick="cancelEditInfo()" />
 <%				
 				}
 			}
