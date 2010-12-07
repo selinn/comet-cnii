@@ -106,7 +106,9 @@
 					String title = rsExt.getString("title");
 					
 					String tags = "";
-					sql = "SELECT t.tag,t.tag_id FROM tags tt JOIN tag t ON tt.tag_id=t.tag_id WHERE tt.userprofile_id=" + activity_id;
+					sql = "SELECT t.tag,t.tag_id FROM tags tt JOIN tag t ON tt.tag_id=t.tag_id " +
+							"WHERE tt.userprofile_id=" + activity_id +
+							" AND LENGTH(TRIM(t.tag)) > 0 ";
 					rsExt.close();
 					rsExt = conn.getResultSet(sql);
 					while(rsExt.next()){
@@ -136,10 +138,10 @@
 					}
 					
 					String extraAct = "";
-					if(tags.length() > 0){
+					if(tags.trim().length() > 0){
 						extraAct += ", and tagged with " + tags;
 					}
-					if(groups.length() > 0){
+					if(groups.trim().length() > 0){
 						extraAct += ", and  contributed to " + groups;
 					}
 %>
