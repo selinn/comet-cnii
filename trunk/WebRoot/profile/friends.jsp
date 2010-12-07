@@ -45,7 +45,7 @@
 				</tr>
 				<tr>
 					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
-						Friend Requests
+						Friends
 					</td>
 				</tr>
 				<tr>
