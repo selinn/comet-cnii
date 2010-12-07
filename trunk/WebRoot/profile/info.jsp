@@ -24,7 +24,8 @@
 	if(user_id==null&&ub==null){
 %>
 	<script type="text/javascript">
-		window.setTimeout(function(){window.location="login.do";},50);
+		redirect("login.do");
+		//window.setTimeout(function(){window.location="login.do";},50);
 	</script>
 <%		
 	}else{
@@ -120,7 +121,7 @@
 								</tr>
 								<tr> 
 									<td width="15%" valign="top" style="font-weight: bold;">About me:</td>
-							  		<td colspan="2"><textarea id="aboutme" name="aboutme" rows="10" cols="60"><%if(aboutme!=null){out.print(aboutme);} %></textarea>
+							  		<td colspan="2"><textarea id="aboutme" name="aboutme" rows="5" cols="45"><%if(aboutme!=null){out.print(aboutme);} %></textarea>
 				<script type="text/javascript"> 
 				//<![CDATA[
  
@@ -138,7 +139,7 @@
 								</tr>
 								<tr> 
 									<td width="15%" valign="top" style="font-weight: bold;">Interests:</td>
-							  		<td colspan="2"><textarea id="interests" name="interests" rows="10" cols="60"><%if(interests!=null){out.print(interests);} %></textarea>
+							  		<td colspan="2"><textarea id="interests" name="interests" rows="5" cols="45"><%if(interests!=null){out.print(interests);} %></textarea>
 				<script type="text/javascript"> 
 				//<![CDATA[
  

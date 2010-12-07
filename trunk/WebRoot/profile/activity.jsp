@@ -29,7 +29,8 @@
 	if(user_id==null&&ub==null){
 %>
 	<script type="text/javascript">
-		window.setTimeout(function(){window.location="login.do";},50);
+		redirect("login.do");
+		//window.setTimeout(function(){window.location="login.do";},50);
 	</script>
 <%		
 	}else{

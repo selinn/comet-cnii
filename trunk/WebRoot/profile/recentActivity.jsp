@@ -44,7 +44,7 @@
 		String name=null;
 		String activity=null;
 		String activity_id=null;
-		Date activitytime=null;
+		String activitytime=null;
 		String _day=null;
 		int _year=0;
 		String _time=null;
@@ -54,7 +54,7 @@
 			name = rs.getString("name");
 			activity = rs.getString("activity");
 			activity_id = rs.getString("activity_id");
-			activitytime = rs.getDate("activitytime");
+			activitytime = rs.getString("activitytime");
 			_day = rs.getString("day");
 			_year = rs.getInt("_year");		
 			_time = rs.getString("_time");
