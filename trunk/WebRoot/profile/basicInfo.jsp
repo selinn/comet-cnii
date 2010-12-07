@@ -82,19 +82,16 @@
 				if(emailSet.size() > 0){
 					int i=0;
 					for(Iterator<String> it=emailSet.iterator();it.hasNext();){
-						if(i%3==0){
+						if(i%2==0){
 							out.println("<tr>");
 						}
 						out.print("<td>" + it.next() + "</td>");
-						if(i%3==2){
+						if(i%2==1){
 							out.println("</tr>");
 						}
 						i++;
 					}
-					if(i%3==1){
-						out.println("<td colspan=\"2\">&nbsp;</td></tr>");	
-					}
-					if(i%3==2){
+					if(i%2==1){
 						out.println("<td>&nbsp;</td></tr>");	
 					}
 				}else{
