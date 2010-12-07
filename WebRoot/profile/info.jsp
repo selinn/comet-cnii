@@ -69,10 +69,10 @@
 					<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
 				<tr>
-					<td width="50%" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+					<td width="80%" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
 					Info
 					</td>
-					<td width="50%" align="right" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+					<td width="20%" align="right" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
 <% 
 			if(ub!=null){
 				if(user_id==null||user_id==String.valueOf(ub.getUserID())){
@@ -85,7 +85,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td>
+					<td colspan="2">
 <% 
 			if(ub!=null){
 				if(user_id==null||user_id==String.valueOf(ub.getUserID())){
