@@ -985,7 +985,11 @@
 		ResultSet rs = conn.getResultSet(sql);
 		if(rs.next()){
 %>
-		<span style="color: #003399;font-size: 0.9em;font-weight: bold;"><%=rs.getString("name")%></span>&nbsp;<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" />
+		<span style="color: #003399;font-size: 0.9em;font-weight: bold;"><%=rs.getString("name")%></span>&nbsp;
+		<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" />
+		<div style="height: 0px;overflow: hidden;" id="divAddFriend">
+		
+		</div>
 <%		
 		}else{
 %>
