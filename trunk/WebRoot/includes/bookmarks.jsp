@@ -323,6 +323,18 @@
 		loadInfo();
 	}
 	function flip2ImpactSummary(){
+		divBtnActivity.style.background = "#ffffff";
+		divBtnActivity.style.color = "#003399";
+		divBtnActivity.style.fontWeight = "normal";
+		divBtnActivity.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnActivity.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";				
+	
+		divBtnInfo.style.background = "#ffffff";
+		divBtnInfo.style.color = "#003399";
+		divBtnInfo.style.fontWeight = "normal";
+		divBtnInfo.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnInfo.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
 		divBtnBookmark.style.background = "#ffffff";
 		divBtnBookmark.style.color = "#003399";
 		divBtnBookmark.style.fontWeight = "normal";
@@ -356,6 +368,18 @@
 		}
 	}
 	function flip2Impact(){
+		divBtnActivity.style.background = "#ffffff";
+		divBtnActivity.style.color = "#003399";
+		divBtnActivity.style.fontWeight = "normal";
+		divBtnActivity.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnActivity.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";				
+	
+		divBtnInfo.style.background = "#ffffff";
+		divBtnInfo.style.color = "#003399";
+		divBtnInfo.style.fontWeight = "normal";
+		divBtnInfo.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnInfo.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
 		divBtnBookmark.style.background = "#ffffff";
 		divBtnBookmark.style.color = "#003399";
 		divBtnBookmark.style.fontWeight = "normal";
@@ -389,6 +413,18 @@
 		}
 	}
 	function flip2Post(){
+		divBtnActivity.style.background = "#ffffff";
+		divBtnActivity.style.color = "#003399";
+		divBtnActivity.style.fontWeight = "normal";
+		divBtnActivity.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnActivity.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";				
+	
+		divBtnInfo.style.background = "#ffffff";
+		divBtnInfo.style.color = "#003399";
+		divBtnInfo.style.fontWeight = "normal";
+		divBtnInfo.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnInfo.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
 		divBtnBookmark.style.background = "#ffffff";
 		divBtnBookmark.style.color = "#003399";
 		divBtnBookmark.style.fontWeight = "normal";
@@ -422,6 +458,18 @@
 		}
 	}
 	function flip2Bookmark(){
+		divBtnActivity.style.background = "#ffffff";
+		divBtnActivity.style.color = "#003399";
+		divBtnActivity.style.fontWeight = "normal";
+		divBtnActivity.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnActivity.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";				
+	
+		divBtnInfo.style.background = "#ffffff";
+		divBtnInfo.style.color = "#003399";
+		divBtnInfo.style.fontWeight = "normal";
+		divBtnInfo.onmouseover = "this.style.background='#ffffff';this.style.color='#003399';";
+		divBtnInfo.onmouseout = "this.style.background='#003399';this.style.color='#ffffff';";
+
 		divBtnBookmark.style.background = "#003399";
 		divBtnBookmark.style.color = "#ffffff";
 		divBtnBookmark.style.fontWeight = "bold";
