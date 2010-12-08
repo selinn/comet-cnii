@@ -9,6 +9,8 @@
 
 
 <%@page import="edu.pitt.sis.beans.UserBean"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Iterator"%>
 
 <% 
 	final String[] months = {"January","Febuary","March",
@@ -22,10 +24,9 @@
 	if(user_id==null&&ub==null){
 %>
 	
-<%@page import="java.util.HashSet"%>
-<%@page import="java.util.Iterator"%><script type="text/javascript">
+<script type="text/javascript">
 		window.setTimeout(function(){window.location="login.do";},50);
-	</script>
+</script>
 <%		
 	}else{
 		connectDB conn = new connectDB();
@@ -58,19 +59,11 @@
 				<tr>
 					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
-				<tr>
-					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
-					External Email Contacts
-					</td>
-				</tr>
-				<tr>
-					<td style="border: 1px #EFEFEF solid;">
-						<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
 <% 
 			sql = "SELECT emails FROM emailfriends WHERE user_id=" + ub.getUserID() + " GROUP BY emails";
 			rs = conn.getResultSet(sql);
+			HashSet<String> emailSet = new HashSet<String>();
 			if(rs!=null){
-				HashSet<String> emailSet = new HashSet<String>();
 				while(rs.next()){				
 					String[] email = rs.getString("emails").trim().split(",");
 					if(email!=null){
@@ -79,25 +72,45 @@
 						}
 					}
 				}
-				if(emailSet.size() > 0){
-					int i=0;
-					for(Iterator<String> it=emailSet.iterator();it.hasNext();){
-						if(i%2==0){
-							out.println("<tr>");
-						}
-						out.print("<td>" + it.next() + "</td>");
-						if(i%2==1){
-							out.println("</tr>");
-						}
-						i++;
+			}			
+%>
+				<tr>
+					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+					External Email Contacts
+<%
+			if(emailSet.size() > 0){
+%>
+					(<%=emailSet.size() %> contact<%=(emailSet.size()>1?"s":"") %>)
+<%				
+			}
+%>
+					<br/><span style="color: red;font-style: italic;">(only you can see this)</span>
+					</td>
+				</tr>
+				<tr>
+					<td style="border: 1px #EFEFEF solid;">
+						<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
+<% 
+			if(emailSet.size() > 0){
+				int i=0;
+				for(Iterator<String> it=emailSet.iterator();it.hasNext();){
+					if(i%2==0){
+						out.println("<tr>");
 					}
+					out.print("<td>" + it.next() + "</td>");
 					if(i%2==1){
-						out.println("<td>&nbsp;</td></tr>");	
+						out.println("</tr>");
 					}
-				}else{
-					%>
+					i++;
+					if(i==4)break;
+				}
+				if(i%2==1){
+					out.println("<td>&nbsp;</td></tr>");	
+				}
+				if(emailSet.size() > 4){
+%>
 							<tr>
-								<td>No contact</td>
+								<td colspan="2"><a href="contacts.do">View All</a></td>
 							</tr>
 <%				
 				}
