@@ -10,6 +10,8 @@
 
 <%@page import="edu.pitt.sis.db.connectDB"%>
 <%@page import="edu.pitt.sis.beans.UserBean"%>
+<%@page import="java.util.HashSet"%>
+<%@page import="java.util.Iterator"%>
 
 <% 
 	final String[] months = {"January","Febuary","March",
@@ -19,8 +21,7 @@
 	
 	session = request.getSession(false);
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
-	String user_id = (String)request.getParameter("user_id");
-	if(user_id==null&&ub==null){
+	if(ub==null){
 %>
 	<script type="text/javascript">
 		redirect("login.do");
@@ -28,28 +29,72 @@
 	</script>
 <%		
 	}else{
-		//connectDB conn = new connectDB();
-			
 %>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
-	<tr>
-		<td colspan="3">
-			<iframe id="infoFrame" name="infoFrame" style="width: 0px;height: 0px;border: 0px;position: absolute;" src="profile/infoEntry.jsp"></iframe>
-		</td>
-	</tr>
 	<tr>
 		<td width="75%" valign="top">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 				<tr>
-					<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
+					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
 				<tr>
 					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
-						External Email Contacts
+					External Email Contacts <span style="color: red;font-style: italic;">(only you can see this)</span>
 					</td>
 				</tr>
 				<tr>
-					<td>&nbsp;
+					<td>
+						<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
+<% 
+			connectDB conn = new connectDB();
+			ResultSet rs;
+			String sql;
+			sql = "SELECT emails FROM emailfriends WHERE user_id=" + ub.getUserID() + " GROUP BY emails";
+			rs = conn.getResultSet(sql);
+			if(rs!=null){
+				HashSet<String> emailSet = new HashSet<String>();
+				while(rs.next()){				
+					String[] email = rs.getString("emails").trim().split(",");
+					if(email!=null){
+						for(int i=0;i<email.length;i++){
+							emailSet.add(email[i].trim().toLowerCase());
+						}
+					}
+				}
+				if(emailSet.size() > 0){
+					int i=0;
+					for(Iterator<String> it=emailSet.iterator();it.hasNext();){
+						if(i%3==0){
+							out.println("<tr>");
+						}
+						out.print("<td>" + it.next() + "</td>");
+						if(i%3==2){
+							out.println("</tr>");
+						}
+						i++;
+					}
+					if(i%3==1){
+						out.println("<td colspan=\"2\">&nbsp;</td></tr>");	
+					}
+					if(i%3==2){
+						out.println("<td>&nbsp;</td></tr>");	
+					}
+				}else{
+					%>
+							<tr>
+								<td colspan="3">No contact</td>
+							</tr>
+<%				
+				}
+			}else{
+%>
+							<tr>
+								<td colspan="3">No contact</td>
+							</tr>
+<%				
+			}
+%>
+						</table>					
 					</td>
 				</tr>
 			</table>
