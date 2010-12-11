@@ -84,7 +84,7 @@
 <%				
 			}
 %>
-					<br/><span style="color: red;font-style: italic;">(only you can see this)</span>
+					<br/><span style="color: red;font-style: italic;">(only you can see these)</span>
 					</td>
 				</tr>
 				<tr>
