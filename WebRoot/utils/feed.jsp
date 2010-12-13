@@ -37,6 +37,6 @@
 --%>
 	</tr>
 	<tr>
-		<td align="center" width="20%" style="font-size: 0.75em;"><a href="http://www.google.com/calendar/render?cid=http://washington.sis.pitt.edu/comet/utils/_gcal.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" style="height: 20px;width: auto;" src="images/gcal.png" alt="Google Calendar" /></a></td>
+		<td align="center" width="20%" style="font-size: 0.75em;"><a href="http://www.google.com/calendar/render?cid=http://halley.exp.sis.pitt.edu/comet/utils/_gcal.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>"><img border="0" style="height: 20px;width: auto;" src="images/gcal.png" alt="Google Calendar" /></a></td>
 	</tr>	
 </table>
