@@ -107,7 +107,7 @@
 		sql+=" AND c.col_id IN (SELECT ee.col_id FROM entities ee,entity e " +
 				"WHERE ee.entity_id = e.entity_id AND e._type  IN (" + type_list + "))"; 
 	}
-	sql += " c.col_id,c.title," +
+	sql += " GROUP BY c.col_id,c.title," +
 			"cast(c.detail as char character set utf8), date_format(c._date,_utf8'%b %e %Y')," +
 			"date_format(c.begintime,_utf8'%l:%i %p'), date_format(c.endtime,_utf8'%l:%i %p')," +
 			"s.name,c.location,c.owner_id,u.name " +
