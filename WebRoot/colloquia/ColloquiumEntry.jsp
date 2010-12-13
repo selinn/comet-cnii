@@ -57,6 +57,24 @@ Questions can be directed to CoMeT via email at
 
 <logic:notPresent name="Colloquium">
 
+<style type='text/css' media='all'>
+ ul li{
+     list-style-type:none;
+     margin:0;
+     padding:0;
+     margin-left:8px;
+ }
+</style>
+<script type="text/javascript">
+	function showChildren(obj,btn){
+		if(obj){
+			obj.style.display = "block";
+			btn.style.width="0px";
+			btn.style.display="none";
+		}
+	}
+</script>
+
 <html:form action="/PostColloquiumEntry" method="post">
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
 <% 
@@ -195,22 +213,12 @@ Questions can be directed to CoMeT via email at
 			seriesSet.add(rs.getString("series_id"));	
 		}
 	}
-	String seriesStyle = "";
+	String seriesStyle = "display: block;";
 	if(seriesSet.size() == 0){
-		seriesStyle = "height: 0px;overflow: hidden;";
+		seriesStyle = "display: none;";
 %>
-					<script type="text/javascript">
-						function ShowSeries(){
-							if(btnShowSeries){
-								btnShowSeries.style.width = "0px";
-								btnShowSeries.style.display = "none";
-								divSeries.style.height = "auto";
-								divSeries.style.overflow = "visible";
-							}
-						}
-					</script>
 						<input class="btn" type="button" id="btnShowSeries" value="Show Series" 
-						onclick="ShowSeries();" />
+						onclick="showChildren(ulSeries,this);" />
 <%	
 	}
 %>
@@ -221,7 +229,7 @@ Questions can be directed to CoMeT via email at
 			"ORDER BY name";
 	rs = conn.getResultSet(sql);
 %>
-						<div id="divSeries" style="<%=seriesStyle%>">
+						<ul id="ulSeries" style="<%=seriesStyle%>">
 <%
 	while(rs.next()){
 		String checked = "";
@@ -231,16 +239,19 @@ Questions can be directed to CoMeT via email at
 			checked = "checked='checked'";
 		}
 %>
-						<input type="checkbox" name="series_id" value="<%=_series_id%>" <%=checked%>/>&nbsp;<%=_name%><br/>
+						<li>
+							<input type="checkbox" name="series_id" value="<%=_series_id%>" <%=checked%>/>&nbsp;<%=_name%><br/>
+						</li>
 <%	
 	}
 %>
-						</div>	
+						</ul>	
 					</td>
 				</tr>
 				<tr> 
 					<td width="20%" valign="top" style="font-weight: bold;">Sponsor(s) (optional):</td>
 					<td>
+						<ul>
 <% 
 	sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id IS NULL ";
 	ResultSet rs0 = conn.getResultSet(sql);
@@ -252,408 +263,117 @@ Questions can be directed to CoMeT via email at
 			checked = "checked='checked'";		
 		}
 %>
-						<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />&nbsp;&nbsp;<%=aff%>
+							<li>
+								<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />&nbsp;&nbsp;<%=aff%>
 <%
 		sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + aid + 
 		" ORDER BY a.affiliate";
 		ResultSet rs1 = conn.getResultSet(sql);
 		boolean lvl1Hidden = false;
-		if(rs1.next()){
-			lvl1Hidden = true;
-%>
-							<script type="text/javascript">
-								function ShowSponsor<%=aid%>(){
-									if(btnShowSponsor<%=aid%>){
-										btnShowSponsor<%=aid%>.style.width = "0px";
-										btnShowSponsor<%=aid%>.style.display = "none";
-										divSponsor<%=aid%>.style.height = "auto";
-										divSponsor<%=aid%>.style.overflow = "visible";
-									}
-								}
-							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-						onclick="ShowSponsor<%=aid%>();"  />
-							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
-<%		
+		while(rs1.next()){
 			aid = rs1.getString("affiliate_id");
 			aff = rs1.getString("affiliate");
+			if(!lvl1Hidden){
+%>
+								<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
+								onclick="showChildren(ulSponsor<%=aid%>,this);"  />
+								<ul id="ulSponsor<%=aid %>" style="display: none;">
+<%		
+				lvl1Hidden = true;
+			}
 			checked = "";
 			if(sponsorSet.contains(aid)){
 				checked = "checked='checked'";		
 			}
 %>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-								&nbsp;&nbsp;<%=aff%>
+									<li>
+										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />&nbsp;&nbsp;<%=aff%>
 <%
 			sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + aid + " ORDER BY a.affiliate";
 			ResultSet rs2 = conn.getResultSet(sql);
 			boolean lvl2Hidden = false;
-			if(rs2.next()){
-				lvl2Hidden = true;
-%>
-							<script type="text/javascript">
-								function ShowSponsor<%=aid%>(){
-									if(btnShowSponsor<%=aid%>){
-										btnShowSponsor<%=aid%>.style.width = "0px";
-										btnShowSponsor<%=aid%>.style.display = "none";
-										divSponsor<%=aid%>.style.height = "auto";
-										divSponsor<%=aid%>.style.overflow = "visible";
-									}
-								}
-							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-						onclick="ShowSponsor<%=aid%>();"  />
-							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
-<%
-				aid = rs2.getString("affiliate_id");
-				aff = rs2.getString("affiliate");
-				checked = "";
-				if(sponsorSet.contains(aid)){
-					checked = "checked='checked'";		
-				}
-%>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-									&nbsp;&nbsp;<%=aff%>
-<%
-				sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + 
-						aid + " ORDER BY a.affiliate";
-				ResultSet rs3 = conn.getResultSet(sql);
-				boolean lvl3Hidden = false;
-				if(rs3.next()){
-					lvl3Hidden = true;
-%>
-							<script type="text/javascript">
-								function ShowSponsor<%=aid%>(){
-									if(btnShowSponsor<%=aid%>){
-										btnShowSponsor<%=aid%>.style.width = "0px";
-										btnShowSponsor<%=aid%>.style.display = "none";
-										divSponsor<%=aid%>.style.height = "auto";
-										divSponsor<%=aid%>.style.overflow = "visible";
-									}
-								}
-							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-						onclick="ShowSponsor<%=aid%>();"  />
-							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
-<%
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
-<%
-				}
-				while(rs3.next()){
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
-<%
-				}
-				rs3.close();
-				if(lvl3Hidden){
-%>
-									</div>
-<%
-				}else{
-%>
-									<br/>
-<%
-				}
-			}
 			while(rs2.next()){
 				aid = rs2.getString("affiliate_id");
 				aff = rs2.getString("affiliate");
+				if(!lvl2Hidden){
+%>
+										<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
+										onclick="showChildren(ulSponsor<%=aid%>,this);"  />
+										<ul id="ulSponsor<%=aid%>" style="display: none;">
+<%
+					lvl2Hidden = true;
+				}
 				checked = "";
 				if(sponsorSet.contains(aid)){
 					checked = "checked='checked'";		
 				}
 %>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-									&nbsp;&nbsp;<%=aff%>
+											<li>
+												<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
+												&nbsp;&nbsp;<%=aff%>
 <%
 				sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + 
 						aid + " ORDER BY a.affiliate";
 				ResultSet rs3 = conn.getResultSet(sql);
 				boolean lvl3Hidden = false;
-				if(rs3.next()){
-					lvl3Hidden = true;
-%>
-							<script type="text/javascript">
-								function ShowSponsor<%=aid%>(){
-									if(btnShowSponsor<%=aid%>){
-										btnShowSponsor<%=aid%>.style.width = "0px";
-										btnShowSponsor<%=aid%>.style.display = "none";
-										divSponsor<%=aid%>.style.height = "auto";
-										divSponsor<%=aid%>.style.overflow = "visible";
-									}
-								}
-							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-						onclick="ShowSponsor<%=aid%>();"  />
-							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
-<%
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
-<%
-				}
 				while(rs3.next()){
 					aid = rs3.getString("affiliate_id");
 					aff = rs3.getString("affiliate");
+					if(!lvl3Hidden){
+						lvl3Hidden = true;
+%>
+												<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
+												onclick="showChildren(ulSponsor<%=aid%>,this);"  />
+												<ul id="ulSponsor<%=aid%>" style="display: none;">
+<%
+					}
 					checked = "";
 					if(sponsorSet.contains(aid)){
 						checked = "checked='checked'";		
 					}
 %>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
+													<li>
+														<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
+														&nbsp;&nbsp;<%=aff%>
+													</li>
 <%
 				}
 				rs3.close();
 				if(lvl3Hidden){
 %>
-									</div>
-<%
-				}else{
-%>
-									<br/>
+												</ul>
 <%
 				}
+%>
+											</li>
+<%						
+				
 			}
 			rs2.close();
 			if(lvl2Hidden){
 %>
-								</div>
-<%
-			}else{
-%>
-								<br/>
+										</ul>
 <%
 			}
-		}
-		while(rs1.next()){
-			aid = rs1.getString("affiliate_id");
-			aff = rs1.getString("affiliate");
-			checked = "";
-			if(sponsorSet.contains(aid)){
-				checked = "checked='checked'";		
-			}
 %>
-								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-								<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />&nbsp;&nbsp;<%=aff%>
-<%
-			sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + aid + 
-					" ORDER BY a.affiliate";
-			ResultSet rs2 = conn.getResultSet(sql);
-			boolean lvl2Hidden = false;
-			if(rs2.next()){
-				lvl2Hidden = true;
-%>
-							<script type="text/javascript">
-								function ShowSponsor<%=aid%>(){
-									if(btnShowSponsor<%=aid%>){
-										btnShowSponsor<%=aid%>.style.width = "0px";
-										btnShowSponsor<%=aid%>.style.display = "none";
-										divSponsor<%=aid%>.style.height = "auto";
-										divSponsor<%=aid%>.style.overflow = "visible";
-									}
-								}
-							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-						onclick="ShowSponsor<%=aid%>();"  />
-							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
-<%
-				aid = rs2.getString("affiliate_id");
-				aff = rs2.getString("affiliate");
-				checked = "";
-				if(sponsorSet.contains(aid)){
-					checked = "checked='checked'";		
-				}
-%>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-									&nbsp;&nbsp;<%=aff%>
-<%
-				sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + 
-						aid + " ORDER BY a.affiliate";
-				ResultSet rs3 = conn.getResultSet(sql);
-				boolean lvl3Hidden = false;
-				if(rs3.next()){
-					lvl3Hidden = true;
-%>
-							<script type="text/javascript">
-								function ShowSponsor<%=aid%>(){
-									if(btnShowSponsor<%=aid%>){
-										btnShowSponsor<%=aid%>.style.width = "0px";
-										btnShowSponsor<%=aid%>.style.display = "none";
-										divSponsor<%=aid%>.style.height = "auto";
-										divSponsor<%=aid%>.style.overflow = "visible";
-									}
-								}
-							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-						onclick="ShowSponsor<%=aid%>();"  />
-							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
-<%
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
-<%
-				}
-				while(rs3.next()){
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
-<%
-				}
-				rs3.close();
-				if(lvl3Hidden){
-%>
-									</div>
-<%
-				}else{
-%>
-									<br/>
-<%
-				}
-			}
-			while(rs2.next()){
-				aid = rs2.getString("affiliate_id");
-				aff = rs2.getString("affiliate");
-				checked = "";
-				if(sponsorSet.contains(aid)){
-					checked = "checked='checked'";		
-				}
-%>
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-									&nbsp;&nbsp;<%=aff%>
-<%
-				sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + aid + " ORDER BY a.affiliate";
-				ResultSet rs3 = conn.getResultSet(sql);
-				boolean lvl3Hidden = false;
-				if(rs3.next()){
-					lvl3Hidden = true;
-%>
-							<script type="text/javascript">
-								function ShowSponsor<%=aid%>(){
-									if(btnShowSponsor<%=aid%>){
-										btnShowSponsor<%=aid%>.style.width = "0px";
-										btnShowSponsor<%=aid%>.style.display = "none";
-										divSponsor<%=aid%>.style.height = "auto";
-										divSponsor<%=aid%>.style.overflow = "visible";
-									}
-								}
-							</script>
-						<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-						onclick="ShowSponsor<%=aid%>();"  />
-							<div id="divSponsor<%=aid%>" style="height: 0px;overflow: hidden;">
-<%
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
-<%
-				}
-				while(rs3.next()){
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-										&nbsp;&nbsp;<%=aff%>
-<%
-				}
-				rs3.close();
-				if(lvl3Hidden){
-%>
-									</div>
-<%
-				}else{
-%>
-									<br/>
-<%
-				}
-			}
-			rs2.close();
-			if(lvl2Hidden){
-%>
-								</div>
-<%
-			}else{
-%>
-								<br/>
-<%
-			}
+									</li>
+<%						
 		}
 		rs1.close();
 		if(lvl1Hidden){
 %>
-							</div>
-<%		
-		}else{
-%>
-							<br/>
-<%		
+								</ul>
+<%
 		}
+%>
+							</li>
+<%						
 	}
 	rs0.close();
 	conn.conn.close();
 	conn = null;
 %>			
+						</ul>
 					</td>
 				</tr>
 				<tr> 
