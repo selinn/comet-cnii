@@ -17,6 +17,13 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
 <div id="divImpactContent">
+<style type='text/css' media='all'>
+ ol li{
+     margin:0;
+     padding:0;
+     margin-left:8px;
+ }
+</style>
 
 <% 
 	final String[] months = {"January","Febuary","March",
@@ -447,7 +454,7 @@
 			</td>
 		</tr>
 		<tr>
-			<td>
+			<td width="100%">
 				<ol>
 <% 
 		if(TotalUserCountMap.size() > 0){
@@ -532,15 +539,15 @@
 				strTotal += "</span>";
 %>
 					<li>
-						<table width="100%" cellpadding="0" cellspacing="1" border="0" style="font-size: 0.8em;">
+						<table width="95%" cellpadding="0" cellspacing="1" border="0" style="font-size: 0.8em;">
 							<tr>
-								<td valign="bottom">
+								<td valign="bottom" >
 									<a href="profile.do?user_id=<%=user_id%>"><%=username%></a>
 								</td>
 <% 
 				if(strBookmark.length() > 0){
 %>
-								<td width="20" align="center"> 3 X </td>
+								<td width="20" align="center"> 3 * </td>
 								<td valign="top" align="center" width="40"
 									style="padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #228b22;color: #fff;">
 									<%=strBookmark%>
@@ -554,7 +561,7 @@
 <%						
 					}
  %>
-								<td width="20" align="center"> 2 X </td>
+								<td width="20" align="center"> 2 * </td>
 								<td valign="top" align="center" width="40"
 									style="padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #eedd82;color: #fff;">
 									<%=strEmail%>
