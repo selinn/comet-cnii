@@ -3,6 +3,10 @@
 <%@page import="edu.pitt.sis.db.connectDB"%>
 <%@page import="edu.pitt.sis.beans.UserBean"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
+
+<script type="text/javascript" src="ckeditor/ckeditor.js"></script>	
+<script src="ckeditor/sample.js" type="text/javascript"></script> 
+<link href="ckeditor/sample.css" rel="stylesheet" type="text/css"/>		
 <% 
 	session = request.getSession();
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
@@ -128,6 +132,7 @@
 	connectDB conn = new connectDB();
 	ResultSet rs = conn.getResultSet(sql);
 %>
+
 <table border="0" cellspacing="0" cellpadding="0" width="100%" align="left">
 	<tr>
 		<td colspan="2">&nbsp;</td>
@@ -169,17 +174,12 @@
 		}
 	}
 %>
-</table>
 <logic:present name="UserSession">
-<script type="text/javascript" src="ckeditor/ckeditor.js"></script>	
-<script src="ckeditor/sample.js" type="text/javascript"></script> 
-<link href="ckeditor/sample.css" rel="stylesheet" type="text/css"/>		
- 	<table width="100%" border="0" cellpadding="0" cellspacing="0" align="left">
 		<tr>
-			<td>&nbsp;</td>
+			<td colspan="2">&nbsp;</td>
 		</tr>
  		<tr>
- 			<td valign="top">
+ 			<td colspan="2" valign="top">
 				<form method="post" action="presentColloquium.do<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>">
 					<table width="100%" cellpadding="0" cellspacing="0">
 						<tr>
@@ -215,5 +215,5 @@
 				</form>
  			</td>
  		</tr>
- 	</table> 
 </logic:present>
+</table> 
