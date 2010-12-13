@@ -174,7 +174,7 @@
 <script type="text/javascript" src="ckeditor/ckeditor.js"></script>	
 <script src="ckeditor/sample.js" type="text/javascript"></script> 
 <link href="ckeditor/sample.css" rel="stylesheet" type="text/css"/>		
- 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
+ 	<table width="100%" border="0" cellpadding="0" cellspacing="0" align="left">
 		<tr>
 			<td>&nbsp;</td>
 		</tr>

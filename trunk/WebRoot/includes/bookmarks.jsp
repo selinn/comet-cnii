@@ -847,12 +847,10 @@
 		if(btnCancelEditInfo.value == "Edit"){
 			btnCancelEditInfo.value = "Cancel";
 			if(divInfo){
-				divInfo.style.height = "0px";
-				divInfo.style.overflow = "hidden";
+				divInfo.style.display = "none";
 			}
 			if(divEditInfo){
-				divEditInfo.style.height = "auto";
-				divEditInfo.style.overflow = "visible";
+				divEditInfo.style.display = "block";
 			}
 			btnEditInfo.style.width = "auto";
 			btnEditInfo.style.visibility = "visible";
@@ -874,12 +872,10 @@
 			btnEditInfo.disabled = false;
 			btnCancelEditInfo.disabled = false;
 			if(divEditInfo){
-				divEditInfo.style.height = "0px";
-				divEditInfo.style.overflow = "hidden";
+				divEditInfo.style.display = "none";
 			}
 			if(divInfo){
-				divInfo.style.height = "auto";
-				divInfo.style.overflow = "visible";
+				divInfo.style.display = "block";
 			}
 			btnEditInfo.style.width = "0px";
 			btnEditInfo.style.visibility = "hidden";
