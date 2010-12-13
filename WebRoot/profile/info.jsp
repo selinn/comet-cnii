@@ -90,7 +90,7 @@
 			if(ub!=null){
 				if(user_id==null||user_id==String.valueOf(ub.getUserID())){
 %>
-						<div style="height: 0px;overflow: hidden;" id="divEditInfo">
+						<div style="display: none;" id="divEditInfo">
 							<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
 								<tr>
 									<td colspan="3"><span id="updateError" style="font-weight: bold;color: red;"></span></td>

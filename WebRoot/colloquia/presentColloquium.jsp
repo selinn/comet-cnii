@@ -29,12 +29,10 @@
 		}
 		btnEditNote.value = "Cancel";
 		if(divNote){
-			divNote.style.height = "0px";
-			divNote.style.overflow = "hidden";
+			divNote.style.display = "none";
 		}
 		if(divBookmark){
-			divBookmark.style.height = "auto";
-			divBookmark.style.overflow = "visible";
+			divBookmark.style.display = "block";
 		}
 		/*if(btnCancelEditNote){
 			btnCancelEditNote.style.width = "auto";
@@ -48,12 +46,10 @@
 	function cancelEditNote(){
 		btnEditNote.value = "Edit";
 		if(divNote){
-			divNote.style.height = "auto";
-			divNote.style.overflow = "visible";
+			divNote.style.display = "block";
 		}
 		if(divBookmark){
-			divBookmark.style.height = "0px";
-			divBookmark.style.overflow = "hidden";
+			divBookmark.style.display = "none";
 		}
 		/*if(btnCancelEditNote){
 			btnCancelEditNote.style.width = "0px";
@@ -595,7 +591,7 @@
 					</td>
 <%			
 			}else{
-				styleBookmark = "style=\"height: 0px;overflow: hidden;\"";
+				styleBookmark = "style=\"display: none;\"";
 %>
 					<td colspan="2" bgcolor="#efefef" style="font-size: 0.85em;font-weight: bold;">
 						Your Note
@@ -663,7 +659,7 @@
 										<td width="20%" style="font-size: 0.75em;font-weight: bold;">Tags:</td>
 										<td>
 											<input style="font-size: 0.75em;" type="text" name="tags" size="50" value="<%=usertags%>" />
-											<input type="hidden" name="col_id" value="<%=col_id%>" /><b>(Separate by white space)</b>&nbsp;<input type="submit" class="btn" value="Bookmark" />
+											<input type="hidden" name="col_id" value="<%=col_id%>" /><span style="font-size: 0.75em;font-weight: bold;">(Separate by white space)</span>&nbsp;<input type="submit" class="btn" value="Bookmark" />
 										</td>
 									</tr>
 									<tr>
