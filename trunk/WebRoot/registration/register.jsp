@@ -64,9 +64,9 @@
 			<td colspan="3">
 <% 
 	//Halley Machine
-	//ReCaptcha c = ReCaptchaFactory.newReCaptcha("6Ldamb4SAAAAAIOIeAP8KHcnyZ7IZ889Rg0ZyzxT", "6Ldamb4SAAAAAHTCLlHVW2TSPp2Mn-YkByFU5EXB", false);
+	ReCaptcha c = ReCaptchaFactory.newReCaptcha("6Ldamb4SAAAAAIOIeAP8KHcnyZ7IZ889Rg0ZyzxT", "6Ldamb4SAAAAAHTCLlHVW2TSPp2Mn-YkByFU5EXB", false);
 	//Washington Machine
-	ReCaptcha c = ReCaptchaFactory.newReCaptcha("6LfZ6b4SAAAAADmXK0NFuzK98qbk6p0Ta3xUfdO5", "6LfZ6b4SAAAAABgyEW4S1NiKrZBLR_077NCw_-xz", false);
+	//ReCaptcha c = ReCaptchaFactory.newReCaptcha("6LfZ6b4SAAAAADmXK0NFuzK98qbk6p0Ta3xUfdO5", "6LfZ6b4SAAAAABgyEW4S1NiKrZBLR_077NCw_-xz", false);
 	out.print(c.createRecaptchaHtml(null, null));
 %>
 			</td>
