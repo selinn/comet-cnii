@@ -539,7 +539,7 @@
 				strTotal += "</span>";
 %>
 					<li>
-						<table width="95%" cellpadding="0" cellspacing="1" border="0" style="font-size: 0.8em;">
+						<table width="90%" cellpadding="0" cellspacing="1" border="0" style="font-size: 0.8em;">
 							<tr>
 								<td valign="bottom" >
 									<a href="profile.do?user_id=<%=user_id%>"><%=username%></a>
