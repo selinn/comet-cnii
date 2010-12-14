@@ -8,7 +8,8 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
 <!-- calendar stylesheet -->
-<link rel="stylesheet" type="text/css" media="all" href="css/calendar-win2k-cold-1.css" title="win2k-cold-1" />
+
+<%@page import="edu.pitt.sis.beans.UserBean"%><link rel="stylesheet" type="text/css" media="all" href="css/calendar-win2k-cold-1.css" title="win2k-cold-1" />
 
 <!-- main calendar program -->
 <script type="text/javascript" src="scripts/calendar.js"></script>
@@ -31,6 +32,17 @@
 	String t = (String)request.getParameter("t");
 	String v = (String)request.getParameter("v");
 	String user_id = (String)request.getParameter("user_id");
+	UserBean ub = (UserBean)session.getAttribute("UserSession");
+	//Find friendship btw u and other
+	if(ub!=null&&user_id!=null){
+		String user0_id = user_id;
+		String user1_id = "" + ub.getUserID();
+		if(Integer.parseInt(user0_id) > ub.getUserID()){
+			user0_id = "" + ub.getUserID();
+			user1_id = user_id;
+		}
+		
+	}
 	
 	if(t!=null&&menu!=null){
 		if(t.equalsIgnoreCase("profile")&&menu.equalsIgnoreCase("myaccount")&&v==null){
@@ -971,19 +983,21 @@
 <div align="center">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <% 
-	if(request.getParameter("user_id") != null){// && menu.equalsIgnoreCase("profile")){
+	if(user_id != null){// && menu.equalsIgnoreCase("profile")){
 %>
-<tr>
-	<td align="left">
+		<tr>
+			<td align="left">
 <% 
 		connectDB conn = new connectDB();
-		String sql = "SELECT name FROM userinfo WHERE user_id = " + (String)request.getParameter("user_id");
+		String sql = "SELECT name FROM userinfo WHERE user_id = " + user_id;
 		ResultSet rs = conn.getResultSet(sql);
 		if(rs.next()){
 %>
 		<span style="color: #003399;font-size: 0.9em;font-weight: bold;"><%=rs.getString("name")%></span>&nbsp;
+<% 
+%>
 		<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" />
-		<div style="height: 0px;overflow: hidden;" id="divAddFriend">
+		<div style="display: none;" id="divAddFriend">
 		
 		</div>
 <%		
@@ -995,8 +1009,8 @@
 		conn.conn.close();
 		conn = null;
 %>
-	</td>
-</tr>
+			</td>
+		</tr>
 <%
 	}
 	if(menu.equalsIgnoreCase("myaccount") || menu.equalsIgnoreCase("profile")){
@@ -1027,7 +1041,7 @@
 %>
 								align="center"
 								onclick="flip2Activity();">
-								Activity
+								Wall
 							</div>
 <%			
 		}else{
@@ -1038,7 +1052,7 @@
 								onmouseout="this.style.background='#ffffff';this.style.color='#003399';"
 								align="center"
 								onclick="window.location='profile.do?v=activity<%if(user_id!=null)out.print("&user_id="+user_id);%>'">
-								Activity
+								Wall
 							</div>
 <%			
 		}

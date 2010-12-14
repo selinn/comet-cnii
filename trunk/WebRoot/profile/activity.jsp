@@ -39,6 +39,38 @@
 	<tr>
 		<td width="75%" valign="top">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
+<% 
+			if(ub!=null){
+				boolean allowed2shareComment = false;
+				if(user_id==null||user_id==String.valueOf(ub.getUserID())){
+					allowed2shareComment = true;
+				}else if(user_id!=null){//Is there a friendship
+					String user0_id = user_id;
+					String user1_id = "" + ub.getUserID();
+					if(Integer.parseInt(user_id) > ub.getUserID()){
+						user0_id = "" + ub.getUserID();
+						user1_id = user_id;
+					}
+					String sql = "SELECT friend_id FROM friend WHERE user0_id=" + user0_id + " AND user1_id=" + user1_id + " AND breaktime IS NULL";
+					connectDB conn = new connectDB();
+					ResultSet rs = conn.getResultSet(sql);
+					if(rs.next()){
+						String friend_id = rs.getString("friend_id");
+						allowed2shareComment = true;
+					}
+				}
+				if(allowed2shareComment){
+%>
+				<tr>
+					<td><input type="text" id="usercomment" size="90"></input>&nbsp;<input class="btn" id="btnShareComment" type="button" value="Share"></input></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+				</tr>
+<% 
+				}
+			}
+%>
 				<tr>
 					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
