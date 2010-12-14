@@ -153,6 +153,8 @@
 				}
 			}
 		}
+		conn.conn.close();
+		conn = null;
 	}
 %>
 </table>
