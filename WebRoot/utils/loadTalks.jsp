@@ -512,7 +512,7 @@
 		if(menu.equalsIgnoreCase("myaccount")){
 %>
 						<td align="left" valign="top" width="10">
-							<input name="deleted" type="checkbox" value="<%=col_id%>" />
+							<input id="deleted" name="deleted" type="checkbox" value="<%=col_id%>" />
 						</td>
 <% 
 		}
