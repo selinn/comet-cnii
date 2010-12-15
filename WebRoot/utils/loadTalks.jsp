@@ -458,6 +458,7 @@
 		</tr>
 <%		
 	}
+	int deli=0;
 	while(rs.next()){
 		noTalks = false;
 		String aDay = rs.getString("day");
@@ -512,9 +513,10 @@
 		if(menu.equalsIgnoreCase("myaccount")){
 %>
 						<td align="left" valign="top" width="10">
-							<input id="deleted" name="deleted" type="checkbox" value="<%=col_id%>" />
+							<input id="deleted<%=deli %>" name="deleted" type="checkbox" value="<%=col_id%>" />
 						</td>
 <% 
+			deli++;
 		}
 		//How many emails
 		int emailno = 0;

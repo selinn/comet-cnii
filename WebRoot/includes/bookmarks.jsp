@@ -828,7 +828,41 @@
 							},100);
 					}
 				}
-		}
+		}else if(document.getElementById("deleted0")){
+			if(!oDeleteTalkIFrame){
+				createDeleteTalkIFrame();
+				window.setTimeout(function(){deleteCols();},50); 
+			}else{
+				var cols = "";
+				for(var i=0;true;i++){
+					var deleted = document.getElementById("deleted" + i);
+					if(deleted){
+						if(deleted.checked){
+							cols = cols.concat(deleted.value,',');
+						}
+					}else{
+						break;
+					}	
+				}	
+				if(cols.length > 1){
+					cols = cols.substr(0,cols.length-1);
+				}
+				if(cols.length > 0){
+					var action = "utils/deleteTalks.jsp?col_id=".concat(cols);
+					if(isBookmark == 0){
+						action = action.concat('&post=1');
+					}else if(isBookmark == 2){
+						action = action.concat('&impact=1');
+					}	
+					oDeleteTalkIFrame.location = action;
+					window.setTimeout(
+						function(){
+							alert("Delete Talk(s) Successful!");
+							refreshTalks();
+						},100);
+				}
+			}
+		}		
 	}
 	function redirect(html){
 		window.location = html;
@@ -995,12 +1029,41 @@
 %>
 		<span style="color: #003399;font-size: 0.9em;font-weight: bold;"><%=rs.getString("name")%></span>&nbsp;
 <% 
+			if(ub!=null){
+				String user0_id = user_id;
+				String user1_id = "" + ub.getUserID();
+				if(!user0_id.equalsIgnoreCase(user1_id)){
+					
+					if(Integer.parseInt(user_id) > ub.getUserID()){
+						user0_id = "" + ub.getUserID();
+						user1_id = user_id;
+					}
+					
+					sql = "SELECT friend_id FROM friend WHERE user0_id=" + user0_id + " AND user1_id=" + user1_id + 
+						" AND breaktime IS NULL";
+					
+					rs = conn.getResultSet(sql);
+					if(rs.next()){
+						String friend_id = rs.getString("friend_id");
+					}else{//They are not friends. So is there any befriending request?
+						
+						sql = "SELECT request_id FROM request WHERE user_id=" + ub.getUserID() + " AND target_id=" + user_id + 
+							" AND droprequesttime IS NULL";
+						
+						rs = conn.getResultSet(sql);
+						if(rs.next()){
+							String request_id = rs.getString("request_id");
+						}else{
 %>
 		<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" />
 		<div style="display: none;" id="divAddFriend">
 		
 		</div>
 <%		
+						}
+					}
+				}
+			}
 		}else{
 %>
 		User Not Found
