@@ -11,6 +11,15 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
+<script type="text/javascript">
+	window.onload = function(){
+		if(divNameEntity){
+			//alert("Loading NameEntity");
+			parent.displayExtension(divNameEntity.innerHTML);
+		}
+	}
+</script>	
+<div id="divNameEntity">
 <table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
 <%
 	try{ 
@@ -546,3 +555,5 @@
 %>
 		</td>
 	</tr>
+</table>
+</div>	

@@ -226,16 +226,24 @@
 		divCal.innerHTML = htmlCalendar;
 	}
 	function loadExtension(action){
+		//alert(action);
 		if(!oCalExtIFrame){
+			//alert("No oCalExtIFrame");
 			createCalExtIFrame();
 			window.setTimeout(function(){loadExtension(action);},60);
 			return;
 		}else{
+			//alert("Loading extension");
 			oCalExtIFrame.location = action;
 		}		
 	}	
 	function displayExtension(htmlExtension){
-		divExtension.innerHTML = htmlExtension;
+		var divExtension = document.findElementById("divExtension");
+		if(divExtension){
+			divExtension.innerHTML = htmlExtension;
+		}else{
+			alert("No divExtension");
+		}
 	}
 	/***********************************************/
 	/* Utility Function                            */
@@ -583,6 +591,18 @@
 			action = action.concat('&',queryString);
 		}
 		loadTalks(action);
+
+		action = "utils/namedEntity.jsp";
+		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		if(isBookmark == 0){
+			action = action.concat('&post=1');
+		}
+		if(isBookmark == 0 || isBookmark == 1){
+			if(queryString){
+				action = action.concat('&',queryString);
+			}
+			loadExtension(action);		
+		}			
 	}
 	function flip2Week(){
 		period = 1;
@@ -634,6 +654,19 @@
 			action = action.concat('&',queryString);
 		}
 		loadTalks(action);
+
+		action = "utils/namedEntity.jsp";
+		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		if(isBookmark == 0){
+			action = action.concat('&post=1');
+		}
+		if(isBookmark == 0 || isBookmark == 1){
+			if(queryString){
+				action = action.concat('&',queryString);
+			}
+			//alert(action);
+			loadExtension(action);		
+		}			
 	}
 	function flip2Month(){
 		period = 2;
@@ -684,6 +717,18 @@
 			action = action.concat('&',queryString);
 		}
 		loadTalks(action);
+
+		action = "utils/namedEntity.jsp";
+		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		if(isBookmark == 0){
+			action = action.concat('&post=1');
+		}
+		if(isBookmark == 0 || isBookmark == 1){
+			if(queryString){
+				action = action.concat('&',queryString);
+			}
+			loadExtension(action);		
+		}			
 	}
 	function back(){
 		var action = "";
