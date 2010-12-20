@@ -88,17 +88,17 @@
 		}
 		loadTalks(action);
 		
-		action = "utils/calExt.jsp";
+		action = "utils/namedEntity.jsp";
 		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
-		}else if(isBookmark == 2){
-			action = action.concat('&impact=1');
 		}
-		if(queryString){
-			action = action.concat('&',queryString);
-		}
-		loadExtension(action);
+		if(isBookmark == 0 || isBookmark == 1){
+			if(queryString){
+				action = action.concat('&',queryString);
+			}
+			loadExtension(action);		
+		}			
 	}
 	function navWeek(aWeek,year,month,week){
 		period = 1;
@@ -183,17 +183,17 @@
 		}
 		loadTalks(action);
 
-		action = "utils/calExt.jsp";
-		action = action.concat('?month=',month,'&year=',year,'&week=',week);
+		action = "utils/namedEntity.jsp";
+		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
-		}else if(isBookmark == 2){
-			action = action.concat('&impact=1');
 		}
-		if(queryString){
-			action = action.concat('&',queryString);
-		}
-		loadExtension(action);
+		if(isBookmark == 0 || isBookmark == 1){
+			if(queryString){
+				action = action.concat('&',queryString);
+			}
+			loadExtension(action);		
+		}			
 	}
 	function navMonth(year,month){
 		period = 2;
@@ -237,17 +237,17 @@
 		}
 		loadTalks(action);
 
-		action = "utils/calExt.jsp";
-		action = action.concat('?month=',month,'&year=',year);
+		action = "utils/namedEntity.jsp";
+		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
-		}else if(isBookmark == 2){
-			action = action.concat('&impact=1');
 		}
-		if(queryString){
-			action = action.concat('&',queryString);
-		}
-		loadExtension(action);
+		if(isBookmark == 0 || isBookmark == 1){
+			if(queryString){
+				action = action.concat('&',queryString);
+			}
+			loadExtension(action);		
+		}			
 	}
 </script>
 <table cellspacing="0" cellpadding="0" width="100%" align="center">
@@ -696,6 +696,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
 <%
 		} 
 %>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			<div id="divExtension">&nbsp;</div>
 		</td>
 	</tr>
 	<tr>
