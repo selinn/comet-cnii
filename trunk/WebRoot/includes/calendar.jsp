@@ -273,7 +273,7 @@
 	session=request.getSession(false);
 
     /*---- Variable for Calendar -------------*/
-    final String[] months = {"January","Febuary","March",
+    final String[] months = {"January","February","March",
 							    "April","May","June",
 							    "July","August","September",
 							    "October","November","December"};
