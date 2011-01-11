@@ -58,7 +58,7 @@ public class NotifyAction extends Action {
 
 		if(session.getAttribute("UserSession")==null){
 			session.removeAttribute("HideBar");
-			session.setAttribute("before-login-redirect", "request.do");
+			session.setAttribute("before-login-redirect", "notifications.do");
 			return mapping.findForward("Login");
 		}
 		
