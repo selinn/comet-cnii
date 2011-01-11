@@ -14,13 +14,51 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
-<div id="divTalkContent">
-
 <% 
-	final String[] months = {"January","Febuary","March",
-							    "April","May","June",
-							    "July","August","September",
-							    "October","November","December"};
+	final String[] months = {"January","February","March",
+		    "April","May","June",
+		    "July","August","September",
+		    "October","November","December"};
+	String insertFirst = (String)request.getParameter("insertfirst");
+	String appendLast = (String)request.getParameter("appendlast");
+%>
+<script type="text/javascript">
+<!--
+window.onload = function(){
+<%
+	if(insertFirst!=null){
+%>	
+	if(divTalkContent){
+		if(parent.insertTalks){
+			parent.insertTalks(divTalkContent.innerHTML	);
+		}
+	}
+<% 
+	}else if(appendLast!=null){
+%>	
+	if(divTalkContent){
+		if(parent.appendTalks){
+			parent.appendTalks(divTalkContent.innerHTML);
+		}
+	}
+<% 
+	}else{
+%>	
+	if(divTalkContent){
+		if(parent.displayTalks){
+			parent.displayTalks(divTalkContent.innerHTML);
+		}
+	}
+<% 
+	}
+%>
+}
+
+//-->
+</script>
+
+<div id="divTalkContent">
+<% 
 
 	connectDB conn = new connectDB();
 	session = request.getSession(false);
@@ -97,8 +135,15 @@
 			temp[user_id_value.length] = uid;
 			user_id_value = temp;
 		}
+	}else if(menu.equalsIgnoreCase("series")||menu.equalsIgnoreCase("community")){
+		req_specific_date = true;
+		if(appendLast==null){
+			req_day = calendar.get(Calendar.DAY_OF_MONTH);
+			req_month = month+1;
+			req_year = year;
+		}
 	}
-    
+	
     Calendar setcal = new GregorianCalendar();
     setcal.set(req_year, req_month-1, 1);
     int startday = setcal.get(Calendar.DAY_OF_WEEK) - 1;
@@ -383,7 +428,7 @@
 					"JOIN contribute ct" + i + " ON upc" + i + ".userprofile_id = ct" + i + ".userprofile_id " + 
 					"AND ct" + i + ".comm_id = " + comm_id_value[i] + " ";
 		}
-		sql += "AND c._date >= (SELECT beginterm FROM sys_config) AND c._date < (SELECT endterm FROM sys_config) ";
+		//sql += "AND c._date >= (SELECT beginterm FROM sys_config) AND c._date < (SELECT endterm FROM sys_config) ";
 	}
 	if(tag_id_value != null){//Tag Mode
 		for(int i=0;i<tag_id_value.length;i++){
@@ -396,7 +441,7 @@
 		for(int i=0;i<series_id_value.length;i++){
 			sql += "JOIN seriescol sc" + i + " ON c.col_id = sc" + i + ".col_id AND sc" + i + ".series_id=" + series_id_value[i] + " ";
 		}
-		sql += "AND c._date >= (SELECT beginterm FROM sys_config) AND c._date < (SELECT endterm FROM sys_config) ";
+		//sql += "AND c._date >= (SELECT beginterm FROM sys_config) AND c._date < (SELECT endterm FROM sys_config) ";
 	}
 	if(entity_id_value != null){//Entity Mode
 		for(int i=0;i<entity_id_value.length;i++){
@@ -427,8 +472,51 @@
 			sql += "AND pt.posttime >= '" + strBeginDate + " 00:00:00' " +
 			"AND pt.posttime <= '" + strEndDate + " 23:59:59' ";
 		}else{
-			sql += "AND c._date >= '" + strBeginDate + " 00:00:00' " +
-			"AND c._date <= '" + strEndDate + " 23:59:59' ";
+			if(menu.equalsIgnoreCase("series")||menu.equalsIgnoreCase("community")){
+				if(insertFirst==null){
+					sql += "AND c._date >='" + strBeginDate + " 00:00:00' ";
+					
+					//Count # older talks
+					String _sql = "SELECT COUNT(*) _no FROM colloquium c ";
+					if(series_id_value != null){//Series Mode
+						for(int i=0;i<series_id_value.length;i++){
+							_sql += "JOIN seriescol sc" + i + " ON c.col_id = sc" + i + ".col_id AND sc" + i + ".series_id=" + series_id_value[i] + " ";
+						}
+					}
+					if(comm_id_value != null){//Community Mode
+						for(int i=0;i<comm_id_value.length;i++){
+							_sql += "JOIN userprofile upc" + i + " ON c.col_id=upc" + i + ".col_id " +
+									"JOIN contribute ct" + i + " ON upc" + i + ".userprofile_id = ct" + i + ".userprofile_id " + 
+									"AND ct" + i + ".comm_id = " + comm_id_value[i] + " ";
+						}
+					}
+					_sql += "AND c._date < '" + strBeginDate + " 00:00:00' ";
+					ResultSet rs = conn.getResultSet(_sql);
+					if(rs.next()){
+						int olderTalkNo = rs.getInt("_no");
+						if(olderTalkNo > 0){
+%>
+	<table id="tblOlderTalks" border="0" cellspacing="0" cellpadding="0" width="95%" align="center">
+		<tr>
+			<td bgcolor="#efefef" style="font-size: 0.25em;">&nbsp;</td>
+		</tr>
+		<tr>
+			<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;">&nbsp;<input class="btn" type="button" onclick="this.value='Loading...';this.style.disabled='disabled';showOlderTalks();return false;" value="Show <%=olderTalkNo %> Older Talk<%=(olderTalkNo>0?"s":"") %>" ></input></td>
+		</tr>
+		<tr>
+			<td bgcolor="#efefef" style="font-size: 0.25em;">&nbsp;</td>
+		</tr>
+	</table>	
+<%							
+						}
+					}
+				}else{
+					sql += "AND c._date < '" + strBeginDate + " 00:00:00' ";
+				}
+			}else{
+				sql += "AND c._date >= '" + strBeginDate + " 00:00:00' " +
+				"AND c._date <= '" + strEndDate + " 23:59:59' ";
+			}
 		}
 	}
 	sql += "GROUP BY c.col_id ";
@@ -444,9 +532,13 @@
 	ResultSet rs = conn.getResultSet(sql);
 	boolean noTalks = true;
 	
+	if(menu.equalsIgnoreCase("myaccount")){
 %>
-	<form name="talkForm">
-	<table cellspacing="0" cellpadding="0" width="95%" align="center">
+	<form name="talkForm" method="post">
+<%		
+	}
+%>
+	<table border="0" cellspacing="0" cellpadding="0" width="95%" align="center">
 <%	
 	if(!req_most_recent && tag_id_value==null && entity_id_value==null && series_id_value==null && comm_id_value==null){
 %>
@@ -865,17 +957,6 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 	}
 	conn.conn.close();
 	conn = null;
-%>
-<script type="text/javascript">
-	window.onload = function(){
-		if(divTalkContent){
-			if(parent.displayTalks){
-				parent.displayTalks(divTalkContent.innerHTML);
-			}
-		}
-	}
-</script>	
-<%			
 		
 	if(!day.equalsIgnoreCase("")){
 %>
@@ -897,11 +978,19 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 	if(noTalks){
 %>
 		<tr>
-			<td style="font-size: 0.95em;font-weight: bold;" align="center">No Talks</td>
+			<td id="lblNoTalk" style="font-size: 0.95em;font-weight: bold;" align="center">No Talks Recently</td>
 		</tr>
 <%	
 	}
 %>
 	</table>
+<% 
+	if(menu.equalsIgnoreCase("myaccount")){
+%>
 	</form>
+<% 
+	}
+%>
 </div>
+<script type="text/javascript">
+</script>	

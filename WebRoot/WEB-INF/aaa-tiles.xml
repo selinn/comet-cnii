@@ -113,6 +113,11 @@
 		<put name="mainwindow" value="/profile/friends.jsp" />
 		<put name="title" value="CoMeT | Friends" />
 	</definition>
+	<definition name="aaa.colloquia.notifications" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/profile/notifications.jsp" />
+		<put name="title" value="CoMeT | Notifications" />
+	</definition>
 	<definition name="aaa.colloquia.request" 
 		extends="aaa.default.nosidebar">
 		<put name="mainwindow" value="/profile/request.jsp" />

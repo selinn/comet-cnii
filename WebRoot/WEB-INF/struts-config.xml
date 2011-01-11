@@ -122,6 +122,11 @@
 		 redirect="true"
 		 contextRelative="true" />  
 		<forward
+		 name="aaa.colloquia.notifications"
+		 path="/notifications.do"
+		 redirect="true"
+		 contextRelative="true" />  
+		<forward
 		 name="aaa.colloquia.request"
 		 path="/request.do"
 		 redirect="true"
@@ -300,6 +305,13 @@
 		<action forward="aaa.colloquia.friends" path="/friends" />         	  
 		<action path="/friends" scope="request" type="edu.pitt.sis.action.FriendsAction">
 		<forward name="Success" path="aaa.colloquia.friends" redirect="false" contextRelative="true" />
+		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
+		<forward name="Failure" path="aaa.index" redirect="true" contextRelative="true" />      
+		</action>              
+
+		<action forward="aaa.colloquia.notifications" path="/notifications" />         	  
+		<action path="/notifications" scope="request" type="edu.pitt.sis.action.NotifyAction">
+		<forward name="Success" path="aaa.colloquia.notifications" redirect="false" contextRelative="true" />
 		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
 		<forward name="Failure" path="aaa.index" redirect="true" contextRelative="true" />      
 		</action>              

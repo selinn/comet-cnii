@@ -108,6 +108,7 @@
 	var oTalkIFrame = null;
 	var oDeleteTalkIFrame = null;
 	var oCalExtIFrame = null;
+	var oSelfTalkIFrame = null;
 	var now = new Date();
 	var _day = now.getDate();
 	var _dayWeek = now.getDay();
@@ -200,6 +201,63 @@
 			window.setTimeout(function(){createCalExtIFrame();},50);
 		}
 	}
+	
+	function showOlderTalks(){
+		if(!oSelfTalkIFrame){
+			createSelfTalkIFrame();
+			window.setTimeout(function(){showOlderTalks();},60);
+			return;
+		}else{
+			var action = "utils/loadTalks.jsp?insertfirst=1";
+			var queryString = window.location.search;
+			if(queryString!=null){
+				queryString = queryString.substr(1,queryString.length-1);
+				action = action.concat('&',queryString);
+			}
+			oSelfTalkIFrame.location = action;
+		}			
+	}
+
+	function createSelfTalkIFrame(){
+		if(document.body){
+			var iframe = document.createElement("iframe");
+			iframe.name = "hiddenSelfTalkFrame";
+			iframe.id = "hiddenSelfTalkFrame";
+			iframe.style.position = 'absolute';
+			iframe.style.border = '0px';
+			iframe.style.width = '0px';
+			iframe.style.height = '0px';
+			if(document.body.firstChild){
+				document.body.insertBefore(iframe, document.body.firstChild);
+			}else{
+				document.body.appendChild(iframe);
+			}
+			oSelfTalkIFrame = frames["hiddenSelfTalkFrame"];
+		}else{
+			window.setTimeout(function(){createSelfTalkIFrame();},50);
+		}
+	}
+
+	function insertTalks(htmlTalks){
+		var divMain = document.getElementById("divMain");
+		divMain.innerHTML = htmlTalks.concat(divMain.innerHTML); 
+		var tblOlderTalks = document.getElementById("tblOlderTalks");
+		if(tblOlderTalks){
+			tblOlderTalks.style.display = "none";
+			tblOlderTalks.style.height = "0px";
+			tblOlderTalks.style.overflow = "hidden";
+		}
+		var lblNoTalk = document.getElementById("lblNoTalk");
+		if(lblNoTalk){
+			lblNoTalk.style.display = "none";
+		}		
+	}
+
+	function appendTalks(htmlTalks){
+		var divMain = document.getElementById("divMain");
+		divMain.innerHTML = divMain.innerHTML.concat(htmlTalks); 
+	}
+
 	function loadTalks(action){
 		//divTalks.innerHTML = "<font color='red'><b>Loading...</b></font>";
 		if(!oTalkIFrame){
@@ -238,11 +296,11 @@
 		}		
 	}	
 	function displayExtension(htmlExtension){
-		var divExtension = document.findElementById("divExtension");
+		//var divExtension = document.getElementById("divExtension");
 		if(divExtension){
 			divExtension.innerHTML = htmlExtension;
 		}else{
-			alert("No divExtension");
+			//alert("No divExtension");
 		}
 	}
 	/***********************************************/
@@ -1023,6 +1081,14 @@
 		document.getElementById("aboutme").value = document.getElementById("infoAboutme").innerHTML;	
 		document.getElementById("interests").value = document.getElementById("infoInterests").innerHTML;
 	}
+	function showAddFriendDialog(){
+		var divAddFriend = document.getElementById("divAddFriend");
+		divAddFriend.style.display = "block";
+	}
+	function hideAddFriendDialog(){
+		var divAddFriend = document.getElementById("divAddFriend");
+		divAddFriend.style.display = "none";
+	}
 </script>
 <logic:notPresent name="UserSession">
 <% 
@@ -1071,8 +1137,9 @@
 		String sql = "SELECT name FROM userinfo WHERE user_id = " + user_id;
 		ResultSet rs = conn.getResultSet(sql);
 		if(rs.next()){
+			String _username = rs.getString("name");
 %>
-		<span style="color: #003399;font-size: 0.9em;font-weight: bold;"><%=rs.getString("name")%></span>&nbsp;
+		&nbsp;<span style="color: #003399;font-size: 0.9em;font-weight: bold;"><%=_username %></span>&nbsp;
 <% 
 			if(ub!=null){
 				String user0_id = user_id;
@@ -1100,9 +1167,29 @@
 							String request_id = rs.getString("request_id");
 						}else{
 %>
-		<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" />
-		<div style="display: none;" id="divAddFriend">
-		
+		<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" onclick="showAddFriendDialog();return false;" />
+		<div style="z-index: 1000;position: absolute;display: none;background-color: #fff;text-align: center;width: 300px;" 
+			id="divAddFriend">
+			<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+				<tr>
+					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
+				</tr>
+				<tr>
+					<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;">
+						&nbsp;Send <%=_username %> a friend request?
+					</td>
+				</tr>
+				<tr>
+					<td style="border: 1px solid #efefef;">
+						<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+							<tr>
+								<td align="right" width="85%"><input class="btn" type="button" value="Send Request" onclick="hideAddFriendDialog();return false;"></input></td>
+								<td align="center" width="15%"><input class="btn" type="button" value="Cancel" onclick="hideAddFriendDialog();return false;"></input></td>
+							</tr>
+						</table>		
+					</td>
+				</tr>
+			</table>
 		</div>
 <%		
 						}

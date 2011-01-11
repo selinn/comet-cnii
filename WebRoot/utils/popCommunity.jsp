@@ -38,11 +38,12 @@
 	connectDB conn = new connectDB();
 	ResultSet rs = null;
 	String sql = "SELECT c.comm_id,c.comm_name,COUNT(*) _no " +
-					"FROM community c,contribute cc,userprofile u " +
-	    			"WHERE c.comm_id = cc.comm_id AND " +
+					"FROM community c JOIN contribute cc ON c.comm_id = cc.comm_id " +
+					"JOIN userprofile u ON cc.userprofile_id = u.userprofile_id " +
+	    			"WHERE " +
 	    			"u.col_id IN " +
-	    			"(SELECT col_id FROM colloquium WHERE _date >= (SELECT beginterm FROM sys_config) AND _date <= (SELECT endterm FROM sys_config)) AND " +
-	    			"cc.userprofile_id = u.userprofile_id ";
+	    			"(SELECT col_id FROM colloquium WHERE _date >= (SELECT beginterm FROM sys_config) AND " +
+	    			"_date <= (SELECT endterm FROM sys_config)) ";
 	if(affiliate_id > 0){
 		sql += "AND u.col_id IN " + 
 				"(SELECT ac.col_id FROM affiliate_col ac," +

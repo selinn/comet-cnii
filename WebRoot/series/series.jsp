@@ -62,25 +62,25 @@
 </script>
  <table cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
-		<td colspan="2" align="left" style="color: #003399;font-weight: bold;font-size: 0.9em;">
+		<td colspan="5" align="left" style="color: #003399;font-weight: bold;font-size: 0.9em;">
 			Series: <%=name%>
 		</td>
 	</tr>
 	<tr>
-		<td style="font-size: 0.8em;">
+		<td colspan="4" style="font-size: 0.8em;" width="730">
 			Post by <a href="calendar.do?user_id=<%=owner_id%>"><%=owner%></a><br/>
 			URL: <a href="<%=url%>"><%=url%></a><br/>
 			<%=description%>
 		</td>
-		<td align="right" valign="top"><input class="btn" type="button" onclick="document.location='PreCreateSeries.do?series_id=<%=series_id%>'" value="Edit" /></td>
+		<td align="right" valign="top" width="50"><input class="btn" type="button" onclick="document.location='PreCreateSeries.do?series_id=<%=series_id%>'" value="Edit" /></td>
 	</tr>
 	<tr>
-		<td align="left" valign="top" width="650">
+		<td colspan="3" align="left" valign="top" width="650">
 			<div id="divMain">
 				<tiles:insert template="/includes/bookmarks.jsp" />			
 			</div>
         </td>
-		<td align="right" valign="top" width="130"> 
+		<td colspan="2" align="right" valign="top" width="130"> 
 			<br/>	
 			<div id="divFeed">
 				<tiles:insert template="/utils/feed.jsp" />
