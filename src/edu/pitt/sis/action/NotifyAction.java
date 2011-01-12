@@ -54,7 +54,7 @@ public class NotifyAction extends Action {
 		HttpSession session = request.getSession();
 		
 		
-		session.setAttribute("menu","request");
+		session.setAttribute("menu","notifications");
 
 		if(session.getAttribute("UserSession")==null){
 			session.removeAttribute("HideBar");
