@@ -131,7 +131,19 @@ public class LoginAction extends Action {
 			session.setAttribute("LoginError",leb);
 			return mapping.findForward("Failure");
 		}else{
-			session.setAttribute("UserSession", ub);
+			Cookie cid = new Cookie("comet_user_id", "" + ub.getUserID());
+	        cid.setMaxAge(365*24*60*60);
+	        cid.setPath("/");
+	        response.addCookie(cid);
+			
+			Cookie cname = new Cookie("comet_user_name", ub.getName());
+	        cname.setMaxAge(365*24*60*60);
+	        cname.setPath("/");
+	        response.addCookie(cname);
+	        
+	        session.removeAttribute("logout");
+	        
+	        session.setAttribute("UserSession", ub);
 			if(session.getAttribute("HideBar")!=null){
 				session.removeAttribute("HideBar");
 			}
