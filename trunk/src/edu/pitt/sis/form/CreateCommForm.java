@@ -23,6 +23,7 @@ public class CreateCommForm extends ActionForm {
 
 	private static final long serialVersionUID = 1L;
 
+	private String comm_id;
 	private String name;
 	private String description;
 
@@ -55,6 +56,7 @@ public class CreateCommForm extends ActionForm {
 	public void reset(ActionMapping mapping, HttpServletRequest request) {
 		name = null;
 		description = null;
+		comm_id = null;
 	}
 
 	public String getName() {
@@ -72,6 +74,15 @@ public class CreateCommForm extends ActionForm {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	public String getComm_id() {
+		return comm_id;
+	}
+
+	public void setComm_id(String commId) {
+		comm_id = commId;
+	}
+
 
 
 }
