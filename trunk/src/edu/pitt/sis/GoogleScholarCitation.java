@@ -26,8 +26,8 @@ public class GoogleScholarCitation {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String url_to_get = "http://scholar.google.com/scholar?as_q=&num="+ret_results+"&as_sauthors=" + gAuthor;
-		link = "http://scholar.google.com/scholar?as_q=&as_sauthors=" + gAuthor;
+		String url_to_get = "http://scholar.google.com/scholar?as_q=&num="+ret_results+"&as_sdt=0,39&as_ylo=&as_vis=1&as_sauthors=" + gAuthor;
+		link = "http://scholar.google.com/scholar?as_q=&as_sdt=0,39&as_ylo=&as_vis=1&as_sauthors=" + gAuthor;
 		String content = fetchHTML(url_to_get);
         // Variables used to find the correct location of the total number of returned results
         String pre = "of about <b>";
@@ -71,7 +71,7 @@ public class GoogleScholarCitation {
             	//System.out.println("Page: " + (i+1));
             	//System.out.println("=============================");
                 int start = i * 100;
-                url_to_get = "http://scholar.google.com/scholar?as_q=&num="+ret_results+"&as_sauthors="+gAuthor+"&start="+start;
+                url_to_get = "http://scholar.google.com/scholar?as_q=&num="+ret_results+"&as_sdt=0,39&as_ylo=&as_vis=1&as_sauthors="+gAuthor+"&start="+start;
         		content = fetchHTML(url_to_get);
             	citePages.add(getCitationCount(content));        	
         	}
