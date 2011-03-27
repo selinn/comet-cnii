@@ -58,14 +58,26 @@ public class CreateCommAction extends Action {
 		PreparedStatement pstmt = null;
 		CreateCommForm ccf = (CreateCommForm)form;
 		try{
-			String sql = "INSERT INTO community (comm_name,comm_desc,lastupdate,user_id) VALUES (?,?, now(),?);";
-			pstmt = conn.conn.prepareStatement(sql);
-			pstmt.setString(1,ccf.getName());
-			pstmt.setString(2,ccf.getDescription());
-			pstmt.setLong(3, ub.getUserID());
-			pstmt.execute();
-			pstmt.close();
-			conn.conn.close();
+			if(ccf.getComm_id().equalsIgnoreCase("0")){
+				String sql = "INSERT INTO community (comm_name,comm_desc,lastupdate,user_id) VALUES (?,?, now(),?);";
+				pstmt = conn.conn.prepareStatement(sql);
+				pstmt.setString(1,ccf.getName());
+				pstmt.setString(2,ccf.getDescription());
+				pstmt.setLong(3, ub.getUserID());
+				pstmt.execute();
+				pstmt.close();
+				conn.conn.close();
+			}else{
+				String sql = "UPDATE community SET comm_name=?,comm_desc=?,lastupdate=NOW(),user_id) VALUES (?,?, now(),?);";
+				pstmt = conn.conn.prepareStatement(sql);
+				pstmt.setString(1,ccf.getName());
+				pstmt.setString(2,ccf.getDescription());
+				pstmt.setLong(3, ub.getUserID());
+				pstmt.execute();
+				pstmt.close();
+				conn.conn.close();
+			}
+			
 			
 		}catch(SQLException e){
 			try {
