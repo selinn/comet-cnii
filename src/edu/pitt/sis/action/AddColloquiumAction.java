@@ -9,6 +9,7 @@ import java.util.Date;
 import javax.servlet.http.*;
 
 import edu.pitt.sis.FetchNE;
+import edu.pitt.sis.GoogleScholarCitation;
 import edu.pitt.sis.MailNotifier;
 import edu.pitt.sis.db.*;
 import edu.pitt.sis.beans.*;
@@ -111,7 +112,8 @@ public class AddColloquiumAction extends Action {
 				pstmt.setString(2, concatname.toLowerCase());
 				pstmt.setString(3, cqf.getAffiliation());
 				pstmt.execute();
-				pstmt.close();				
+				pstmt.close();
+								
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -132,6 +134,29 @@ public class AddColloquiumAction extends Action {
 				ResultSet rs = pstmt.executeQuery();
 				if(rs.next()){
 					speaker_id = rs.getLong(1);
+					
+					String speaker = "";
+					for(int i=0;i<name.length;i++){
+						speaker += name[i] + " ";
+					}
+					speaker = speaker.trim();
+
+					GoogleScholarCitation gsc = new GoogleScholarCitation(speaker);
+					int citations = gsc.getTotal_cites();
+					int publications = gsc.getPublications();
+					int h_index = gsc.getH_index();
+					String _publication_link = gsc.getLink();
+					
+					sql = "UPDATE speaker SET citations=?,publications=?,hindex=?,gslink=?,lastupdate=NOW() WHERE speaker_id=?";
+					pstmt = conn.conn.prepareStatement(sql);
+					pstmt.setInt(1,citations);
+					pstmt.setInt(2,publications);
+					pstmt.setInt(3,h_index);
+					pstmt.setString(4,_publication_link);
+					pstmt.setLong(5,speaker_id);
+					pstmt.executeUpdate();
+					pstmt.close();
+
 				}
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
