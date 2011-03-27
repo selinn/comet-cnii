@@ -4,8 +4,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.*;
 
 import edu.pitt.sis.db.*;
@@ -48,6 +46,16 @@ public class LogoutAction extends Action {
 		ActionForm form,
 		HttpServletRequest request,
 		HttpServletResponse response) {
+		Cookie cid = new Cookie("comet_user_id", null);
+        cid.setMaxAge(0);
+        cid.setPath("/");
+        response.addCookie(cid);
+		
+		Cookie cname = new Cookie("comet_user_name", null);
+        cname.setMaxAge(0);
+        cname.setPath("/");
+        response.addCookie(cname);
+
 		HttpSession session = request.getSession();
 		if(session.getAttribute("UserSession")!=null){
 			session.removeAttribute("UserSession");
@@ -62,6 +70,7 @@ public class LogoutAction extends Action {
 			session.removeAttribute("openIdMap");
 		}
 		session.setAttribute("menu","home");
+		session.setAttribute("logout",true);
 		return mapping.findForward("Success");					
 	}
 
