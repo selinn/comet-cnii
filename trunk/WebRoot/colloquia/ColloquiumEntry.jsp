@@ -1,9 +1,10 @@
-<%@ page language="java" pageEncoding="UTF-8"%>
+<%@page language="java" pageEncoding="UTF-8"%>
 <%@page import="edu.pitt.sis.db.connectDB"%>
 <%@page import="edu.pitt.sis.form.ColloquiumForm"%>
 <%@page import="java.sql.ResultSet"%>
+<%@page import="java.io.*"%>
 <%@page import="java.util.HashSet"%>
-
+<%@page import="java.util.ArrayList"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html" prefix="html" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
@@ -15,10 +16,34 @@
 	session=request.getSession(false);
 %>
 
-<logic:present name="UserSession">
+
+<%@page import="java.util.LinkedHashMap"%><logic:present name="UserSession">
 <% 
 	session.removeAttribute("redirect");
 %>
+    
+<logic:present name="Colloquium">
+<% 
+	ColloquiumForm cqf = (ColloquiumForm)session.getAttribute("Colloquium");
+	String title = cqf.getTitle();
+	long col_id = cqf.getCol_id();
+%>
+<span style="font-size: 0.8em;font-weight: bold;color: green;text-decoration: none;">
+	<a style="text-decoration: none;" href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> was Submitted Successfully!
+</span>
+<br/><br/>
+<span style="font-size: 0.8em;">It will automatically redirect to the talk page in 3 seconds.</span><br/>
+<script type="text/javascript">
+	var talkpage = "presentColloquium.do?col_id=<%=col_id %>";
+	window.setTimeout(function(){window.location = talkpage;},3000);
+</script>
+<span style="font-size: 0.8em;">
+Questions can be directed to CoMeT via email at 
+<a href="mailto:comet.paws@gmail.com">comet.paws@gmail.com</a>.</span>
+</logic:present>
+
+<logic:notPresent name="Colloquium">
+
 <!-- calendar stylesheet -->
 <link rel="stylesheet" type="text/css" media="all" href="css/calendar-win2k-cold-1.css" title="win2k-cold-1" />
 
@@ -33,50 +58,12 @@
 <script type="text/javascript" src="scripts/calendar-setup.js"></script>
 
 <script type="text/javascript" src="ckeditor/ckeditor.js"></script>	
-<script src="ckeditor/sample.js" type="text/javascript"></script> 
-<link href="ckeditor/sample.css" rel="stylesheet" type="text/css"/>		
 
-	
-<logic:present name="Colloquium">
-<% 
-	ColloquiumForm cqf = (ColloquiumForm)session.getAttribute("Colloquium");
-	String title = cqf.getTitle();
-	long col_id = cqf.getCol_id();
-%>
-<span style="font-size: 0.8em;font-weight: bold;"><a href="presentColloquium.do?col_id=<%=col_id %>"><%=title %></a> was Submitted Successfully!</span>
-<br/><br/>
-<span style="font-size: 0.8em;">It will automatically redirect to the talk page in 3 seconds.</span><br/>
-<script type="text/javascript">
-	var talkpage = "presentColloquium.do?col_id=<%=col_id %>";
-	window.setTimeout(function(){window.location = talkpage;},3000);
-</script>
-<span style="font-size: 0.8em;">
-Questions can be directed to CoMeT via email at 
-<a href="mailto:comet.paws@gmail.com">comet.paws@gmail.com</a>.</span>
-</logic:present>
+<script src="ckeditor/_samples/sample.js" type="text/javascript"></script> 
+<link href="ckeditor/_samples/sample.css" rel="stylesheet" type="text/css"/>
 
-<logic:notPresent name="Colloquium">
+<script src="https://www.google.com/jsapi?key=ABQIAAAAJV4VSZegWFWQprtTfauynxQNhFvRy9-gdGqZBHpj1luIRJ1nLBS2fCJx1UmWsKM7FHDCz6YzvKqUWg"></script>
 
-<style type='text/css' media='all'>
- ul li{
-     list-style-type:none;
-     margin:0;
-     padding:0;
-     margin-left:8px;
- }
-</style>
-<script type="text/javascript">
-	function showChildren(obj,btn){
-		if(obj){
-			obj.style.display = "block";
-			btn.style.width="0px";
-			btn.style.display="none";
-		}
-	}
-</script>
-
-<html:form action="/PostColloquiumEntry" method="post">
-<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 <% 
 	//UserBean ub = (UserBean)session.getAttribute("UserSession");
 	String col_id = "0";
@@ -95,6 +82,9 @@ Questions can be directed to CoMeT via email at
 	String slide_url = "";
 	String s_bio = "";
 	HashSet<String> sponsorSet = new HashSet<String>();
+	LinkedHashMap<Long,String> speakerName = new LinkedHashMap<Long,String>();
+	LinkedHashMap<Long,String> speakerAff = new LinkedHashMap<Long,String>();
+	LinkedHashMap<Long,String> speakerPic = new LinkedHashMap<Long,String>();
 
 	String sql = "SELECT c.col_id,c.title,s.name,s.affiliation,h.host,date_format(c._date,_utf8'%m/%d/%Y') _date," +
 					"date_format(c.begintime,_utf8'%l %i %p') _begin," +
@@ -139,9 +129,404 @@ Questions can be directed to CoMeT via email at
 		while(rs.next()){
 			sponsorSet.add(rs.getString("affiliate_id"));
 		}
+		
+		sql = "SELECT s.speaker_id,s.name,s.affiliation,s.picURL FROM col_speaker cs JOIN speaker s ON cs.speaker_id = s.speaker_id WHERE cs.col_id=" + request.getParameter("col_id");
+		rs = conn.getResultSet(sql);
+		while(rs.next()){
+			speakerName.put(rs.getLong("speaker_id"),rs.getString("name"));
+			speakerAff.put(rs.getLong("speaker_id"),rs.getString("affiliation"));
+			speakerPic.put(rs.getLong("speaker_id"),rs.getString("picURL"));
+		}
 	}
 	
 %>
+
+<script type="text/javascript">
+    var counter = <%=speakerName.size() %>;
+
+      google.load('search', '1');
+
+      var imageSearch;
+	  
+	  //show more pages
+	  function addPaginationLinks() {
+        // To paginate search results, use the cursor function.
+        var cursor = imageSearch.cursor;
+        var curPage = cursor.currentPageIndex; // check what page the app is on
+        var pagesDiv = document.createElement('div');
+        
+        pagesDiv.id = "pageDiv";
+        for (var i = 0; i < cursor.pages.length; i++) {
+          var page = cursor.pages[i];
+          if (curPage == i) { 
+
+          // If we are on the current page, then don't make a link.
+            var label = document.createTextNode('  ' + page.label + '  ');
+            
+            pagesDiv.appendChild(label);
+          } else {
+
+            // Create links to other pages using gotoPage() on the searcher.
+            var link = document.createElement('a');
+            link.href = 'javascript:imageSearch.gotoPage('+i+');';
+            link.innerHTML = page.label;
+            link.style.marginRight = '4px';
+            link.style.marginLeft = '4px';
+            pagesDiv.appendChild(link);
+          }
+        }
+
+        //var contentDiv = document.getElementById('content_' + counter);
+        var contentDiv = document.getElementById('content');
+        contentDiv.appendChild(pagesDiv);
+      }
+
+     
+
+      function searchComplete() {
+    	
+        // Check that we got results
+        if (imageSearch.results && imageSearch.results.length > 0) {
+
+          // Grab our content div, clear it.
+          //var contentDiv = document.getElementById('content_'+counter);
+          var contentDiv = document.getElementById('content');
+          contentDiv.innerHTML = '';
+
+          // Loop through our results, printing them to the page.
+          var results = imageSearch.results;
+          for (var i = 0; i < results.length; i++) {
+            // For each result write it's title and image to the screen
+            var result = results[i];
+            
+            var imgContainer = document.createElement('div');
+            imgContainer.id = "picDiv";
+            
+            var imgContainerInside = document.createElement('div');
+            imgContainerInside.id = "imgDiv";
+            
+            var rdoContainer = document.createElement('div');
+            rdoContainer.id = "rdoDiv";
+            
+            var newImg = document.createElement('img');
+            
+            // There is also a result.url property which has the escaped version
+            newImg.src = result.tbUrl;
+            imgContainerInside.appendChild(newImg);
+            var rdo = document.createElement('input');
+            rdo.type = 'radio';
+            rdo.id = 'radio_' + i;
+  
+            rdo.value = result.tbUrl;
+            rdo.onclick= function() {showImg(this.value);};
+            rdoContainer.appendChild(rdo);
+            
+            imgContainer.appendChild(imgContainerInside);
+            imgContainer.appendChild(rdoContainer);
+            // Put our image in the content
+            contentDiv.appendChild(imgContainer);
+            //alert("haha");
+          }
+			
+
+          // Now add links to additional pages of search results.
+          addPaginationLinks(imageSearch);
+        }
+      }
+	  
+      function showImg(src){
+    	  //var image = document.getElementById('imgDisplay_'+counter);
+    	  var image = document.getElementById('imgDisplay');
+    	  image.src = src;
+      }
+      
+      function searchImage(imagekeyword){
+    	 
+        	// Create an Image Search instance.
+        	imageSearch = new google.search.ImageSearch(); 		
+        	imageSearch.setRestriction(google.search.ImageSearch.RESTRICT_IMAGETYPE, google.search.ImageSearch.IMAGETYPE_FACES);		         
+        	// Set searchComplete as the callback function when a search is          
+        	// complete.  The imageSearch object will have results in it.          
+        	imageSearch.setSearchCompleteCallback(this, searchComplete, null);         
+        	// execute search
+          	imageSearch.execute(imagekeyword);               
+        	// Include the required Google branding         
+          	//google.search.Search.getBranding('branding');
+        
+     }
+
+		var nameArray = new Array();
+		var affiliationArray = new Array();
+		var pictureArray = new Array();
+<% 
+	int j = 0;
+	for(long speaker_id : speakerName.keySet()){
+		String name = speakerName.get(speaker_id);
+		String aff = speakerAff.get(speaker_id);
+		String picURL = speakerPic.get(speaker_id);
+%>
+		nameArray[<%=j %>] = "<%=name %>";
+		affiliationArray[<%=j %>] = "<%=aff %>";
+		pictureArray[<%=j %>] = "<%=picURL %>";
+<%		
+		j++;
+	}
+%>		
+
+function addTeacherElement() {
+		
+		var name = document.getElementById('nameInput');
+		var affiliation = document.getElementById('affiliationInput');
+		var image = document.getElementById('imgDisplay');
+		
+		if (affiliation.value == ''){
+			alert("Please enter the affiliation of speaker.");
+			return;
+		}
+
+		var container = document.getElementById('speaker_container');		
+		var trObj = document.createElement('tr');
+		trObj.setAttribute('id','speaker_tr_' + counter);	
+				
+		var tdLabelObj = document.createElement('td');
+		trObj.appendChild(tdLabelObj);
+			
+		var tdSpeakerObj = document.createElement('td');
+		
+		var tab = document.createElement('table');
+		tab.setAttribute('class', 'showSpeakers');
+		
+		var tr1 = document.createElement('tr');
+		var tr2 = document.createElement('tr');
+		
+		var tdImage = document.createElement('td');
+		tdImage.setAttribute('rowspan', 2);
+		var imageObj = document.createElement('img');
+		imageObj.setAttribute('src', image.src);
+		tdImage.appendChild(imageObj);
+		
+		var tdName = document.createElement('td');
+		var nameObj = document.createElement('label');
+		nameObj.innerHTML = "<b>Name:</b> " + name.value;
+		tdName.appendChild(nameObj);
+		
+		tr1.appendChild(tdImage);
+		tr1.appendChild(tdName);
+		
+		
+		var tdAffiliation = document.createElement('td');
+		var affiliationLabelObj = document.createElement('label');
+		affiliationLabelObj.innerHTML ="<b>Affiliation:</b> " + affiliation.value;	
+		tdAffiliation.appendChild(affiliationLabelObj);	
+		tr2.appendChild(tdAffiliation);
+	
+		tab.appendChild(tr1);
+		tab.appendChild(tr2);
+		tdSpeakerObj.appendChild(tab);
+		
+		var tdReoveObj = document.createElement('td');
+		
+		var buttonObj = document.createElement('input');
+		buttonObj.setAttribute('type','button');
+		buttonObj.setAttribute('name', counter);
+		buttonObj.setAttribute('value','Remove');
+		buttonObj.setAttribute('class','btn');
+		buttonObj.style.float = "right";
+		
+		buttonObj.onclick = function(){
+			trObj.parentNode.removeChild(trObj);
+			nameArray[this.name] = '';
+			affiliationArray[this.name] = '';
+		}; 	
+		
+		tdReoveObj.appendChild(buttonObj); 
+	
+		trObj.appendChild(tdSpeakerObj);
+		trObj.appendChild(tdReoveObj);
+		container.appendChild(trObj);
+
+		nameArray[counter] = name.value;
+		affiliationArray[counter] = affiliation.value;
+		pictureArray[counter] = image.src;
+	
+	
+	name.value = '';
+	affiliation.value = '';
+	document.getElementById('trShowImage').style.display = "none";	
+	var cell = document.getElementById("content");
+	if ( cell.hasChildNodes() )
+	{
+	    while ( cell.childNodes.length >= 1 )
+	    {
+	        cell.removeChild( cell.firstChild );       
+	    } 
+	}
+	counter++;
+}
+
+function submitform()
+{
+	
+	var speakerAffiliation = document.getElementById('affiliation');
+	var speakerName = document.getElementById('speaker');
+	var speakerPic =  document.getElementById('picURL');
+	for(var i = 0; i < nameArray.length; i++){
+		speakerName.value += nameArray[i] + ";;";
+		if (affiliationArray[i] == '')
+			affiliationArray[i] = 'null';
+		speakerAffiliation.value += affiliationArray[i] + ";;";
+		speakerPic.value += pictureArray[i] + ";;";
+	}
+	//alert(speakerName.value + "!!!!!!" + speakerAffiliation.value);
+  	document.forms[1].submit();
+}
+
+$(document).ready(function() {
+	
+	/* if (counter > 1){
+		$("input").focus(function () {
+	        counter = $(this).attr("name");
+	        
+	   });
+	} */
+	   
+	  $("input#series").autocomplete("series.jsp", {
+		  	delay: 20,
+			formatItem: function(data, i, n, value) {			
+				return  value.split(";")[0];
+					
+			},
+	  		formatResult: function(data, value) {
+				return value.split(";")[0];
+			}
+	  }).result(function(event, data, formatted) {
+		  $("input#series_id").val(formatted.split(";")[1]);
+	  }); 
+	
+	 
+	  $("input#sponsor").autocomplete("utils/sponsor.jsp", {
+		  	delay: 20,
+			formatItem: function(data, i, n, value) {			
+				return  value.split(";")[0];
+					
+			},
+			formatResult: function(data, value) {
+				return value.split(";")[0];
+			}
+	  }).result(function(event, data, formatted) {
+		  $("input#sponsor_id").val(formatted.split(";")[1]);
+	  }); 
+
+	
+	  $("input#nameInput").autocomplete("speakers.jsp", {
+		  	delay: 20,
+			formatItem: function(data, i, n, value) {
+				var imageSrc = value.split(";")[2];
+				if (imageSrc != "null"){
+					if (imageSrc.indexOf("http") != 0){
+						imageSrc = "images/speaker/" + imageSrc;
+					}
+					return "<table><tr><td rowspan=\"2\">" + "<img src='" + imageSrc + "' height=\"50\" width=\"50\" /> </td>" 
+					+ "<td style=\"font-size:12px\"><b>" + value.split(";")[0] + "</b></td></tr><tr><td style=\"font-size:11px\">" + value.split(";")[1] +"</td></tr></table>";
+				
+				}
+				else{
+					return "<table><tr><td rowspan=\"2\">" + "<img src='images/speaker/avartar.gif' height=\"50\" width=\"50\" /> </td>" 
+					+ "<td style=\"font-size:12px\"><b>" + value.split(";")[0] + "</b></td></tr><tr><td style=\"font-size:11px\">" + value.split(";")[1] +"</td></tr></table>";
+				}
+				
+			},
+	  		formatResult: function(data, value) {
+				return value.split(";")[0];
+			}
+	  }).result(function(event, data, formatted) {
+		  
+		  if (data){
+			  $("input#affiliationInput").val(formatted.split(";")[1]);
+			  //$("#trShowImage").css("visibility", "visible");
+			 
+			  var imageSrc = formatted.split(";")[2];
+			  if (imageSrc != "null"){
+				  if (imageSrc.indexOf("http") != 0){
+						imageSrc = "images/speaker/" + imageSrc;			
+				  }
+				  $("#trShowImage").css("display", "table-row");
+				  
+				  $("input#selectImg").val("Not this person?");	 					
+				  $("div#image").html("<img id='imgDisplay' src='" + imageSrc + "' />");
+				  
+			  }else{
+				  imageSrc = "images/speaker/avartar.gif";
+				  $("#trShowImage").css("display", "table-row");
+				  $("input#selectImg").val("Select a picture");
+				  $("div#image").html("<img id='imgDisplay' src='" + imageSrc + "' />");
+				 
+				  
+			  }
+		  }	else{
+			  imageSrc = "images/speaker/avartar.gif";
+			  $("#trShowImage").css("display", "table-row");
+			  $("input#selectImg").val("Select a picture");
+			  $("div#image").html("<img id='imgDisplay' src='" + imageSrc + "' />");
+			  
+		  } 
+		  $("input#selectImg").addClass("btn");
+		  		  		  
+	  }).blur(function(){
+		    $(this).search();
+	  });	  
+
+			
+		 
+});
+  
+</script>
+    	
+<style type='text/css' media='all'>
+.showSpeakers{
+	font-size: 1em;
+}
+ ul li{
+     list-style-type:none;
+     margin:0;
+     padding:0;
+     margin-left:8px;
+ }
+ #content{
+ 	margin:5px 0px;
+	margin-bottom: 20px;
+ 	float: left;
+ }
+ #picDiv{
+ 	margin:5px 20px;
+ 	margin-left: 0;
+ 	float: left;
+ }
+  #pageDiv{
+  	clear:both;
+  	margin: 15px 0;
+ 	text-align: center;
+ 	padding:0 3px;
+ }
+  #rdoDiv{;
+ 	margin: 5px 40px;
+ 	
+ }
+</style>
+<script type="text/javascript">
+	function showChildren(obj,btn){
+		if(obj){
+			obj.style.display = "block";
+			btn.style.width="0px";
+			btn.style.display="none";
+		}
+	}
+</script>
+
+<html:form action="/PostColloquiumEntry" method="post">
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 	<tr>
 		<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 	</tr>
@@ -177,20 +562,121 @@ Questions can be directed to CoMeT via email at
 				<tr> 
 						<td width="20%" valign="top" style="font-weight: bold;">Title:</td>
 			  		<td><html:text style="font-size: 1em;" property="title" size="80" value="<%=title%>"/></td>
+			  		
 				</tr>
 				<tr> 
 					<td colspan="2"><font style="color: red;"><b><html:errors property="title"/></b></font></td>
 				</tr>
+				
+				
+				
+				<%-- 
 				<tr> 
-					<td width="20%" valign="top" style="font-weight: bold;">Speaker:</td>
-			  		<td><html:text style="font-size: 1em;" property="speaker" size="80" value="<%=speaker%>"/></td>
+					<td width="20%" valign="top" style="font-weight: bold;">
+						Speaker:
+						
+					</td>
+			  		<td>
+			  			<!--<html:text style="font-size: 1em;" property="speaker"  size="80" value=""/>-->
+			  			
+			  			
+			  			
+			  		</td>		
+				</tr>
+				<tr>
+					<td style="vertical-align: top">
+						<div id="image"></div>
+						<input style="visibility: hidden;margin:5px 0;" type="button" id="selectImg" value="Not this Picture?" onclick='searchImage(speaker.value)'/>
+					</td>
+					<td>
+						<div id="content"></div>
+					</td>
+				</tr>
+				
+				
+				<tr> 
+					<td width="20%" valign="top" style="font-weight: bold;">Speaker Affiliation: (optional)</td>
+			  		<td>
+			  			<html:text style="font-size: 1em;" property="affiliation" size="80" value="<%=affiliation%>"/>
+							<input id="affiliation" name="affiliation" size="80" value="<%= affiliation %>" />
+			  		</td>
+				</tr> --%>
+				<tr>
+							<td width="20%" valign="top" style="font-weight: bold;">
+								Speaker:					
+							</td>
+							
+							<td>
+							<table width="100%" class="showSpeakers">
+								<tbody id = "speaker_container">
+<% 
+	int ii=0;
+	for(long speaker_id : speakerName.keySet()){
+%>
+									<tr id="speaker_tr_<%=ii %>">
+										<td>&nbsp;</td>
+										<td>
+											<table class="showSpeakers">
+												<tr>
+													<td rowspan="2">
+														<img src="<%=speakerPic.get(speaker_id)==null?"images/speaker/avartar.gif":speakerPic.get(speaker_id) %>" class="quimby_search_image" />
+													</td>
+													<td>
+														<label>
+															<b>Name:</b>
+															<%=speakerName.get(speaker_id) %>
+														</label>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														 <label>
+														 	<b>Affiliation:</b>
+														 	<%=speakerAff.get(speaker_id) %>
+														 </label>
+													</td>
+												</tr>
+											</table>
+										</td>
+										<td>
+											<input type="button" name="<%=ii %>" value="Remove" class="btn" style="float: right;" 
+											onclick="$('#speaker_tr_<%=ii %>').remove();nameArray[<%=ii %>] = '';affiliationArray[<%=ii %>] = '';return false;" />
+										</td>
+									</tr>
+<%		
+		ii++;
+	}
+%>					
+								</tbody>
+							</table>
+							<b>Name:</b> <input style="font-size: 1em;" id="nameInput" name="nameInput"  size="50" value=""/>
+								<b>&nbsp;&nbsp;&nbsp;&nbsp;Affiliation:</b><input style="font-size: 1em;" id="affiliationInput" name="affiliationInput"  size="40" value=""/>
+								<br/>
+								<br/>
+								<input type="button" class="btn" onclick="addTeacherElement();return false;" value="Add" />
+								<br/>
+								
+							</td>
+							
+				</tr>
+				<tr id="trShowImage" style="display:none;">
+					<td style="vertical-align: top">
+						<div id="image"></div>
+						<input style="margin:5px 0;" type="button" id="selectImg" class="btn" value="Not this Picture?" onclick='searchImage(nameInput.value)'/>
+					</td>
+					<td>
+						<div id="content"></div>
+					</td>
+				</tr>
+				
+				
+				<tr>
+					<td><input type="hidden" id="speaker" name="speaker" size="20" /> </td>
+					<td><input type="hidden" id="affiliation" name="affiliation" size="20" /></td>
+					<td><input type="hidden" id="picURL" name="picURL" /> </td>
 				</tr>
 				<tr> 
 					<td colspan="2"><font style="color: red;"><b><html:errors property="speaker"/></b></font></td>
-				</tr>
-				<tr> 
-					<td width="20%" valign="top" style="font-weight: bold;">Speaker Affiliation: (optional)</td>
-			  		<td><html:text style="font-size: 1em;" property="affiliation" size="80" value="<%=affiliation%>"/></td>
 				</tr>
 				<tr> 
 					<td colspan="2"><font style="color: red;"><b><html:errors property="affiliation"/></b></font></td>
@@ -203,179 +689,23 @@ Questions can be directed to CoMeT via email at
 					<td colspan="2"><font style="color: red;"><html:errors property="host"/></font></td>
 				</tr>
 				<tr>
-					<td width="20%" valign="top" style="font-weight: bold;">Series (optional):</td>
+					<td width="20%" valign="top" style="font-weight: bold;">Series: </td>
 					<td>
-<% 
-	if(!col_id.equalsIgnoreCase("0")){
-		sql = "SELECT series_id FROM seriescol WHERE col_id = " + col_id;
-		rs = conn.getResultSet(sql);
-		while(rs.next()){
-			seriesSet.add(rs.getString("series_id"));	
-		}
-	}
-	String seriesStyle = "display: block;";
-	if(seriesSet.size() == 0){
-		seriesStyle = "display: none;";
-%>
-						<input class="btn" type="button" id="btnShowSeries" value="Show Series" 
-						onclick="showChildren(ulSeries,this);" />
-<%	
-	}
-%>
-
-<%	
-	sql = "SELECT series_id,name FROM series " +
-			//"WHERE semester = (SELECT currsemester FROM sys_config) " + 
-			"ORDER BY name";
-	rs = conn.getResultSet(sql);
-%>
-						<ul id="ulSeries" style="<%=seriesStyle%>">
-<%
-	while(rs.next()){
-		String checked = "";
-		String _series_id = rs.getString("series_id");
-		String _name = rs.getString("name");
-		if(seriesSet.contains(_series_id)){
-			checked = "checked='checked'";
-		}
-%>
-						<li>
-							<input type="checkbox" name="series_id" value="<%=_series_id%>" <%=checked%>/>&nbsp;<%=_name%><br/>
-						</li>
-<%	
-	}
-%>
-						</ul>	
+                			<input id="series" name="series" size="80"  /> 
+							<input type="hidden" id="series_id" name="series_id" size="80"  />
 					</td>
+					
 				</tr>
-				<tr> 
-					<td width="20%" valign="top" style="font-weight: bold;">Sponsor(s) (optional):</td>
-					<td>
-						<ul>
-<% 
-	sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id IS NULL ";
-	ResultSet rs0 = conn.getResultSet(sql);
-	while(rs0.next()){
-		String aid = rs0.getString("affiliate_id");
-		String aff = rs0.getString("affiliate");
-		String checked = "";
-		if(sponsorSet.contains(aid)){
-			checked = "checked='checked'";		
-		}
-%>
-							<li>
-								<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />&nbsp;&nbsp;<%=aff%>
-<%
-		sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + aid + 
-		" ORDER BY a.affiliate";
-		ResultSet rs1 = conn.getResultSet(sql);
-		boolean lvl1Hidden = false;
-		while(rs1.next()){
-			aid = rs1.getString("affiliate_id");
-			aff = rs1.getString("affiliate");
-			if(!lvl1Hidden){
-%>
-								<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-								onclick="showChildren(ulSponsor<%=aid%>,this);"  />
-								<ul id="ulSponsor<%=aid %>" style="display: none;">
-<%		
-				lvl1Hidden = true;
-			}
-			checked = "";
-			if(sponsorSet.contains(aid)){
-				checked = "checked='checked'";		
-			}
-%>
-									<li>
-										<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />&nbsp;&nbsp;<%=aff%>
-<%
-			sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + aid + " ORDER BY a.affiliate";
-			ResultSet rs2 = conn.getResultSet(sql);
-			boolean lvl2Hidden = false;
-			while(rs2.next()){
-				aid = rs2.getString("affiliate_id");
-				aff = rs2.getString("affiliate");
-				if(!lvl2Hidden){
-%>
-										<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-										onclick="showChildren(ulSponsor<%=aid%>,this);"  />
-										<ul id="ulSponsor<%=aid%>" style="display: none;">
-<%
-					lvl2Hidden = true;
-				}
-				checked = "";
-				if(sponsorSet.contains(aid)){
-					checked = "checked='checked'";		
-				}
-%>
-											<li>
-												<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-												&nbsp;&nbsp;<%=aff%>
-<%
-				sql = "SELECT a.affiliate_id,a.affiliate FROM relation r,affiliate a WHERE r.child_id = a.affiliate_id AND r.parent_id = " + 
-						aid + " ORDER BY a.affiliate";
-				ResultSet rs3 = conn.getResultSet(sql);
-				boolean lvl3Hidden = false;
-				while(rs3.next()){
-					aid = rs3.getString("affiliate_id");
-					aff = rs3.getString("affiliate");
-					if(!lvl3Hidden){
-						lvl3Hidden = true;
-%>
-												<input class="btn" type="button" id="btnShowSponsor<%=aid%>" value="Show children" 
-												onclick="showChildren(ulSponsor<%=aid%>,this);"  />
-												<ul id="ulSponsor<%=aid%>" style="display: none;">
-<%
-					}
-					checked = "";
-					if(sponsorSet.contains(aid)){
-						checked = "checked='checked'";		
-					}
-%>
-													<li>
-														<input type="checkbox" name="sponsor_id" value="<%=aid%>" <%=checked%> />
-														&nbsp;&nbsp;<%=aff%>
-													</li>
-<%
-				}
-				rs3.close();
-				if(lvl3Hidden){
-%>
-												</ul>
-<%
-				}
-%>
-											</li>
-<%						
 				
-			}
-			rs2.close();
-			if(lvl2Hidden){
-%>
-										</ul>
-<%
-			}
-%>
-									</li>
-<%						
-		}
-		rs1.close();
-		if(lvl1Hidden){
-%>
-								</ul>
-<%
-		}
-%>
-							</li>
-<%						
-	}
-	rs0.close();
-	conn.conn.close();
-	conn = null;
-%>			
-						</ul>
+				<tr>
+					<td width="20%" valign="top" style="font-weight: bold;">Sponsor: </td>
+					<td>
+                			<input id="sponsor" name="sponsor" size="80"  /> 
+ 							<input type="hidden" id="sponsor_id" name="sponsor_id" size="80"  /> 
 					</td>
+					
 				</tr>
+				
 				<tr> 
 				  <td width="20%" style="font-weight: bold;">Date(month/date/year):</td>
 				  <td>
@@ -573,7 +903,8 @@ Questions can be directed to CoMeT via email at
 </table>
 <input type="hidden" name="s_bio" value="" />
 <input type="hidden" name="col_id" value="<%=col_id %>" />
-<input type="submit" class="btn" value="Post Talk" />
+<input type="button" class="btn" value="Post Talk" onclick="submitform()" />
+
 </html:form>
 </logic:notPresent>
 

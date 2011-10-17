@@ -42,9 +42,27 @@ public class ColloquiumForm extends ActionForm {
 	private String host;
 	private String[] series_id;
 	private String url;
-	private String[] sponsor_id;
+	private String sponsor_id;
 	private String video_url;
 	private String slide_url;
+	private String paper_url;
+	private String picURL;
+	public String getPicURL() {
+		return picURL;
+	}
+
+	public void setPicURL(String picURL) {
+		this.picURL = picURL;
+	}
+
+	public String getPaper_url() {
+		return paper_url;
+	}
+
+	public void setPaper_url(String paperUrl) {
+		paper_url = paperUrl;
+	}
+
 	private String s_bio;
 
 	// --------------------------------------------------------- Methods
@@ -254,11 +272,11 @@ public class ColloquiumForm extends ActionForm {
 		this.url = url;
 	}
 
-	public String[] getSponsor_id() {
+	public String getSponsor_id() {
 		return sponsor_id;
 	}
 
-	public void setSponsor_id(String[] sponsor_id) {
+	public void setSponsor_id(String sponsor_id) {
 		this.sponsor_id = sponsor_id;
 	}
 

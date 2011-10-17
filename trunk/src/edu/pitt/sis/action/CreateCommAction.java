@@ -59,20 +59,29 @@ public class CreateCommAction extends Action {
 		CreateCommForm ccf = (CreateCommForm)form;
 		try{
 			if(ccf.getComm_id().equalsIgnoreCase("0")){
-				String sql = "INSERT INTO community (comm_name,comm_desc,lastupdate,user_id) VALUES (?,?, now(),?);";
+				String sql = "INSERT INTO community (comm_name,comm_desc,lastupdate,user_id,owner_id) VALUES (?,?, now(),?,?);";
 				pstmt = conn.conn.prepareStatement(sql);
 				pstmt.setString(1,ccf.getName());
 				pstmt.setString(2,ccf.getDescription());
 				pstmt.setLong(3, ub.getUserID());
+				pstmt.setLong(4, ub.getUserID());
 				pstmt.execute();
 				pstmt.close();
 				conn.conn.close();
 			}else{
-				String sql = "UPDATE community SET comm_name=?,comm_desc=?,lastupdate=NOW(),user_id) VALUES (?,?, now(),?);";
+				//Backup old version
+				String sql = "INSERT INTO community_bk " +
+						"(timestamp,comm_id,comm_name,comm_desc,lastupdate,user_id,url,owner_id) " +
+						"SELECT NOW(),comm_id,comm_name,comm_desc,lastupdate,user_id,url,owner_id " +
+						"FROM community WHERE comm_id=" + ccf.getComm_id();
+				conn.executeUpdate(sql);
+
+				sql = "UPDATE community SET comm_name=?,comm_desc=?,lastupdate=NOW(),user_id=? WHERE comm_id=?";
 				pstmt = conn.conn.prepareStatement(sql);
 				pstmt.setString(1,ccf.getName());
 				pstmt.setString(2,ccf.getDescription());
 				pstmt.setLong(3, ub.getUserID());
+				pstmt.setLong(4, Long.parseLong(ccf.getComm_id()));
 				pstmt.execute();
 				pstmt.close();
 				conn.conn.close();

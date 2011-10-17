@@ -16,9 +16,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <%@page import="java.util.Calendar"%>
-<%@page import="java.util.GregorianCalendar"%><html>
+<%@page import="java.util.GregorianCalendar"%>
+<%@page import="java.util.LinkedHashMap"%><html>
   	<head>  	
-  		<link rel="CoMeT Icon" href="images/logo.png" />
+  		<link rel="CoMeT Icon" href="images/favicon.ico" />
     	<title>
     		<tiles:getAsString name="title"/>
 	    </title>
@@ -27,30 +28,30 @@
 	    <meta http-equiv="expires" content="0">    
 
 <%-- 
+<link type="text/css" href="../css/jquery-ui-1.8.5.custom.css" rel=
+  "stylesheet" /> 
+--%>
+<link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/themes/base/jquery-ui.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"> 
+</script> 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"> 
+</script> 
+<script type="text/javascript" src="<%=request.getContextPath() + "/scripts/jquery.cookie.js"%>"> 
+</script> 
+
+<link rel="stylesheet" href="css/jquery.autocomplete.css" type="text/css" />
+<link type='text/css' href='css/basic.css' rel='stylesheet' media='screen' />
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type='text/javascript' src='scripts/jquery.bgiframe.min.js'></script>
+<script type='text/javascript' src='scripts/jquery.autocomplete.js'></script>
+<script type='text/javascript' src='scripts/jquery.simplemodal.js'></script>
+<%-- 
 		<script type="text/javascript" src="<%=request.getContextPath() + "/scripts/xtree.js"%>"></script>
 		<script type="text/javascript" src="<%=request.getContextPath() + "/scripts/xmlextras.js"%>"></script>
 		<script type="text/javascript" src="<%=request.getContextPath() + "/scripts/xloadtree.js"%>"></script>	
 --%>
 		<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&lang=en"></script>
-		<script type="text/javascript">
-			function setDocumentTitle(aTitle){
-				document.title = aTitle;
-			}
-		</script>
-
-<style>
-input.btn { 
-  color:#003399; 
-	font: bold 0.7em verdana,helvetica,sans-serif; 
-	background-color: #99CCFF; 
-  border: 2px solid; 
-	border-color: #0066CC #003366 #003366 #0066CC; 
-  filter:progid:DXImageTransform.Microsoft.Gradient (GradientType=0,StartColorStr='#ffffffff',EndColorStr='#ffeeddaa'); 
-} 
-</style>
-
-		<link href="<%=request.getContextPath() + "/css/stylesheet.css"%>" rel="stylesheet" media="grey" />  
-	</head>
 <% 
 	session=request.getSession(false);
 	int userID = -1;
@@ -58,52 +59,942 @@ input.btn {
 	String sessionID = session.getId();
 	Cookie cookies[] = request.getCookies();
 	//Find session id & user id
-	boolean foundSessionID = false;
+	//boolean foundSessionID = false;
 	boolean foundUserID = false;
 	if(cookies != null){
 		for(int i=0;i<cookies.length;i++){
 			Cookie c = cookies[i];
-            if (c.getName().equals("comet.session.id")) {
+            /*if (c.getName().equals("comet_session_id")) {
                 sessionID = c.getValue();
             	foundSessionID = true;
+            }*/			
+            if (c.getName().equals("comet_user_id")) {
+            	if(c.getValue() != null){
+                    userID = Integer.parseInt(c.getValue());
+                	foundUserID = true;
+            	}
             }			
-            if (c.getName().equals("comet.user.id")) {
-                userID = Integer.parseInt(c.getValue());
-            	foundUserID = true;
-            }			
-            if (c.getName().equals("comet.user.name")) {
+            if (c.getName().equals("comet_user_name")) {
                 userName = c.getValue();
             }			
 		}
 	}
-	if(!foundSessionID){
-		Cookie c = new Cookie("comet.session.id", sessionID);
-        c.setMaxAge(356*24*60*60);
+	/*if(!foundSessionID){
+		Cookie c = new Cookie("comet_session_id", sessionID);
+        c.setMaxAge(365*24*60*60);
         response.addCookie(c);
-	}
+	}*/
 	connectDB conn = new connectDB();
 	ResultSet rs;
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
 	if(ub != null){
-		Cookie c = new Cookie("comet.user.id", "" + ub.getUserID());
-        c.setMaxAge(356*24*60*60);
-        response.addCookie(c);
-		c = new Cookie("comet.user.name", ub.getName());
-        c.setMaxAge(356*24*60*60);
-        response.addCookie(c);
-	}else if(foundUserID){
-		ub = new UserBean();
-		ub.setUserID(userID);
-		ub.setName(userName);
-		session.setAttribute("UserSession",ub);
+		Cookie cid = new Cookie("comet_user_id", "" + ub.getUserID());
+        cid.setMaxAge(365*24*60*60);
+        cid.setPath("/");
+        response.addCookie(cid);
+		Cookie cname = new Cookie("comet_user_name", ub.getName());
+        cname.setMaxAge(365*24*60*60);
+        cname.setPath("/");
+        response.addCookie(cname);
+	}else if(foundUserID && userID > 0){
+		if(session.getAttribute("logout")==null){
+			ub = new UserBean();
+			ub.setUserID(userID);
+			ub.setName(userName);
+			session.setAttribute("UserSession",ub);
+		}
 	}
 %>
+<script type="text/javascript">
+	/*************************************************/
+	/* Request Add Friend Script                     */
+	/*************************************************/
+	function addQuickBookmark(col_id){
+		
+  				var src = "utils/bookmarkPage.jsp?col_id=" + col_id;
+  				$.modal('<iframe src="' + src + '" height="450" width="830" style="border:0" >', {
+  					
+  					containerCss:{
+  						backgroundColor:"#fff",
+  						borderColor:"#000",
+  						height:450,
+  						padding:0,
+  						width:830
+  					},
+  					overlayClose:true
+  					
+  				});
+
+  				
+	}
+	
+	
+	function closeWindow(){
+		if(typeof period != "undefined"){
+			var action = "utils/loadTalks.jsp";
+			if(period == 0){//Day
+				action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+			}else if(period == 1){//Week
+				var thisweek = getWeekNoInMonth(_year,_month,_day);
+				action = action.concat('?month=',_month,'&year=',_year,'&week=',thisweek);
+			}else{
+				action = action.concat('?month=',_month,'&year=',_year);
+			}
+			if(queryString){
+				action = action.concat('&',queryString);
+			}
+			//alert(action);
+			loadTalks(action);
+			
+		}else{
+			window.parent.location.reload();
+		}
+		$.modal.close();
+	}
+	function   DrawImage(ImgD, iwidth, iheight){ 
+	      var image = new Image();     
+	      image.src = ImgD.src; 
+	      if(image.width > 0  &&  image.height> 0){ 
+	        if(image.width/image.height >= iwidth/iheight){    
+	          	 ImgD.width=iwidth; 
+	          	 ImgD.height=image.height*iwidth/image.width;  
+	          	 ImgD.alt=image.width+ "* "+image.height; 
+	        } 
+	       else{ 
+	          	ImgD.height=iheight; 
+	          	ImgD.width=image.width*iheight/image.height;           
+	          	ImgD.alt=image.width+ "* "+image.height; 
+	       } 
+	     }
+	} 
+
+	function s_confirm(){
+		if(document.s_search.search_text.value == "" || document.s_search.search_text.value == " "){
+	        alert("Enter keywords");
+	    }else{
+	        document.s_search.submit();
+	    }
+	}
+	
+	function showAddFriendDialog(divAddFriend){
+		//var divAddFriend = document.getElementById("divAddFriend");
+		divAddFriend.style.display = "block";
+	}
+	
+	function hideAddFriendDialog(divAddFriend){
+		//var divAddFriend = document.getElementById("divAddFriend");
+		divAddFriend.style.display = "none";
+	}
+	
+	function sendFriendRequest(objParent,uid,reqtype){
+		$.post("profile/friendRequest.jsp",{user_id: uid,request_type: reqtype},function(data){
+				if(data){
+					if(data.status=="OK"){
+						if(objParent != null){
+							if(reqtype=="add"){
+								objParent.innerHTML = "<span style=\"font-size: 0.8em;font-style: italic;color: #aaaaaa;\">Friend Request Sent</span> <a href=\"javascript:return false;\"".concat(
+										" onclick=\"addFriend(",objParent.id,",",uid,",'drop');return false;\">",
+											"<img border='0' src='images/x.gif' /></a>");
+							}
+							if(reqtype=="drop"){
+								objParent.innerHTML = "<input class =\"btn\" type=\"button\" id=\"btnAddAsFriend\"".concat(
+										" value=\"Add as Friend\" onclick=\"showAddFriendDialog(divAddFriend);return false;\" />");
+							}
+							if(reqtype=="accept"){
+								objParent.innerHTML = "<span style=\"font-size: 0.8em;font-style: italic;color: #aaaaaa;\">You both are connected.</span>";
+								window.setTimeout(function(){location.reload();},500);
+							}
+							if(reqtype=="notnow"){
+								objParent.innerHTML = "&nbsp;";
+							}				
+							if(reqtype=="reject"){
+								objParent.innerHTML = "<input class =\"btn\" type=\"button\" id=\"btnAddAsFriend\"".concat(
+									" value=\"Add as Friend\" onclick=\"showAddFriendDialog(divAddFriend);return false;\" />");
+							}				
+						}	
+					}else{
+						alert(data.status + " : " + data.message);
+					}		
+				}	
+			});
+	}	
+
+	function toggleRequestList(aList,divTopList){
+		var _class = divTopList.getAttribute("class");
+		if(_class == "hiddenlist"){
+			$(".shownlist").removeClass("shownlist").addClass("hiddenlist");
+			divTopList.setAttribute("class","shownlist");
+			aList.setAttribute("class","shownlist");
+		}else{
+			divTopList.setAttribute("class","hiddenlist");
+			aList.setAttribute("class","hiddenlist");
+		}		
+	}
+	
+	function autohintGotFocus(txtShare){
+	    if(txtShare.value == txtShare.getAttribute('title')){ 
+	        txtShare.value = '';
+	        var rows = txtShare.getAttribute('rows');
+	        if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r+1));
+	        }   
+	        txtShare.removeAttribute('class');
+	    }
+	}	
+	
+	function autohintGotFocus(txtShare,objButton){
+	    if(txtShare.value == txtShare.getAttribute('title')){ 
+	        txtShare.value = '';
+	        var rows = txtShare.getAttribute('rows');
+	        if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r+1));
+	        }   
+	        txtShare.removeAttribute('class');
+	        objButton.style.display = "block";
+	    }
+	}	
+	
+	function autohintGotBlur(txtShare){
+	    if(txtShare.value == '' && txtShare.getAttribute('title') != ''){ 
+	    	txtShare.value = txtShare.getAttribute('title');
+	        var rows = txtShare.getAttribute('rows');
+	        if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r-1));
+	        }   
+	    	txtShare.setAttribute('class','auto-hint'); 
+	    }
+	}
+		
+	function autohintGotBlur(txtShare,objButton){
+	    if(txtShare.value == '' && txtShare.getAttribute('title') != ''){ 
+	    	txtShare.value = txtShare.getAttribute('title');
+	        var rows = txtShare.getAttribute('rows');
+	        if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r-1));
+	        }   
+	    	txtShare.setAttribute('class','auto-hint');
+	    	objButton.style.display = "none"; 
+	    }
+	}
+	
+	function postComment(u_id,txtShare,objButton){
+		if(txtShare.getAttribute('class') != 'auto-hint'){
+			txtShare.style.disabled = true;
+			$.post("utils/postComment.jsp",{user_id: u_id,comment: txtShare.value},
+				function(data){
+					if(data.status == "OK"){
+						txtShare.value = "";
+						autohintGotBlur(txtShare,objButton);
+						var latestTime = document.getElementById("latestTime");
+						if(latestTime){
+							$.get("profile/recentActivity.jsp",{user_id: u_id,insertfirst: 1,timestamp: latestTime.value},
+								function(data){
+									var now = new Date();
+									latestTime.value = now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + " " +
+											now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+									var tdRecentActivity = document.getElementById("tdRecentActivity");
+									tdRecentActivity.innerHTML = data.concat(tdRecentActivity.innerHTML);
+								}
+							);
+						}	
+					}else{
+							alert("<b><red>" + data.status + ":</red></b> " + data.message);
+					}		
+					txtShare.style.disabled = false;
+				}
+			);
+		}	
+	}
+	
+	function replyComment(cid,_txtComment,_objButton){
+		var txtComment = document.getElementById(_txtComment);
+		var objButton = document.getElementById(_objButton); 
+		if(txtComment.getAttribute('class') != 'auto-hint'){
+			txtComment.style.disabled = true;
+			$.post("utils/postComment.jsp",{comment_id: cid,comment: txtComment.value},
+				function(data){
+					if(data.status == "OK"){
+						txtComment.value = "";
+						autohintGotBlur(txtComment,objButton);
+						var latestTime = document.getElementById("commenttimeccid".concat(cid));
+						if(latestTime){
+							$.get("utils/replyComment.jsp",{user_id: u_id,comment_id: cid,timestamp: latestTime.value},
+								function(data){
+									var now = new Date();
+									latestTime.value = now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + " " +
+											now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+									var tdReplyComment = document.getElementById("tdcommentcid".concat(cid));
+									if(tdReplyComment){
+										tdReplyComment.innerHTML = tdReplyComment.innerHTML.concat(data);
+										tdReplyComment.style.display = "block";
+									}else{
+										//alert("No found " + "tdcommentcid".concat(cid));
+									}	
+								}
+							);
+						}
+					}else{
+							alert("<b><red>" + data.status + ":</red></b> " + data.message);
+					}		
+					txtComment.style.disabled = false;
+				}
+			);
+		}	
+	}	
+	
+	function likeComment(uid,cid,anchorlike,tdlike){
+		var txtLike = anchorlike.innerHTML;
+		if(txtLike){
+			$.post("utils/postLike.jsp",{user_id: uid,comment_id: cid,like: txtLike},
+				function(data){
+					if(data.status == "OK"){
+						var like_tag = document.getElementById(tdlike);
+						if(data.like_tag == "&nbsp;"){
+							like_tag.style.display = "none";
+						}else{
+							like_tag.style.display = "block";
+						}
+						like_tag.innerHTML = data.like_tag;		
+					}	
+				}
+			);
+			if(txtLike == "Like"){
+				anchorlike.innerHTML = "Unlike";
+			}else{
+				anchorlike.innerHTML = "Like";
+			}		
+		}	
+	}	
+	
+	function likeSeries(uid,sid,anchorlike,tdlike){
+		var classname = $(anchorlike).attr('class');
+		var txtLike;
+		
+		if(classname == 'btn'){
+			txtLike = anchorlike.value;
+		}else{
+			txtLike = anchorlike.innerHTML;
+		}		
+
+		if(txtLike){
+			$.post("utils/postLike.jsp",{user_id: uid,series_id: sid,like: txtLike},
+				function(data){
+					if(data.status == "OK"){
+						if(tdlike!=null){
+							var classname = $('#'.concat(tdlike)).attr('class');
+							if(data.like_tag == "&nbsp;"){
+								$('.'.concat(classname)).css('display','none');
+							}else{
+								$('.'.concat(classname)).css('display','inline');
+							}
+							$('.'.concat(classname)).html(data.like_tag);
+						}
+					}	
+				}
+			);
+			
+			if(classname == 'btn'){
+				if(txtLike == "Like"){
+					anchorlike.value = "Unlike";
+				}else{
+					anchorlike.value = "Like";
+				}		
+			}else{
+				if(txtLike == "Like"){
+					$('.'.concat(classname)).text('Unlike');
+				}else{
+					$('.'.concat(classname)).text('Like');
+				}		
+			}		
+		}	
+	}	
+
+	function insertTag(tag){
+		/*var el = document.getElementById('myTags');
+		el.innerHTML += '<div><div class="tags">' + tag + '&nbsp;&nbsp;</div><input style="float:left" height="15" width="15" type="image" src="./images/delete.jpg" onclick="deleteTag(this, \'' + tag + '\')"/></div>';
+		
+		//document.AddBookmarkColloquiumForm.tags.value += tag + ",,";
+		document.getElementById(tag).removeAttribute("onclick");
+		document.getElementById(tag).removeAttribute("href");
+		document.getElementById(tag).style.color = "black";*/
+		var inserted = false;
+
+		$("input.tagInput").each(function(index){
+			if(jQuery.trim($(this).val()) == '' && !inserted){
+				$(this).val(tag);
+				inserted = true;
+
+				$("a.".concat(tag.split(" ").join("_"))).attr("color","black");
+				$("a.".concat(tag.split(" ").join("_"))).removeAttr("onclick");
+				$("a.".concat(tag.split(" ").join("_"))).removeAttr("href");
+			}
+		});
+
+		if(!inserted){
+			addMoreTagInputRow();
+			insertTag(tag);
+			
+		}	
+	}
+
+	/*function deleteTag(element, tag){
+		 var parentElement = element.parentNode;
+		 var parentElement2 = parentElement.parentNode;
+	     if(parentElement2){
+	            parentElement2.removeChild(parentElement);  
+	     }
+	     //var tagContent = document.AddBookmarkColloquiumForm.tags.value;
+	     //document.AddBookmarkColloquiumForm.tags.value = tagContent.replace(tag+",,", "");
+	     
+	     document.getElementById(tag).onclick = function() {insert(tag);};
+	     document.getElementById(tag).href = "javascript: void(0)";
+	     document.getElementById(tag).style.color = "#00A";	
+	     
+	}*/
+
+	function getSuggestedTag(colid){
+		if(colid != null){
+
+			$("#spanSuggestedTag").html("<div align='center'><img border='0' src='images/loading-small.gif' /></div>");
+			
+			var key = "0494dda81af7f0b4c28c93401dd0326845df8d91";
+			var alchemyURL = "http://access.alchemyapi.com/calls/url/URLGetRankedConcepts";
+			var talkurl = "http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=".concat(colid);
+
+			$.post(alchemyURL,{apikey: key, url: talkurl, outputMode: "json"},
+				function(data){
+					if(data.status == "OK"){
+						var i;
+						var suggestedtags = "";
+						for(i=0;i<data.concepts.length;i++){
+							suggestedtags = suggestedtags
+								.concat("<a class='",data.concepts[i].text.toLowerCase().split(" ").join("_"),"' href='javascript:void(0)' onclick='insertTag(\"",
+										data.concepts[i].text.toLowerCase(),"\")'>",data.concepts[i].text.toLowerCase(),"</a>&nbsp;");
+						}
+						if(suggestedtags.length > 0){
+							suggestedtags = " <b>Suggested tags (click to add): </b>".concat(suggestedtags);
+							//alert(suggestedtags);
+							$("#spanSuggestedTag").html(suggestedtags);
+						}else{
+							$("#spanSuggestedTag").html("&nbsp;");
+						}
+					}else{
+						alert(data.statusInfo);
+					}
+				}
+			);
+
+		}
+	}
+
+	function addMoreTagInputRow(){
+		var currowno = $("#tags_container tr").length;
+		var col1 = "<td width=\"30%\" align=\"center\">Keyword".concat(currowno*3 + 1,": <input style=\"font-size: 10px;\" class=\"tagInput\" type=\"text\" size=\"20\"  /></td>");
+		var col2 = "<td width=\"30%\" align=\"center\">Keyword".concat(currowno*3 + 2,": <input style=\"font-size: 10px;\" class=\"tagInput\" type=\"text\" size=\"20\"  /></td>");
+		var col3 = "<td width=\"30%\" align=\"center\">Keyword".concat(currowno*3 + 3,": <input style=\"font-size: 10px;\" class=\"tagInput\" type=\"text\" size=\"20\"  /></td>");
+		var col4 = "<td width=\"10%\">&nbsp;</td>";
+		
+		$("#tags_container").append("<tr class='removable'>".concat(col1,col2,col3,col4,"</tr>"));
+		
+	}
+	
+	function getTalkUserTag(uid,colid){
+		if(uid != null && colid != null){
+			
+			//$("#myTags").html("<div align='center'><img border='0' src='images/loading-small.gif' /></div>");
+			$("#tags_container").hide();
+			$("#divUserTagLoading").show();
+			
+			$.post("utils/getTags.jsp",{user_id: uid, col_id: colid, outputMode: "json"},
+				function(data){
+					//alert(data.status);
+					if(data.status == "OK"){
+						$("#divUserTagLoading").hide();
+						//Create tag cells more to fit user tags
+						if(data.tags.length > 6){
+							var remainder = data.tags.length % 6;
+						    var quotient = ( data.tags.length - remainder ) / 6;
+
+						    if ( quotient >= 0 ){
+						        quotient = Math.floor( quotient );
+						    }else{  // negative
+						        quotient = Math.ceil( quotient );
+						    }
+
+						    if(remainder > 0){
+								quotient++;
+							}
+
+							if(quotient > 2){// 2 is the fixed number of initial rows
+								var newrowno = qutient - 2;
+								for(var i=0;i<newrowno;i++){
+									addMoreTagInputRow();
+								}
+							}
+		
+						}
+
+						$("input.tagInput").each(function(index){
+							//alert(index);
+							if(index < data.tags.length){
+								//alert(data.tags[index].tag.toLowerCase());
+								$(this).val(data.tags[index].tag.toLowerCase());
+							}
+						});
+						
+						$("#tags_container").show();
+					}else{
+						alert(data.message);
+					}
+				}
+			);
+
+		}
+	}
+	
+	function getPopUserTag(uid){
+		if(uid != null){
+			
+			$("#spanPopUserTag").html("<div align='center'><img border='0' src='images/loading-small.gif' /></div>");
+
+			$.post("utils/getTags.jsp",{user_id: uid, outputMode: "json"},
+				function(data){
+					//alert(data.status);
+					if(data.status == "OK"){
+						var i;
+						var popUserTags = "";
+						for(i=0;i<data.tags.length;i++){
+							popUserTags = popUserTags
+								.concat("<a class='",data.tags[i].tag.toLowerCase().split(" ").join("_"),
+										"' href='javascript:void(0)' onclick='insertTag(\"",
+										data.tags[i].tag.toLowerCase(),"\")'>",data.tags[i].tag.toLowerCase(),"</a>&nbsp;");
+						}
+						if(popUserTags.length > 0){
+							popUserTags = " <b>Top 10 your tags (click to add): </b>".concat(popUserTags);
+							//alert(popUserTags);
+							$("#spanPopUserTag").html(popUserTags);
+						}else{
+							$("#spanPopUserTag").html("&nbsp;");
+						}
+					}else{
+						alert(data.message);
+					}
+				}
+			);
+
+		}
+	}
+
+	function showPopupTag(uid,colid,anchorTag,tdTag){
+		$("#tags_container tr.removable").remove();
+		$('.tagInput').val('');
+		
+		var talkDetail = '&nbsp;Title: '.concat($('#aTitleColID'.concat(colid)).text());
+		$("#tdTagTitle").html(talkDetail);
+		//talkDetail = talkDetail.concat('&nbsp;Speaker: ',document.getElementById('spanSpeakerColID'.concat(colid)).innerHTML);
+		//document.getElementById('spanTagTalkDetail').innerHTML = talkDetail;
+
+		getTalkUserTag(uid,colid);
+		getSuggestedTag(colid);
+		getPopUserTag(uid);
+
+		$("#btnAddMoreTagRow").unbind();
+		$("#btnAddMoreTagRow").click(function(){addMoreTagInputRow();});	
+		
+		$("#btnDoneTagging").unbind();
+		$("#btnDoneTagging").click( function(){
+				var tags = null;
+				if($("input.tagInput").length > 0){
+					tags = "";
+					jQuery.each($("input.tagInput"), function(){
+						if(jQuery.trim($(this).val()) != ""){
+							tags = tags.concat(jQuery.trim($(this).val()),";;");
+						}
+					});
+				}
+				
+				$.post("utils/postTags.jsp",{user_id: uid,col_id: colid,tag: tags},
+					function(data){
+						if(data.status=="OK"){
+
+							$(anchorTag).text(data.tag_tag);
+							
+							var i;
+							var talkTags = "";
+							for(i=0;i<data.tags.length;i++){
+								//"&nbsp;<a href=\"tag.do?tag_id=" + tag_id + "\">" + tag + "</a>";
+								talkTags = talkTags
+									.concat("&nbsp;<a href=\"tag.do?tag_id=",data.tags[i].tag_id,"\">",
+											data.tags[i].tag.toLowerCase(),"</a>");
+							}
+							if(talkTags.length > 0){
+								talkTags = "<br/><b>Tags:</b>".concat(talkTags);
+								$(tdTag).html(talkTags);
+								$(tdTag).show();
+							}else{
+								$(tdTag).html("&nbsp;");
+								$(tdTag).hide;
+							}
+						}else{
+							alert(data.message);
+						}
+						//divTagTalk.style.display = 'none';
+						$("#divTagTalk").fadeOut();
+					}
+				);
+			}
+		);
+		
+		var position = $(anchorTag).position();
+		divTagTalk.style.top = position.top;
+		divTagTalk.style.display = 'block';
+	
+	}
+	
+	function bookmarkTalk(uid,colid,anchorBookmark,tdBookmark){
+		var classname = $(anchorBookmark).attr('class');
+		var txtBookmark;
+		if(classname == 'btn'){
+			txtBookmark = anchorBookmark.value;
+		}else{
+			txtBookmark = anchorBookmark.innerHTML;
+		}
+ 
+		if(typeof txtBookmark != "undefined"){
+			$.post("utils/postBookmark.jsp",{user_id: uid,col_id: colid,bookmark: txtBookmark},
+				function(data){
+					if(data.status == "OK"){
+						if(tdBookmark != null){
+							var classname = $('#'.concat(tdBookmark)).attr('class');
+							if(data.bookmark_tag == "&nbsp;"){
+								$('.'.concat(classname)).css('display','none');
+							}else{
+								$('.'.concat(classname)).css('display','inline');
+							}
+							$('.'.concat(classname)).html(data.bookmark_tag);
+						}
+
+						if($('.tdBookNoColID'.concat(colid)) != null){
+							if(data.bookmarkno > 0){
+								$('.tdBookNoColID'.concat(colid)).css('display','inline');
+								$('.tdBookNoColID'.concat(colid)).html('<b>'
+										.concat(data.bookmarkno,
+											'</b><br/><span style=\'font-size: 0.55em;\'>bookmark',
+											data.bookmarkno > 1?'s':''));
+							}else{
+								$('.tdBookNoColID'.concat(colid)).css('display','none');
+							}
+						}
+
+						if($('.spanWhomBookmarkColID'.concat(colid)) != null){
+							if(data.whombookmark.length > 0){
+								$('.spanWhomBookmarkColID'.concat(colid)).css('display','inline');
+								$('.spanWhomBookmarkColID'.concat(colid)).html('<br/><b>Bookmarked by:</b>'
+										.concat(data.whombookmark));
+							}else{
+								$('.spanWhomBookmarkColID'.concat(colid)).css('display','none');
+							}
+						}
+
+						if($('.tdEmailNoColID'.concat(colid)) != null){
+							if(data.emailno > 0){
+								$('.tdEmailNoColID'.concat(colid)).css('display','inline');
+								$('.tdEmailNoColID'.concat(colid)).html('<b>'
+										.concat(data.emailno,
+											'</b><br/><span style=\'font-size: 0.55em;\'>email',
+											data.emailno > 1?'s':''));
+							}else{
+								$('.tdEmailNoColID'.concat(colid)).css('display','none');
+							}
+						}							
+
+						if($('.tdViewNoColID'.concat(colid)) != null){
+							if(data.viewno > 0){
+								$('.tdViewNoColID'.concat(colid)).css('display','inline');
+								$('.tdViewNoColID'.concat(colid)).html('<b>'
+										.concat(data.viewno,
+											'</b><br/><span style=\'font-size: 0.55em;\'>view',
+											data.viewno > 1?'s':''));
+							}else{
+								$('.tdViewNoColID'.concat(colid)).css('display','none');
+							}
+						}
+
+						if(data.bookmark_tag == "&nbsp;Bookmarked&nbsp;"){							
+							//$("#btnNoAskAgain").show();
+							$("#btnTagClose").val("No, Thanks");
+							showPopupTag(uid,colid,".atagcolid".concat(colid),".spanTagColID".concat(colid));
+						}
+					}else{
+						alert(data.message);
+					}		
+				}
+			);
+
+			if(classname == 'btn'){
+				if(txtBookmark == "Bookmark"){
+					anchorBookmark.value = 'Unbookmark';
+				}else{
+					anchorBookmark.value = 'Bookmark';
+				}		
+			}else{
+				if(txtBookmark == "Bookmark"){
+					$('.'.concat(classname)).text('Unbookmark');
+				}else{
+					$('.'.concat(classname)).text('Bookmark');
+				}		
+			}		
+		}	
+	}
+	
+	function subscribeSeries(uid,sid,anchorSubscribe,tdSubscribe){
+		var classname = $(anchorSubscribe).attr('class');
+		var txtSubscribe;
+		if(classname == 'btn'){
+			txtSubscribe = anchorSubscribe.value;
+		}else{
+			txtSubscribe = anchorSubscribe.innerHTML;
+		}
+ 
+		if(txtSubscribe){
+			$.post("utils/postSubscribe.jsp",{user_id: uid,series_id: sid,subscribe: txtSubscribe},
+				function(data){
+					if(data.status == "OK"){
+						if(tdSubscribe != null){
+							var classname = $('#'.concat(tdSubscribe)).attr('class');
+							if(data.subscribe_tag == "&nbsp;"){
+								$('.'.concat(classname)).css('display','none');
+							}else{
+								$('.'.concat(classname)).css('display','inline');
+							}
+							$('.'.concat(classname)).html(data.subscribe_tag);
+						}	
+					}	
+				}
+			);
+
+			if(classname == 'btn'){
+				if(txtSubscribe == "Subscribe"){
+					anchorSubscribe.value = 'Unsubscribe';
+				}else{
+					anchorSubscribe.value = 'Subscribe';
+				}		
+			}else{
+				if(txtSubscribe == "Subscribe"){
+					$('.'.concat(classname)).text('Unsubscribe');
+				}else{
+					$('.'.concat(classname)).text('Subscribe');
+				}		
+			}		
+		}	
+	}	
+
+	function deleteSeries(sid){
+		$.post("utils/postDelete.jsp",{series_id: sid},
+			function(data){
+				if(data.status == "OK"){
+					window.location = 'series.do';
+				}else{
+					alert(data.message);
+				}	
+			}
+		);
+	}
+	
+	function subscribeCommunity(uid,cid,anchorSubscribe,classSubscribe){
+		var classname = $(anchorSubscribe).attr('class');
+		var txtSubscribe;
+		if(classname == 'btn'){
+			txtSubscribe = anchorSubscribe.value;
+		}else{
+			txtSubscribe = anchorSubscribe.innerHTML;
+		}
+ 
+		if(txtSubscribe){
+			$.post("utils/postSubscribe.jsp",{user_id: uid,comm_id: cid,subscribe: txtSubscribe},
+				function(data){
+					if(data.status == "OK"){
+						if(classSubscribe != null){
+							
+							if(data.subscribe_tag == "&nbsp;"){
+								$('.'.concat(classSubscribe)).css('display','none');
+							}else{
+								$('.'.concat(classSubscribe)).css('display','inline');
+							}
+							$('.'.concat(classSubscribe)).html(data.subscribe_tag);
+						}	
+					}	
+				}
+			);
+
+			if(classname == 'btn'){
+				if(txtSubscribe == "Subscribe"){
+					anchorSubscribe.value = 'Unsubscribe';
+				}else{
+					anchorSubscribe.value = 'Subscribe';
+				}		
+			}else{
+				if(txtSubscribe == "Subscribe"){
+					$('.'.concat(classSubscribe)).text('Unsubscribe');
+				}else{
+					$('.'.concat(classSubscribe)).text('Subscribe');
+				}		
+			}		
+		}	
+	}	
+
+	function joinCommunity(uid,cid,anchorJoin,tdJoin){
+		var classname = $(anchorJoin).attr('class');
+		var txtJoin;
+		if(classname == 'btn'){
+			txtJoin = anchorJoin.value;
+		}else{
+			txtJoin = anchorJoin.innerHTML;
+		}
+ 
+		if(txtJoin){
+			$.post("utils/postMember.jsp",{user_id: uid,comm_id: cid,join: txtJoin},
+				function(data){
+					if(data.status == "OK"){
+						if(tdJoin != null){
+							var classname = $('#'.concat(tdJoin)).attr('class');
+							if(data.member_tag == "&nbsp;"){
+								$('.'.concat(classname)).css('display','none');
+								$('.sub'.concat(classname)).css('display','none');
+							}else{
+								$('.'.concat(classname)).css('display','inline');
+								$('.sub'.concat(classname)).css('display','inline');
+							}
+							$('.'.concat(classname)).html(data.member_tag);
+						}	
+					}	
+				}
+			);
+
+			if(classname == 'btn'){
+				if(txtJoin == "Join"){
+					anchorJoin.value = 'Leave';
+				}else{
+					anchorJoin.value = 'Join';
+				}		
+			}else{
+				if(txtJoin == "Join"){
+					$('.'.concat(classname)).text('Leave');
+				}else{
+					$('.'.concat(classname)).text('Join');
+				}		
+			}		
+		}	
+	}	
+	
+	$(document).ready(function(){
+		$("input.tagInput").autocomplete("./utils/tags.jsp", {
+			  	delay: 20,
+				formatItem: function(data, i, n, value) {			
+					return  value;
+						
+				},
+				formatResult: function(data, value) {
+					return value;
+				}
+		});
+		
+		/*$("#divAddFriend").dialog({ 
+				autoOpen: false,
+			 	buttons: {
+					"Send Request" : function(){
+						$(this).dialog("close");
+					},
+					"Cancel": function(){
+						$(this).dialog("close");
+					}
+		 		},
+		 		minWidth: 300,
+		 		width: 400,
+		 		minHeight: 160
+			}
+		);
+		$("#btnAddAsFriend").click(function(){
+			$("#divAddFriend").dialog('open');
+			return false;
+		});*/
+	});	
+
+	function setDocumentTitle(aTitle){
+		document.title = aTitle;
+	}
+</script>
+
+<style>
+input.btn { 
+	color:#003399; 
+	font: bold 0.7em verdana,helvetica,sans-serif; 
+	background-color: #99CCFF; 
+	border: 2px solid; 
+	border-color: #0066CC #003366 #003366 #0066CC; 
+	filter:progid:DXImageTransform.Microsoft.Gradient (GradientType=0,StartColorStr='#ffffffff',EndColorStr='#ffeeddaa'); 
+}
+a.hiddenlist,a.hiddenlist:visited{
+	background-color: white;
+	border-left: 1px solid white;
+	border-right: 1px solid white;
+	text-decoration:none;
+	color: black;
+}
+a.shownlist,a.shownlist:visited{
+	background-color: #003366;
+	border: 1px solid #003366;
+	text-decoration:none;
+	color: white;
+}
+div.hiddenlist{
+	display: none;	
+}
+div.shownlist{
+	display: block;
+	position:absolute;
+	right: 0;
+	border: 1px solid #003366;
+	width: 200px;
+	text-align: left;
+	background-color: #efefef;
+	/*padding-left: 0;
+	margin-left: 0;*/
+} 
+div.showlist ul{
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	border: 1px solid #003366;
+	width: 100%;
+}
+div.shownlist ul li{
+	float: left;
+	margin: 0;
+	border-top: 1px solid #003366;
+	width: 100%;
+}
+div.shownlist table{
+	width: 100%;
+	padding: 0;
+	border: 0;
+	margin: 0;
+}
+div.tags {float: left; background-color: #0080ff; margin-left:6px;  margin-bottom: 4px; font-size: 13px}
+</style>
+
+		<link href="<%=request.getContextPath() + "/css/stylesheet.css"%>" rel="stylesheet" media="grey" />  
+	</head>
 	<body leftmargin="0" topmargin="0" style="font-family: arial,Verdana,sans-serif,serif;font-size: 0.9em;">
 		<table width="100%" border="0" cellpadding="0" cellspacing="0" style = "margin-top:8px;margin-bottom:8px;"> 
 			<tr>
 				<td valign="top" align="left" style = "background-color: #fff;padding-right:4px" rowspan="3" width="18%">
                 	<html:link forward="aaa.index" >
-                		<img src="images/logo.png" border="0">
+                		<img src="images/comet_logo.png" border="0">
                 	</html:link>
 				</td>			
 				<td align="left" style = "background-color: #fff;padding-left:4px" width="52%">		
@@ -126,7 +1017,7 @@ input.btn {
 				<td style="font-weight:bold; color: #0080ff; font-size:0.75em;">
 					  Bookmark Talks, Share with Friends, and We Recommend More! 
 				</td>
-				<td align="right">
+				<td align="right" style="color: #003366; font-size:0.75em;">
 					<logic:notPresent name="HideBar">
 						<logic:notPresent name="UserSession">
 							<a class="rpxnow" onclick="return false;"
@@ -154,17 +1045,103 @@ input.btn {
 								href="https://washington.rpxnow.com/openid/v2/signin?token_url=http%3A%2F%2Fhalley.exp.sis.pitt.edu%2Fcomet%2Frpx.do">
 								<img alt="openid" src="images/openid.png" border="0"></a>
 						</logic:notPresent>
+						<logic:present name="UserSession">
+							<div id="divNotifications" style="float: right;position: relative;" title="Notifications">
+								<a class="hiddenlist" title="Notifications" href="javascript:return false;" onclick="toggleRequestList(this,divTopNotifyList);return false;">Notifications</a>
+								<div id="divTopNotifyList" class="hiddenlist">
+										<ul>
+											<li>Notifications</li>
+											<li>No new notifications.</li>
+											<li>See All Notifications</li>
+										</ul>
+								</div>
+							</div>
+							<div style="float: right;">&nbsp;</div>
+<% 
+	String sql = "SELECT u.name,u.user_id FROM userinfo u JOIN request r ON u.user_id=r.requester_id " +
+				"WHERE r.accepttime IS NULL AND r.rejecttime IS NULL AND r.droprequesttime IS NULL AND r.target_id=" + ub.getUserID() +
+				" ORDER BY r.requesttime DESC LIMIT 5;";
+	rs = conn.getResultSet(sql);
+	LinkedHashMap<Integer,String> requestMap = new LinkedHashMap<Integer,String>();
+	while(rs.next()){
+		String uname = rs.getString("name");
+		int uid = rs.getInt("user_id");
+		requestMap.put(uid,uname);
+		
+	}
+	if(requestMap.size()==0){
+		
+	}else{
+		
+	}
+%>											
+							<div id="divFriendRequest" style="float: right;position: relative;" title="Friend Requests">
+								<a class="hiddenlist" title="Friend Requests" href="javascript:return false;" onclick="toggleRequestList(this,divTopReqList);return false;"><%=requestMap.size()>0?""+requestMap.size():"" %> Friend Request<%=requestMap.size()>1?"s":"" %></a>
+								<div id="divTopReqList" class="hiddenlist">
+										<ul>
+<%-- 
+											<li>Friend Requests</li>
+--%>
+<%		
+	if(requestMap.size()==0){
+%>
+											<li>No new requests.</li>
+<%-- 
+											<li>See All Friends</li>
+--%>
+<%		
+	}else{
+		for(int uid : requestMap.keySet()){
+			String uname = requestMap.get(uid);
+%>
+											<li><a style="text-decoration: none" href="profile.do?user_id=<%=uid %>"><%=uname %></a></li>
+<%		
+		}
+	}
+%>											
+										</ul>
+								</div>
+							</div>
+						</logic:present>
+
 					</logic:notPresent>
 				</td>
 			</tr>
 			<tr>
-				<td align="left" style = "background-color: #fff;padding-right:4px">
+				<td align="left" style = "background-color: #fff;padding-right:4px;width: 60%;">
 					<logic:notPresent name="HideBar">
-						<form action="http://www.google.com/cse" id="cse-search-box" style="border:0px;margin:0px;padding:0px">
-	                  		<input name="cx" value="007783681798264447413:mijruzgwfwi" type="hidden">
-							<input name="ie" value="UTF-8" type="hidden">
-						    <input name="q" size="38" type="text">
-						    <input name="sa" class ="btn" value="Search" type="submit">
+						<form name="s_search" action="searchResult.do" style="border:0px;margin:0px;padding:0px">
+<% 
+	String s_opt = request.getParameter("s_opt");
+%>
+	                  		<select   name= "s_opt" id="s_opt">  	
+	                  					 
+    							<option   value= "1" <%=s_opt==null?"":(s_opt.trim().equalsIgnoreCase("1")?"selected":"") %>> Title </option> 
+    							<option   value= "2" <%=s_opt==null?"":(s_opt.trim().equalsIgnoreCase("2")?"selected":"") %>> Detail </option>
+    							<option   value= "3" <%=s_opt==null?"":(s_opt.trim().equalsIgnoreCase("3")?"selected":"") %>> Speaker </option>
+    							<option   value= "4" <%=s_opt==null?"selected":(s_opt.trim().equalsIgnoreCase("4")?"selected":"") %>> ALL </option>
+							</select> 
+							<%
+								String query = new String();
+								if ((query = request.getParameter("search_text")) != null){
+									int index;
+									if ((index = query.indexOf("AND")) != -1){
+										query = query.substring(0, index).trim();
+									}
+									if ((query.startsWith("(") && query.endsWith(")") )){
+										query = query.substring(1, query.length()-1);
+									}
+										
+								}
+								else{
+									query = "";
+								}
+							%>
+						    <input name="search_text" size="38" type="text" value = "<%= query %>">
+						    <input name="sa" class ="btn" value="Search" type="button" onclick="s_confirm()">
+						    <input name="sortBy" value="1" type="hidden" />
+							<input name="firstSearch" value="true" type="hidden" />
+						    <a href="advancedSearch.do" style="font-size:11px; text-decoration: none; cursor: pointer; color: #36C">Advanced Search</a>
 					    </form>
                 	</logic:notPresent>
               	</td>    
@@ -599,8 +1576,13 @@ input.btn {
 				}
 			}
 
-			String sql = "SELECT COUNT(*) _no FROM affiliate_col ac JOIN colloquium c ON ac.col_id = c.col_id " +
-							"WHERE ac.affiliate_id = " + id +
+			String sql = "SELECT COUNT(*) _no FROM colloquium c " +
+							"WHERE c.col_id IN " +
+							"(SELECT ac.col_id FROM affiliate_col ac JOIN " +
+							"(SELECT child_id FROM relation WHERE " +
+							"path LIKE CONCAT((SELECT path FROM relation WHERE child_id="+ id + "),',%')) cc " +
+							"ON ac.affiliate_id = cc.child_id " +
+							"UNION SELECT col_id FROM affiliate_col WHERE affiliate_id=" + id + ")" +
 							" AND c._date >= '" + strBeginDate + " 00:00:00' AND c._date <= '" + strEndDate + " 23:59:59'";
 			rs = conn.getResultSet(sql);
 			if(rs.next()){
@@ -674,5 +1656,86 @@ input.btn {
   RPXNOW.overlay = true;
   RPXNOW.language_preference = 'en';
 </script>
+
+		<div style="z-index: 1000;position: absolute;top: 50%;left: 50%;margin-left: -25%;margin-top: -25%;display: none;bacground: rgb(170,170,170) transparent;background: rgba(170,170,170,0.6);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99aaaaaa, endColorstr=#99aaaaaa);-ms-filter: 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#99aaaaaa, endColorstr=#99aaaaaa)';padding: 10px;" 
+			id="divTagTalk">
+			<table cellpadding="0" cellspacing="0" style="background-color: #fff;width: 550px;border: 1px solid #aaaaaa;">
+				<tr>
+					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
+				</tr>
+				<tr>
+					<td id="tdTagTitle" bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;padding: 4px;">
+						&nbsp;Tag a talk
+					</td>
+				</tr>
+				<tr>
+					<td style="border: 1px solid #efefef;">
+						<table width="100%" cellpadding="1" cellspacing="0" border="0" align="center">
+							<tr>
+								<td id="tdTagHeader" colspan="3" style="font-size: 0.85em;padding: 4px;">
+									<table cellpadding="1" cellspacing="0" border="0" width="100%">
+										<tr>
+											<td>
+												<img width='75' alt='Information icon' 
+													src='http://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Information_icon.svg/75px-Information_icon.svg.png'/>
+											</td>
+											<td valign="middle">
+												Could you please help us provide some keywords to organize this talk?
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3">
+									<div id="divUserTagLoading" align='center'><img border='0' src='images/loading-small.gif' /></div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3">
+									<table cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size: 0.7em;padding: 4px;">
+										<tbody id="tags_container" >
+											<tr>
+												<td width="30%" align="center">Keyword1: <input style="font-size: 10px;" class="tagInput" type="text" size="20"  /></td>
+												<td width="30%" align="center">Keyword2: <input style="font-size: 10px;" class="tagInput" type="text" size="20"  /></td>
+												<td width="30%" align="center">Keyword3: <input style="font-size: 10px;" class="tagInput" type="text" size="20"  /></td>
+												<td width="10%" valign="middle"><input id="btnAddMoreTagRow" class="btn" type="button" value="Add More Tags"/></td>
+											</tr>
+											<tr>
+												<td width="30%" align="center">Keyword4: <input style="font-size: 10px;" class="tagInput" type="text" size="20"  /></td>
+												<td width="30%" align="center">Keyword5: <input style="font-size: 10px;" class="tagInput" type="text" size="20"  /></td>
+												<td width="30%" align="center">Keyword6: <input style="font-size: 10px;" class="tagInput" type="text" size="20"  /></td>
+												<td width="10%">&nbsp;</td>
+											</tr>
+										</tbody>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" style="font-size: 0.7em;padding: 4px;">
+									<span id="spanSuggestedTag">&nbsp;</span>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" style="font-size: 0.7em;padding: 4px;">
+									<span id="spanPopUserTag">&nbsp;</span>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="3" style="font-size: 0.7em;padding: 4px;">
+									&nbsp;
+								</td>
+							</tr>
+							<tr style="background-color: #efefef;">
+								<td align="right" width="470">&nbsp;&nbsp;<input id="btnNoAskAgain" class="btn" type="button" style="display: none;" value="Never Ask Again"></input></td>
+								<td align="center" width="40"><input id="btnDoneTagging" class="btn" type="button" value="Save"></input></td>
+								<td align="center" width="40"><input id="btnTagClose" class="btn" type="button" value="Close" onclick="$('#divTagTalk').fadeOut();return false;"></input></td>
+							</tr>
+						</table>		
+					</td>
+				</tr>
+			</table>
+		</div>
+
 </body>
 </html>

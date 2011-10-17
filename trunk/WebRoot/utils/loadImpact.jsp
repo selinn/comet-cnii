@@ -765,7 +765,7 @@ final String[] months = {"January","Febuary","March",
 %>
 <script type="text/javascript">
 	window.onload = function(){
-		if(divImpactContent){
+		if(typeof divImpactContent != "undefined"){
 			if(parent.displayTalks){
 				//alert(divImpactContent.innerHTML);
 				parent.displayTalks(divImpactContent.innerHTML);

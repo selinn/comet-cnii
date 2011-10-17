@@ -231,7 +231,7 @@
 					if(i!=0){
 						user_list += ",";
 					}
-					user_list += user_id_value[i];
+					user_list += "" + user_id_value[i];
 				}
 			}
 			String sql = "SELECT c.col_id FROM rec_user ru JOIN colloquium c ON ru.col_id = c.col_id " +
@@ -300,11 +300,11 @@
 
 				String user_list = "";
 				if(user_id_value !=null){//User Mode
-					for(int j=0;i<user_id_value.length;j++){
+					for(int j=0;j<user_id_value.length;j++){
 						if(j!=0){
 							user_list += ",";
 						}
-						user_list += user_id_value[j];
+						user_list += "" + user_id_value[j];
 					}
 				}
 				String sql = "SELECT c.col_id FROM rec_user ru JOIN colloquium c ON ru.col_id = c.col_id " +
@@ -359,14 +359,14 @@
 	}
 	
 	if(req_recommend){
-		String col_id_list = "";
-		for(Iterator<Integer> it=recSet.iterator();it.hasNext();){
+		String col_id_list = "0";
+		for(Integer recID : recSet){
 			if(col_id_list.length() > 0){
 				col_id_list += ",";
 			}
-			col_id_list += it.next();
+			col_id_list += "" + recID;
 		}
-		sql += "AND c.col_id IN (" + col_id_list + ")";
+		sql += "AND c.col_id IN (" + col_id_list + ") ";
 		//out.println(sql);
 	}else if(user_id_value !=null){//User Mode
 		for(int i=0;i<user_id_value.length;i++){
@@ -436,6 +436,7 @@
 	response.setContentType("application/xml");
 	out.print("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 	out.print("<talks>");
+	//out.print("<sql><![CDATA[" + sql + "]]></sql>");
 	while(rs.next()){
 		noTalks = false;
 		String aDay = rs.getString("day");
@@ -446,6 +447,7 @@
 		String col_id = rs.getString("col_id");
 
 		out.print("<talk id=\"" + col_id + "\">");
+		out.print("<col_id><![CDATA[" + col_id + "]]></col_id>");
 		out.print("<title><![CDATA[" + rs.getString("title") + "]]></title>");
 		String speaker = rs.getString("name");
 		out.print("<speaker><![CDATA[" + speaker + "]]></speaker>");

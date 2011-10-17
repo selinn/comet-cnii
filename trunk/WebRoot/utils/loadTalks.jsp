@@ -8,6 +8,10 @@
 <%@page import="java.util.HashMap"%>
 <%@page import="java.util.Iterator"%>
 <%@page import="java.util.HashSet"%>
+<%@page import="java.io.IOException"%>
+<%@page import="java.io.InputStreamReader"%>
+<%@page import="java.net.URL"%>
+<%@page import="java.io.BufferedReader"%>
 
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html" prefix="html" %>
@@ -21,14 +25,24 @@
 		    "October","November","December"};
 	String insertFirst = (String)request.getParameter("insertfirst");
 	String appendLast = (String)request.getParameter("appendlast");
+	int num = 0;
 %>
+<style>
+	img.speakerImg {
+	    display: block;
+	    margin-left: auto;
+	    margin-right: auto;
+	}
+
+</style>
 <script type="text/javascript">
+
 <!--
 window.onload = function(){
 <%
 	if(insertFirst!=null){
 %>	
-	if(divTalkContent){
+	if(typeof divTalkContent != "undefined"){
 		if(parent.insertTalks){
 			parent.insertTalks(divTalkContent.innerHTML	);
 		}
@@ -36,7 +50,7 @@ window.onload = function(){
 <% 
 	}else if(appendLast!=null){
 %>	
-	if(divTalkContent){
+	if(typeof divTalkContent != "undefined"){
 		if(parent.appendTalks){
 			parent.appendTalks(divTalkContent.innerHTML);
 		}
@@ -44,7 +58,7 @@ window.onload = function(){
 <% 
 	}else{
 %>	
-	if(divTalkContent){
+	if(typeof divTalkContent != "undefined"){
 		if(parent.displayTalks){
 			parent.displayTalks(divTalkContent.innerHTML);
 		}
@@ -55,6 +69,65 @@ window.onload = function(){
 }
 
 //-->
+/*
+function   DrawImage(ImgD, iwidth, iheight){ 
+      var image = new Image();     
+      image.src = ImgD.src; 
+      if(image.width > 0  &&  image.height> 0){ 
+        if(image.width/image.height >= iwidth/iheight){    
+          	 ImgD.width=iwidth; 
+          	 ImgD.height=image.height*iwidth/image.width;  
+          	 ImgD.alt=image.width+ "× "+image.height; 
+        } 
+       else{ 
+          	ImgD.height=iheight; 
+          	ImgD.width=image.width*iheight/image.height;           
+          	ImgD.alt=image.width+ "× "+image.height; 
+       } 
+     }
+} 
+
+function addQuickBookmark(col_id){
+	
+	var src = "utils/bookmarkPage.jsp?col_id=" + col_id;
+	$.modal('<iframe src="' + src + '" height="450" width="830" style="border:0" >', {
+		
+		containerCss:{
+			backgroundColor:"#fff",
+			borderColor:"#000",
+			height:450,
+			padding:0,
+			width:830
+		},
+		overlayClose:true
+		
+	});
+
+	
+}
+
+function closeWindow(){
+	if(period){
+		var action = "utils/loadTalks.jsp";
+		if(period == 0){//Day
+			action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		}else if(period == 1){//Week
+			action = action.concat('?month=',_month,'&year=',_year,'&week=',thisweek);
+		}else{
+			action = action.concat('?month=',_month,'&year=',_year);
+		}
+		if(queryString){
+			action = action.concat('&',queryString);
+		}
+		alert(action);
+		loadTalks(action);
+		
+	}else{
+		window.parent.location.reload();
+	}
+	$.modal.close();
+}
+*/
 </script>
 
 <div id="divTalkContent">
@@ -76,6 +149,7 @@ window.onload = function(){
     boolean req_posted = false;//True means user posts' talks
 	boolean req_impact = false;//True means user impact
 	boolean req_most_recent = false;
+	boolean searchResult = false;
 	String[] user_id_value = request.getParameterValues("user_id");
 	String[] tag_id_value = request.getParameterValues("tag_id");
 	String[] entity_id_value = request.getParameterValues("entity_id");
@@ -121,6 +195,9 @@ window.onload = function(){
     if(request.getParameter("isdebug")!=null){
     	isdebug = true;
     }
+    if(request.getParameter("searchResult") != null){
+    	searchResult = true;
+    }
     
 	String menu = (String)session.getAttribute("menu");
 	if(menu.equalsIgnoreCase("myaccount")){
@@ -165,7 +242,7 @@ window.onload = function(){
 	    if(req_month == 1){
 	    	setcal.set(req_year-1, 11, 1);
 	    }else{
-	    	setcal.set(req_year, req_month-2, 1);
+			setcal.set(req_year, req_month-2, 1);
 	    }  
 	    int daysPrevMonth = setcal.getActualMaximum(Calendar.DAY_OF_MONTH);
 	/*****************************************************************/
@@ -304,8 +381,8 @@ window.onload = function(){
 							" AND c._date >='" + strRecBeginDate + "' " +
 							"AND c._date <='" + strRecEndDate + "' " +
 							"AND c.col_id NOT IN (SELECT col_id FROM userprofile WHERE user_id=" + ub.getUserID() + ") " +
-							"AND c.col_id NOT IN (SELECT col_id FROM userfeedback where user_id=" + ub.getUserID() + 
-							" AND rating <= (SELECT SUM(rating)/COUNT(*) FROM userfeedback WHERE user_id=" +ub.getUserID() + ") GROUP BY col_id) " +
+							"AND c.col_id NOT IN (SELECT col_id FROM lastuserfeedback where user_id=" + ub.getUserID() + 
+							" AND rating <= (SELECT averageUserfeedback FROM averageuserratings WHERE user_id=" +ub.getUserID() + ")) " +
 							"ORDER BY ru.weight DESC LIMIT 5";
 			ResultSet rs = conn.getResultSet(sql);
 			//out.println(sql);
@@ -366,8 +443,8 @@ window.onload = function(){
 								" AND c._date >='" + strRecBeginDate + "' " +
 								"AND c._date <='" + strRecEndDate + "' " +
 								"AND c.col_id NOT IN (SELECT col_id FROM userprofile WHERE user_id=" + ub.getUserID() + ") " +
-								"AND c.col_id NOT IN (SELECT col_id FROM userfeedback where user_id=" + ub.getUserID() + 
-								" AND rating <= (SELECT SUM(rating)/COUNT(*) FROM userfeedback WHERE user_id=" + ub.getUserID() + ") GROUP BY col_id) " +
+								"AND c.col_id NOT IN (SELECT col_id FROM lastuserfeedback where user_id=" + ub.getUserID() + 
+								" AND rating <= (SELECT averageUserfeedback FROM averageuserratings WHERE user_id=" + ub.getUserID() + ")) " +
 								"ORDER BY ru.weight DESC LIMIT 5";
 				ResultSet rs = conn.getResultSet(sql);
 				//out.println(sql);
@@ -384,10 +461,16 @@ window.onload = function(){
 // ~ Recommendation Part
 //=================================================================
 
+	//Search Result Part
+	ArrayList<Long> searchList = new ArrayList<Long>();
+	if(searchResult){
+		searchList = (ArrayList<Long>)session.getAttribute("searchResultList");
+	}
+
 	String sql = "SELECT date_format(c._date,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 					"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
 					"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
-					"date_format(c._date,_utf8'%Y') _year,c.slide_url " +
+					"date_format(c._date,_utf8'%Y') _year,c.slide_url, s.picURL " +
 					"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
 					"JOIN userinfo u ON c.owner_id = u.user_id ";// +
 					//"LEFT JOIN host h ON c.host_id = h.host_id " +
@@ -399,7 +482,7 @@ window.onload = function(){
 		sql = "SELECT date_format(pt.posttime,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 				"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
 				"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
-				"date_format(c._date,_utf8'%Y') _year,c.slide_url " +
+				"date_format(c._date,_utf8'%Y') _year,c.slide_url, s.picURL " +
 				"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
 				"JOIN userinfo u ON c.owner_id = u.user_id " +
 				"JOIN " +
@@ -467,6 +550,15 @@ window.onload = function(){
 					"UNION SELECT col_id FROM affiliate_col WHERE affiliate_id=" + affiliate_id_value[i] + ") ";
 		}
 	}
+	if(searchResult){
+		sql += " AND c.col_id IN (";
+		for (long a: searchList){
+		 	sql += "'" + a + "',";
+		}
+		sql = sql.substring(0, sql.length()-1);
+		sql += ")";
+	}
+	int olderTalkNo = 0;
 	if(menu.equalsIgnoreCase("calendar")||menu.equalsIgnoreCase("myaccount")||req_most_recent||req_specific_date){
 		if(req_posted){
 			sql += "AND pt.posttime >= '" + strBeginDate + " 00:00:00' " +
@@ -476,7 +568,7 @@ window.onload = function(){
 				if(insertFirst==null){
 					sql += "AND c._date >='" + strBeginDate + " 00:00:00' ";
 					
-					//Count # older talks
+					//Count # earlier talks
 					String _sql = "SELECT COUNT(*) _no FROM colloquium c ";
 					if(series_id_value != null){//Series Mode
 						for(int i=0;i<series_id_value.length;i++){
@@ -493,20 +585,28 @@ window.onload = function(){
 					_sql += "AND c._date < '" + strBeginDate + " 00:00:00' ";
 					ResultSet rs = conn.getResultSet(_sql);
 					if(rs.next()){
-						int olderTalkNo = rs.getInt("_no");
+						olderTalkNo = rs.getInt("_no");
 						if(olderTalkNo > 0){
 %>
-	<table id="tblOlderTalks" border="0" cellspacing="0" cellpadding="0" width="95%" align="center">
-		<tr>
-			<td bgcolor="#efefef" style="font-size: 0.25em;">&nbsp;</td>
-		</tr>
-		<tr>
-			<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;">&nbsp;<input class="btn" type="button" onclick="this.value='Loading...';this.style.disabled='disabled';showOlderTalks();return false;" value="Show <%=olderTalkNo %> Older Talk<%=(olderTalkNo>0?"s":"") %>" ></input></td>
-		</tr>
-		<tr>
-			<td bgcolor="#efefef" style="font-size: 0.25em;">&nbsp;</td>
-		</tr>
-	</table>	
+	<br/>
+	<div id="divOlderTalks" align="center">
+		<table border="0" cellspacing="0" cellpadding="0" width="95%" align="center">
+			<tr>
+				<td bgcolor="#efefef" style="font-size: 0.25em;">&nbsp;</td>
+			</tr>
+			<tr>
+				<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;">
+					&nbsp;
+					<input class="btn" type="button" 
+						onclick="this.value='Loading...';this.style.disabled='disabled';showOlderTalks();return false;" 
+						value="Show <%=olderTalkNo %> Earlier Talk<%=(olderTalkNo>0?"s":"") %>" />
+				</td>
+			</tr>
+			<tr>
+				<td bgcolor="#efefef" style="font-size: 0.25em;">&nbsp;</td>
+			</tr>
+		</table>	
+	</div>
 <%							
 						}
 					}
@@ -520,11 +620,23 @@ window.onload = function(){
 		}
 	}
 	sql += "GROUP BY c.col_id ";
-	if(req_posted){
-		sql += "ORDER BY pt.posttime;";
+	if(searchResult){
+		//No order
+		sql += " ORDER BY FIELD(c.col_id, ";
+		for (long a: searchList){
+		 	sql += "'" + a + "',";
+		}
+		sql = sql.substring(0, sql.length()-1);
+		sql += ")";
+
 	}else{
-		sql += "ORDER BY c._date,c.begintime;";
+		if(req_posted){
+			sql += "ORDER BY pt.posttime;";
+		}else{
+			sql += "ORDER BY c._date,c.begintime;";
+		}
 	}
+	
 	String day = "";
 	if(isdebug){
 		out.println(sql);
@@ -540,7 +652,7 @@ window.onload = function(){
 %>
 	<table border="0" cellspacing="0" cellpadding="0" width="95%" align="center">
 <%	
-	if(!req_most_recent && tag_id_value==null && entity_id_value==null && series_id_value==null && comm_id_value==null){
+	if(!req_most_recent && tag_id_value==null && entity_id_value==null && series_id_value==null && comm_id_value==null && !searchResult){
 %>
 		<tr>
 			<td>&nbsp;</td>
@@ -548,10 +660,14 @@ window.onload = function(){
 		<tr>
 			<td><%=strDisplayDateRange%></td>
 		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
 <%		
 	}
 	int deli=0;
 	while(rs.next()){
+		num++;
 		noTalks = false;
 		String aDay = rs.getString("day");
 		String _year = rs.getString("_year");
@@ -561,29 +677,45 @@ window.onload = function(){
 		//String host = rs.getString("host");
 		String owner_id = rs.getString("owner_id");
 		String owner = rs.getString("owner");
+		String pic_url = "images/speaker/avartar.gif";
+		if (rs.getString("picURL") != null)
+			pic_url = rs.getString("picURL");
 		if(!day.equalsIgnoreCase(aDay)){
 			if(!day.equalsIgnoreCase("")){
 %>
 				</table>
 			</td>
 		</tr>
-<%			
-			}else if(menu.equalsIgnoreCase("myaccount")){
-%>
 		<tr>
 			<td>&nbsp;</td>
 		</tr>
+<%			
+			}else if(menu.equalsIgnoreCase("myaccount")){
+%>
 		<tr>
 			<td align="right">
 				<input class="btn" type="button" value="Delete" onclick="deleteCols();" >
 			</td>
 		</tr>
-<%			}
-			day = aDay;
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+<%			}else if(menu.equalsIgnoreCase("series")||menu.equalsIgnoreCase("community")){
+				if(insertFirst!=null&&day.equalsIgnoreCase("")){
 %>
 		<tr>
 			<td>&nbsp;</td>
 		</tr>
+<%					
+				}
+			}		
+			day = aDay;
+%>
+<%-- 
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
+--%>
 		<tr>
 			<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 		</tr>
@@ -612,7 +744,7 @@ window.onload = function(){
 		}
 		//How many emails
 		int emailno = 0;
-		sql = "SELECT emails FROM emailfriends WHERE col_id=" + col_id;
+		/*sql = "SELECT emails FROM emailfriends WHERE col_id=" + col_id;
 		ResultSet rsExt = conn.getResultSet(sql);
 		if(rsExt!=null){
 			HashSet<String> setEmails = new HashSet<String>();
@@ -627,11 +759,11 @@ window.onload = function(){
 				}
 			}
 			emailno = setEmails.size();
-		}
+		}*/
 		
 		//How many views
 		int viewno = 0;
-		sql = "SELECT ipaddress,sessionid,COUNT(*) _no FROM talkview WHERE col_id=" + col_id + " GROUP BY ipaddress,sessionid";
+		/*sql = "SELECT ipaddress,sessionid,COUNT(*) _no FROM talkview WHERE col_id=" + col_id + " GROUP BY ipaddress,sessionid";
 		rsExt = conn.getResultSet(sql);
 		if(rsExt!=null){
 			while(rsExt.next()){
@@ -644,7 +776,7 @@ window.onload = function(){
 				}
 				
 			}
-		}
+		}*/
 		
 		//Bookmark by
 		HashSet<Integer> bookSet = null; 
@@ -656,14 +788,14 @@ window.onload = function(){
 		sql = "SELECT u.user_id,u.name,COUNT(*) _no FROM userinfo u,userprofile up " +
 				"WHERE u.user_id = up.user_id AND up.col_id = " + col_id +
 				" GROUP BY u.user_id,u.name ORDER BY u.name";
-		rsExt = conn.getResultSet(sql);
+		ResultSet rsExt = conn.getResultSet(sql);
 		if(rsExt!=null){
 			while(rsExt.next()){
 				String user_name = rsExt.getString("name");
 				long user_id = rsExt.getLong("user_id");
-				long _no = rsExt.getLong("_no");
+				//long _no = rsExt.getLong("_no");
 				if(user_name.length() > 0){
-					bookmarks += "&nbsp;<a href=\"profile.do?user_id=" + user_id + "\">" + user_name + "</a>";
+					bookmarks += "&nbsp;<a href=\"calendar.do?user_id=" + user_id + "\">" + user_name + "</a>";
 					bookmarkno++;				
 				}
 				if(ub != null){
@@ -673,69 +805,107 @@ window.onload = function(){
 				}
 			}
 		}
+		
+		sql = "SELECT viewno,emailno FROM col_impact WHERE col_id=" + col_id;
+		rsExt = conn.getResultSet(sql);
+		while(rsExt.next()){
+			viewno = rsExt.getInt("viewno");
+			emailno = rsExt.getInt("emailno");
+		}
 %>
 						<td>
 							<table align="center" width="100%" border="0" cellpadding="0" cellspacing="1" style="font-size: 0.8em;">
 								<tr>
 									<td valign="top" width="9.5%">
 <%
+		String strBookmark = "", strEmail = "", strView = "";
 		if(viewno > 0 || emailno > 0 || bookmarkno > 0){
 %>
+<%-- 
 										<table width="100%" border="0" cellpadding="0" cellspacing="1">
+--%>
 <% 
 			if(bookmarkno > 0){
-				String strBookmark = "<b>" + bookmarkno + "</b><br/><span style='font-size: 0.55em;'>bookmark";
+				strBookmark = "<b>" + bookmarkno + "</b><br/><span style='font-size: 0.55em;'>bookmark";
 				if(bookmarkno > 1){
 					strBookmark += "s";
 				}
 				strBookmark += "</span>";
 %>
+<%-- 
 											<tr>
 												<td valign="top" align="center" 
 													style="padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #228b22;color: #fff;">
 													<%=strBookmark%>
 												</td>
 											</tr>
+--%>
 <%			
 			}
 			if(emailno > 0){
-				String strEmail = "<b>" + emailno + "</b><br/><span style='font-size: 0.55em;'>email";
+				strEmail = "<b>" + emailno + "</b><br/><span style='font-size: 0.55em;'>email";
 				if(emailno > 1){
 					strEmail += "s";
 				}
 				strEmail += "</span>";
 %>
+<%-- 
 											<tr>
 												<td valign="top" align="center" style="padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #eedd82;color: #fff;">
 													<%=strEmail%>
 												</td>
 											</tr>
+--%>
 <%			
 			}
 			if(viewno > 0){
-				String strView = "<b>" + viewno + "</b><br/><span style='font-size: 0.55em;'>view";
+				strView = "<b>" + viewno + "</b><br/><span style='font-size: 0.55em;'>view";
 				if(viewno > 1){
 					strView += "s";
 				}
 				strView += "</span>";
 %>
+<%-- 
 											<tr>
 												<td valign="top" align="center" 
 													style="padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #9370db;color: #fff;">
 													<%=strView%>
 												</td>
 											</tr>
+--%>
 <%			
 			}
 %>											
+<%-- 
 										</table>
+--%>
 <%		
-		} 
+		}
 %>
+										<table width="100%" border="0" cellpadding="0" cellspacing="1">
+											<tr>
+												<td class="tdBookNoColID<%=col_id %>" valign="top" align="center" 
+													style="display:<%=bookmarkno==0?"none":"inline" %>;padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #228b22;color: #fff;">
+													<%=strBookmark%>
+												</td>
+											</tr>
+											<tr>
+												<td class="tdEmailNoColID<%=col_id %>" valign="top" align="center" 
+													style="display:<%=emailno==0?"none":"inline" %>;padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #eedd82;color: #fff;">
+													<%=strEmail%>
+												</td>
+											</tr>
+											<tr>
+												<td class="tdViewNoColID<%=col_id %>" valign="top" align="center" 
+													style="display:<%=viewno==0?"none":"inline" %>;padding-right: 1px;padding-left: 1px;padding-top: 3px;padding-bottom: 3px;font-weight: bold;background-color: #9370db;color: #fff;">
+													<%=strView%>
+												</td>
+											</tr>
+										</table>
 									</td>
-									<td width="90.5%" valign="top">
+									<td width="75.5%" valign="top">
 
-							<b><a href="presentColloquium.do?col_id=<%=col_id%>"><%=rs.getString("title")%></a></b>
+							<b><a id="aTitleColID<%=col_id %>" href="presentColloquium.do?col_id=<%=col_id%>"><%=rs.getString("title")%></a></b>
 <% 
 		String video_url = rs.getString("video_url");
 		if(video_url != null){
@@ -753,6 +923,10 @@ window.onload = function(){
 <%				
 			}
 		}
+		boolean bookmarked = false;
+%>
+							<logic:present name="UserSession">
+<%		
 		if(recSet != null){
 			if(recSet.contains(Integer.parseInt(col_id))){
 %>
@@ -763,12 +937,38 @@ onclick="javascript:return false;">&nbsp;Recommended&nbsp;</span>
 		}
 		if(bookSet != null){
 			if(bookSet.contains(Integer.parseInt(col_id))){
+				bookmarked = true;
 %>
-&nbsp;<span style="cursor: pointer;font-size: 1em;background-color: green;font-weight: bold;color: white;"
-onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 <%				
+			}else{
+%>
+<%-- 
+			<input type='image' onClick="addQuickBookmark(<%= col_id %>)" src="images/bookmark.jpeg" 
+			width="20" height="20"  align = "right" />
+--%>
+<% 
 			}
 		}
+%>
+&nbsp;<span id="spanbookcolid<%=col_id %>" class="spanbookcolid<%=col_id %>" 
+style="display:<%=bookmarked?"inline":"none" %>;cursor: pointer;font-size: 1em;background-color: green;font-weight: bold;color: white;"
+onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
+<%-- 
+&nbsp;
+<a class="abookcolid<%=col_id %>" href="javascript:return false;" 					
+	style="text-decoration: none;"
+	onmouseover="this.style.textDecoration='underline'" 
+	onmouseout="this.style.textDecoration='none'"
+	onclick="bookmarkTalk(<%=ub.getUserID() %>, <%=col_id %>, this, 'spanbookcolid<%=col_id %>')"
+><%=bookmarked?"Unbookmark":"Bookmark" %></a>
+--%>
+<%-- 
+<input class="btn" type="button" value="<%=bookmarked?"Unbookmark":"Bookmark" %>"
+					onclick="bookmarkTalk(<%=ub.getUserID() %>,<%=col_id %>,this,'spanbookcolid<%=col_id %>');" />
+--%>
+							</logic:present>
+<%	
+		
 		String speaker = rs.getString("name");
 		String affiliation = rs.getString("affiliation");
 		if(!affiliation.equalsIgnoreCase("n/a")){
@@ -778,7 +978,7 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 		}
 %>							
 							<br/>
-							<span style="font-size: 0.75em;"><b>By:</b> <%=speaker%>&nbsp;
+							<span style="font-size: 0.75em;"><b>By:</b> <span id="spanSpeakerColID<%=col_id %>"><%=speaker%></span>&nbsp;
 							<b>on:</b> <%=rs.getString("_begin")%> - <%=rs.getString("_end")%><br/>
 <% 
 		sql = "SELECT r.path FROM affiliate_col ac INNER JOIN relation r ON ac.affiliate_id = r.child_id WHERE ac.col_id = " + col_id;
@@ -787,6 +987,7 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 		HashMap<String,String> aList = new HashMap<String,String>();
 		while(rsSponsor.next()){
 			String relation = rsSponsor.getString("path");
+			
 			relationList.add(relation);
 			String[] path = relation.split(",");
 			for(int i=0;i<path.length;i++){
@@ -855,7 +1056,33 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 							<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 1em;font-family: arial,Verdana,sans-serif,serif;">
 								<tr>
 									<td style="font-weight: bold;" width="8%" align="left">Series:</td>
-									<td><a href="series.do?series_id=<%=series_id%>"><%=series_name%></a></td>
+									<td>
+										<a href="series.do?series_id=<%=series_id%>"><%=series_name%></a>
+										<logic:present name="UserSession">
+<% 
+				int subno = 0;
+				if(ub != null){
+					sql = "SELECT COUNT(*) _no FROM final_subscribe_series WHERE series_id=" + series_id + " AND user_id=" + ub.getUserID();
+					rsExt = conn.getResultSet(sql);
+					if(rsExt.next()){
+						subno = rsExt.getInt("_no");
+					}
+				}
+%>
+										&nbsp;
+										<span class="spansubsid<%=series_id %>" id="spansubcid<%=col_id %>" 
+											style="display: <%=subno==0?"none":"inline" %>;font-size: 0.9em;cursor: pointer;background-color: blue;font-weight: bold;color: white;"
+											onclick="window.location='series.do?series_id=<%=series_id %>'"><%=subno>0?"&nbsp;Subscribed&nbsp;":"" %>
+										</span>
+										&nbsp;	
+										<a class="asubsid<%=series_id %>" href="javascript:return false;" 					
+											style="text-decoration: none;"
+											onmouseover="this.style.textDecoration='underline'" 
+											onmouseout="this.style.textDecoration='none'"
+											onclick="subscribeSeries(<%=ub.getUserID() %>, <%=series_id %>, this, 'spansubcid<%=col_id %>')"
+										><%=subno>0?"Unsubscribe":"Subscribe" %></a>
+										</logic:present>	
+									</td>
 								</tr>
 							</table>
 <%				
@@ -888,16 +1115,15 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 %>
 		<logic:present name="UserSession">
 <%
+		
 		//Tags
-		sql = "SELECT t.tag_id,t.tag,COUNT(*) _no FROM tag t,tags tt,userprofile u " +
-				"WHERE t.tag_id = tt.tag_id AND " +
-				"tt.userprofile_id = u.userprofile_id AND " +
-				"u.col_id = " + col_id +
+		sql = "SELECT t.tag_id,t.tag,COUNT(*) _no FROM tag t JOIN tags tt ON t.tag_id = tt.tag_id " +
+				"WHERE  tt.col_id = " + col_id +
 				" GROUP BY t.tag_id,t.tag " +
 				"ORDER BY t.tag";
+		String tags = "";
 		rsExt = conn.getResultSet(sql);
 		if(rsExt != null){
-			String tags = "";
 			while(rsExt.next()){
 				String tag = rsExt.getString("tag");
 				long tag_id = rsExt.getLong("tag_id");
@@ -906,12 +1132,24 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 					tags +=	"&nbsp;<a href=\"tag.do?tag_id=" + tag_id + "\">" + tag + "</a>";
 				}
 			}
-			if(tags.length() > 0){
-%>
-							<br/><b>Tags:</b><%=tags%>
-<%
+		}
+		
+		sql = "SELECT COUNT(*) _no FROM tag t JOIN tags tt ON t.tag_id = tt.tag_id " +
+				"WHERE  tt.col_id = " + col_id + " AND tt.user_id=" + ub.getUserID() +
+				" GROUP BY t.tag_id ";
+		boolean usertagged = false;
+		rsExt = conn.getResultSet(sql);
+		if(rsExt != null){
+			while(rsExt.next()){
+				long _no = rsExt.getLong("_no");
+				if(_no > 0)usertagged = true;
 			}
 		}
+%>
+							<span class="spanTagColID<%=col_id %>" style="display:<%=tags.length()>0?"inline":"none" %>;">
+								<br/><b>Tags:</b><%=tags %>
+							</span>
+<%
 		
 		sql = "SELECT c.comm_id,c.comm_name,COUNT(*) _no FROM community c,contribute ct,userprofile u " +
 				"WHERE c.comm_id = ct.comm_id AND " +
@@ -921,8 +1159,8 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 				"ORDER BY c.comm_name";
 		rsExt.close();
 		rsExt = conn.getResultSet(sql);
+		String communities = "";		
 		if(rsExt != null){
-			String communities = "";		
 			while(rsExt.next()){
 				String comm_name = rsExt.getString("comm_name");
 				long comm_id = rsExt.getLong("comm_id");
@@ -931,23 +1169,36 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 					communities += "&nbsp;<a href=\"community.do?comm_id=" + comm_id + "\">" + comm_name + "</a>"; 
 				}
 			}
-			if(communities.length() > 0){
-%>
-							<br/><b>Posted to groups:</b><%=communities%>
-<%			
-			}
-		}
-		if(bookmarks.length() > 0){
-%>
-							<br/><b>Bookmarked by:</b><%=bookmarks%>
-<%			
 		}
 %>
+							<span class="spanPostGroupColID<%=col_id %>" style="display:<%=communities.length()>0?"inline":"none" %>;">
+								<br/><b>Posted to groups:</b><%=communities%>
+							</span>
 
+							<span class="spanWhomBookmarkColID<%=col_id %>" style="display:<%=bookmarks.length()>0?"inline":"none" %>;">
+								<br/><b>Bookmarked by:</b><%=bookmarks%>
+							</span>
+<br/>
+<a class="abookcolid<%=col_id %>" href="javascript:return false;" 					
+	style="text-decoration: none;"
+	onmouseover="this.style.textDecoration='underline'" 
+	onmouseout="this.style.textDecoration='none'"
+	onclick="bookmarkTalk(<%=ub.getUserID() %>, <%=col_id %>, this, 'spanbookcolid<%=col_id %>')"
+><%=bookmarked?"Unbookmark":"Bookmark" %></a>
+&nbsp;
+<a class="atagcolid<%=col_id %>" href="javascript:return false;"
+	style="text-decoration: none;"
+	onmouseover="this.style.textDecoration='underline'" 
+	onmouseout="this.style.textDecoration='none'"
+	onclick="$('#tdTagHeader').hide();$('#btnTagClose').val('Close');showPopupTag(<%=ub.getUserID() %>,<%=col_id %>,this,'.spanTagColID<%=col_id %>')"
+><%=usertagged?"Edit Tags":"Add Tags" %></a>
 		</logic:present>
 
 							</span>
 
+									</td>
+									<td width="15%" valign = "top">
+										<img class="speakerImg" src="<%=pic_url %>" onload="javascript: DrawImage(this, 100, 100)" />
 									</td>
 								</tr>
 							</table>
@@ -978,12 +1229,13 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 	if(noTalks){
 %>
 		<tr>
-			<td id="lblNoTalk" style="font-size: 0.95em;font-weight: bold;" align="center">No Talks Recently</td>
+			<td id="lblNoTalk" style="font-size: 0.95em;font-weight: bold;" align="center"><%=olderTalkNo>0?"No Forthcoming Talks":"No Talks" %></td>
 		</tr>
 <%	
 	}
 %>
 	</table>
+	<input type="hidden" id="count" value="<%= num %>" />
 <% 
 	if(menu.equalsIgnoreCase("myaccount")){
 %>
@@ -992,5 +1244,4 @@ onclick="window.location='myaccount.do'">&nbsp;Bookmarked&nbsp;</span>
 	}
 %>
 </div>
-<script type="text/javascript">
-</script>	
+	

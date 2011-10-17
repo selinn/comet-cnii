@@ -21,6 +21,7 @@
 	connectDB conn = new connectDB();
 	ResultSet rs = null;
     try{
+    	
 		//How many emails
 		int emailno = 0;
 		String sql = "SELECT emails FROM emailfriends WHERE col_id=" + col_id;
@@ -142,7 +143,20 @@
 	</tr>
 </table><br/>
 <%
-			
+			//Update talks impact into db
+			sql = "SELECT COUNT(*) _no FROM col_impact WHERE col_id=" + col_id;
+			rs = conn.getResultSet(sql);
+			if(rs.next()){
+				int found = rs.getInt("_no");
+				if(found == 0){
+					sql = "INSERT INTO col_impact (col_id,viewno,bookmarkno,emailno,timestamp) VALUES (" + 
+							col_id + "," + viewno + "," + bookmarkno + "," + emailno + ",NOW())";
+				}else{
+					sql = "UPDATE col_impact SET viewno=" + viewno + ",bookmarkno=" + bookmarkno + 
+							",emailno=" + emailno + ",timestamp=NOW() WHERE col_id=" + col_id;
+				}
+				conn.executeUpdate(sql);
+			}
 		}
 		
 	}catch(SQLException ex){

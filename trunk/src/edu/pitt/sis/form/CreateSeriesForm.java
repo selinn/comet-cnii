@@ -29,8 +29,17 @@ public class CreateSeriesForm extends ActionForm {
 	private String description;
 	private String[] sponsor_id;
 	private String series_id;
+	private String[] area_id;
 	
 	// --------------------------------------------------------- Methods
+
+	public String[] getArea_id() {
+		return area_id;
+	}
+
+	public void setArea_id(String[] areaId) {
+		area_id = areaId;
+	}
 
 	/** 
 	 * Method validate

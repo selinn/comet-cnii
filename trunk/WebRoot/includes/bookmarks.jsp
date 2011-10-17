@@ -22,10 +22,19 @@
 <script type="text/javascript" src="scripts/calendar-setup.js"></script>
 
 <script type="text/javascript" src="ckeditor/ckeditor.js"></script>	
-<script src="ckeditor/sample.js" type="text/javascript"></script> 
-<link href="ckeditor/sample.css" rel="stylesheet" type="text/css"/>		
+<script src="ckeditor/_samples/sample.js" type="text/javascript"></script> 
+<link href="ckeditor/_samples/sample.css" rel="stylesheet" type="text/css"/>		
 
+<%-- 
+<link type="text/css" href="css/jquery-ui-1.8.5.custom.css" rel=
+  "stylesheet" /> 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"> 
+</script> 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"> 
+</script> 
+--%>
 <% 
+	connectDB conn = new connectDB();
 	session=request.getSession(false);
 	String menu = (String)session.getAttribute("menu");
 	String _v = (String)session.getAttribute("v");
@@ -58,11 +67,33 @@
 	if(user_id!=null&&v==null){
 		//This is ad-hoc page because we should choose v=activity if its user_id is friend of the user unless choosing v=info
 		v="info";
+		if(ub!=null){
+			String user0_id = user_id;
+			String user1_id = "" + ub.getUserID();
+			
+			if(Integer.parseInt(user_id) > ub.getUserID()){
+				user0_id = "" + ub.getUserID();
+				user1_id = user_id;
+			}
+			
+			String sql = "SELECT friend_id FROM friend WHERE user0_id=" + user0_id + " AND user1_id=" + user1_id + 
+						" AND breaktime IS NULL";
+			
+			ResultSet rs = conn.getResultSet(sql);
+			if(rs.next()){
+				v="activity";
+			}
+		}
 	}
 	if(t==null&&v==null){
 		v="bookmark";
 	}
 %>
+<style type="text/css"> 
+    .auto-hint { color: #AAAAAA; }
+    .icon-show { display: block; width: 50px;}
+    .icon-hide { display: none; }
+</style> 
 <script type="text/javascript">
 	var isBookmark = 1;//0: Post;1: Bookmark;2: Impact;3: Impact Summary;4: Activity;5: Info
 <% 
@@ -201,13 +232,56 @@
 			window.setTimeout(function(){createCalExtIFrame();},50);
 		}
 	}
+
+	function getExtFBProfile(profileID){
+		if(document.getElementById("tdFacebook")){
+			var tdFacebook = document.getElementById("tdFacebook");
+			$.get("profile/facebookProfile.jsp", {fAutoID: profileID},
+					function(data){
+						tdFacebook.innerHTML = data;
+					}
+				);
+		}
+		//alert(profileID);
+	}
+
+	function getExtInProfile(profileID){
+		if(document.getElementById("tdLinkedIn")){
+			var tdLinkedIn = document.getElementById("tdLinkedIn");
+			$.get("profile/linkedinProfile.jsp", {lAutoID: profileID},
+					function(data){
+						tdLinkedIn.innerHTML = data;
+					}
+				);
+		}
+	}
+
+	function showOlderPosts(uid,divPost,timeStamp){
+		var divOlderPosts = document.getElementById(divPost);
+		if(divOlderPosts){
+			divOlderPosts.innerHTML = "<div align='center'><img border='0' src='images/loading.gif' /></div>";
+			$.get("profile/recentActivity.jsp",{user_id: uid,appendlast: 1,timestamp: timeStamp},
+				function(data){
+					//divOlderPosts.style.display = "none";
+					//var tdRecentActivity = document.getElementById("tdRecentActivity");
+					//tdRecentActivity.innerHTML = tdRecentActivity.innerHTML.concat(data);
+					divOlderPosts.innerHTML = data;
+				}
+			);
+		}	
+
+	}			
 	
 	function showOlderTalks(){
 		if(!oSelfTalkIFrame){
 			createSelfTalkIFrame();
-			window.setTimeout(function(){showOlderTalks();},60);
+			window.setTimeout(function(){showOlderTalks();},40);
 			return;
 		}else{
+			var divOlderTalks = document.getElementById("divOlderTalks");
+			if(divOlderTalks){
+				divOlderTalks.innerHTML = "<div align='center'><img border='0' src='images/loading.gif' /></div>";
+			}	
 			var action = "utils/loadTalks.jsp?insertfirst=1";
 			var queryString = window.location.search;
 			if(queryString!=null){
@@ -215,6 +289,13 @@
 				action = action.concat('&',queryString);
 			}
 			oSelfTalkIFrame.location = action;
+
+			action = "utils/namedEntity.jsp?insertfirst=1";
+			if(queryString!=null){
+				action = action.concat('&',queryString);
+			}
+			loadExtension(action);		
+				
 		}			
 	}
 
@@ -234,18 +315,19 @@
 			}
 			oSelfTalkIFrame = frames["hiddenSelfTalkFrame"];
 		}else{
-			window.setTimeout(function(){createSelfTalkIFrame();},50);
+			window.setTimeout(function(){createSelfTalkIFrame();},40);
 		}
 	}
 
 	function insertTalks(htmlTalks){
 		var divMain = document.getElementById("divMain");
 		divMain.innerHTML = htmlTalks.concat(divMain.innerHTML); 
-		var tblOlderTalks = document.getElementById("tblOlderTalks");
-		if(tblOlderTalks){
-			tblOlderTalks.style.display = "none";
-			tblOlderTalks.style.height = "0px";
-			tblOlderTalks.style.overflow = "hidden";
+		var divOlderTalks = document.getElementById("divOlderTalks");
+		if(divOlderTalks){
+			divOlderTalks.innerHTML = "&nbsp;";
+			divOlderTalks.style.display = "none";
+			divOlderTalks.style.height = "0px";
+			divOlderTalks.style.overflow = "hidden";
 		}
 		var lblNoTalk = document.getElementById("lblNoTalk");
 		if(lblNoTalk){
@@ -259,10 +341,10 @@
 	}
 
 	function loadTalks(action){
-		//divTalks.innerHTML = "<font color='red'><b>Loading...</b></font>";
+		displayTalks("<div align='center'><img border='0' src='images/loading.gif' /></div>");
 		if(!oTalkIFrame){
 			createTalkIFrame();
-			window.setTimeout(function(){loadTalks(action);},60);
+			window.setTimeout(function(){loadTalks(action);},40);
 			return;
 		}else{
 			oTalkIFrame.location = action;
@@ -274,7 +356,7 @@
 	function loadCalendar(action){
 		if(!oIFrame){
 			createIFrame();
-			window.setTimeout(function(){loadCalendar(action);},60);
+			window.setTimeout(function(){loadCalendar(action);},40);
 			return;
 		}else{
 			oIFrame.location = action;
@@ -285,15 +367,19 @@
 	}
 	function loadExtension(action){
 		//alert(action);
-		if(!oCalExtIFrame){
-			//alert("No oCalExtIFrame");
-			createCalExtIFrame();
-			window.setTimeout(function(){loadExtension(action);},60);
-			return;
-		}else{
-			//alert("Loading extension");
-			oCalExtIFrame.location = action;
-		}		
+		if(divExtension){
+			displayExtension("<div align='center'><img border='0' src='images/loading-small.gif' /></div>");
+			if(!oCalExtIFrame){
+				//alert("No oCalExtIFrame");
+				createCalExtIFrame();
+				window.setTimeout(function(){loadExtension(action);},40);
+				return;
+			}else{
+				//alert("Loading extension");
+				oCalExtIFrame.location = action;			
+			}
+			//$.get(action,{},function(data){displayExtension(data)});		
+		}	
 	}	
 	function displayExtension(htmlExtension){
 		//var divExtension = document.getElementById("divExtension");
@@ -583,6 +669,13 @@
 	/*************************************************/
 	/* User Profile Navigation Script                */
 	/*************************************************/
+	function loadAnActivity(act,actid){
+		$.get("profile/recentActivity.jsp",{activity: act,activity_id: actid},function(data){
+				displayTalks(data);
+			}
+		);
+
+	}	
 	function loadActivity(){
 		var action = "profile/activity.jsp";
 		if(queryString){
@@ -596,6 +689,15 @@
 			action = action.concat('?',queryString);
 		}
 		loadTalks(action);
+	}
+	function loadFriends(){
+		var action = "profile/people.jsp";
+		if(queryString){
+			action = action.concat('?',queryString);
+		}
+		$.get(action,{},function(data){
+			tdUserSubInfo.innerHTML = data; 
+		});
 	}
 	/*************************************************/
 	/* Calendar Navigation Script                    */
@@ -660,7 +762,9 @@
 				action = action.concat('&',queryString);
 			}
 			loadExtension(action);		
-		}			
+		}else{
+			displayExtension("&nbsp;");
+		}				
 	}
 	function flip2Week(){
 		period = 1;
@@ -714,7 +818,7 @@
 		loadTalks(action);
 
 		action = "utils/namedEntity.jsp";
-		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		action = action.concat('?month=',_month,'&year=',_year,'&week=',thisweek);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
 		}
@@ -724,7 +828,9 @@
 			}
 			//alert(action);
 			loadExtension(action);		
-		}			
+		}else{
+			displayExtension("&nbsp;");
+		}						
 	}
 	function flip2Month(){
 		period = 2;
@@ -777,7 +883,7 @@
 		loadTalks(action);
 
 		action = "utils/namedEntity.jsp";
-		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		action = action.concat('?month=',_month,'&year=',_year);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
 		}
@@ -786,7 +892,9 @@
 				action = action.concat('&',queryString);
 			}
 			loadExtension(action);		
-		}			
+		}else{
+			displayExtension("&nbsp;");
+		}				
 	}
 	function back(){
 		var action = "";
@@ -838,7 +946,8 @@
 		}else if(isBookmark == 3){
 			loadTalks("utils/popImpact.jsp".concat(action));	
 		}else{
-			loadTalks("utils/loadTalks.jsp".concat(action));		
+			loadTalks("utils/loadTalks.jsp".concat(action));
+			loadExtension("utils/namedEntity.jsp".concat(action));		
 		}
 		loadCalendar("includes/calendar.jsp".concat(action));
 	}
@@ -894,6 +1003,7 @@
 			loadTalks("utils/popImpact.jsp".concat(action));	
 		}else{
 			loadTalks("utils/loadTalks.jsp".concat(action));		
+			loadExtension("utils/namedEntity.jsp".concat(action));		
 		}
 		loadCalendar("includes/calendar.jsp".concat(action));
 	}
@@ -1081,15 +1191,200 @@
 		document.getElementById("aboutme").value = document.getElementById("infoAboutme").innerHTML;	
 		document.getElementById("interests").value = document.getElementById("infoInterests").innerHTML;
 	}
-	function showAddFriendDialog(){
+
+	/*************************************************/
+	/* Request Add Friend Script                     */
+	/*************************************************/
+
+	function addFriend(divDialog,objParent,uid,reqtype){
+		var data = sendFriendRequest(objParent,uid,reqtype);
+		hideAddFriendDialog(divDialog);		
+	}	
+	
+	/*function showAddFriendDialog(){
 		var divAddFriend = document.getElementById("divAddFriend");
 		divAddFriend.style.display = "block";
 	}
+	
 	function hideAddFriendDialog(){
 		var divAddFriend = document.getElementById("divAddFriend");
 		divAddFriend.style.display = "none";
 	}
+
+	function sendFriendRequest(uid,reqtype){
+		$.post("profile/friendRequest.jsp",{user_id: uid,request_type: reqtype},function(data){
+				if(data){
+					if(data.status == "OK"){
+						
+					}else{
+
+					}		
+				}	
+			});
+	}	
+	
+	function autohintGotFocus(txtShare){
+        if(txtShare.value == txtShare.getAttribute('title')){ 
+            txtShare.value = '';
+            var rows = txtShare.getAttribute('rows');
+            if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r+1));
+            }   
+            txtShare.removeAttribute('class');
+        }
+	}	
+
+	function autohintGotFocus(txtShare,objButton){
+        if(txtShare.value == txtShare.getAttribute('title')){ 
+            txtShare.value = '';
+            var rows = txtShare.getAttribute('rows');
+            if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r+1));
+            }   
+            txtShare.removeAttribute('class');
+            objButton.style.display = "block";
+        }
+	}	
+
+	function autohintGotBlur(txtShare){
+        if(txtShare.value == '' && txtShare.getAttribute('title') != ''){ 
+        	txtShare.value = txtShare.getAttribute('title');
+            var rows = txtShare.getAttribute('rows');
+            if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r-1));
+            }   
+        	txtShare.setAttribute('class','auto-hint'); 
+        }
+	}
+		
+	function autohintGotBlur(txtShare,objButton){
+        if(txtShare.value == '' && txtShare.getAttribute('title') != ''){ 
+        	txtShare.value = txtShare.getAttribute('title');
+            var rows = txtShare.getAttribute('rows');
+            if(rows){
+				var r = parseInt(rows);
+	        	txtShare.setAttribute('rows',(r-1));
+            }   
+        	txtShare.setAttribute('class','auto-hint');
+        	objButton.style.display = "none"; 
+        }
+	}
+
+	function postComment(u_id,txtShare,objButton){
+		if(txtShare.getAttribute('class') != 'auto-hint'){
+			txtShare.style.disabled = true;
+			$.post("utils/postComment.jsp",{user_id: u_id,comment: txtShare.value},
+				function(data){
+					if(data.status == "OK"){
+						txtShare.value = "";
+						autohintGotBlur(txtShare,objButton);
+						var latestTime = document.getElementById("latestTime");
+						if(latestTime){
+							$.get("profile/recentActivity.jsp",{user_id: u_id,insertfirst: 1,timestamp: latestTime.value},
+								function(data){
+									var now = new Date();
+									latestTime.value = now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + " " +
+											now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+									var tdRecentActivity = document.getElementById("tdRecentActivity");
+									tdRecentActivity.innerHTML = data.concat(tdRecentActivity.innerHTML);
+								}
+							);
+						}	
+					}else{
+   						alert("<b><red>" + data.status + ":</red></b> " + data.message);
+					}		
+					txtShare.style.disabled = false;
+				}
+			);
+		}	
+	}
+
+	function replyComment(cid,_txtComment,_objButton){
+		var txtComment = document.getElementById(_txtComment);
+		var objButton = document.getElementById(_objButton); 
+		if(txtComment.getAttribute('class') != 'auto-hint'){
+			txtComment.style.disabled = true;
+			$.post("utils/postComment.jsp",{comment_id: cid,comment: txtComment.value},
+				function(data){
+					if(data.status == "OK"){
+						txtComment.value = "";
+						autohintGotBlur(txtComment,objButton);
+						var latestTime = document.getElementById("commenttimeccid".concat(cid));
+						if(latestTime){
+							$.get("utils/replyComment.jsp",{user_id: u_id,comment_id: cid,timestamp: latestTime.value},
+								function(data){
+									var now = new Date();
+									latestTime.value = now.getFullYear() + "-" + (now.getMonth()+1) + "-" + now.getDate() + " " +
+											now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+									var tdReplyComment = document.getElementById("tdcommentcid".concat(cid));
+									if(tdReplyComment){
+										tdReplyComment.innerHTML = tdReplyComment.innerHTML.concat(data);
+										tdReplyComment.style.display = "block";
+									}else{
+										//alert("No found " + "tdcommentcid".concat(cid));
+									}	
+								}
+							);
+						}
+					}else{
+   						alert("<b><red>" + data.status + ":</red></b> " + data.message);
+					}		
+					txtComment.style.disabled = false;
+				}
+			);
+		}	
+	}	
+
+	function likeComment(uid,cid,anchorlike,tdlike){
+		var txtLike = anchorlike.innerHTML;
+		if(txtLike){
+			$.post("utils/postLike.jsp",{user_id: uid,comment_id: cid,like: txtLike},
+				function(data){
+					if(data.status == "OK"){
+						var like_tag = document.getElementById(tdlike);
+						if(data.like_tag == "&nbsp;"){
+							like_tag.style.display = "none";
+						}else{
+							like_tag.style.display = "block";
+						}
+						like_tag.innerHTML = data.like_tag;		
+					}	
+				}
+			);
+			if(txtLike == "Like"){
+				anchorlike.innerHTML = "Unlike";
+			}else{
+				anchorlike.innerHTML = "Like";
+			}		
+		}	
+	}	
+
+	$(document).ready(function(){
+		$("#divAddFriend").dialog({ 
+				autoOpen: false,
+			 	buttons: {
+					"Send Request" : function(){
+						$(this).dialog("close");
+					},
+					"Cancel": function(){
+						$(this).dialog("close");
+					}
+		 		},
+		 		minWidth: 300,
+		 		width: 400,
+		 		minHeight: 160
+			}
+		);
+		$("#btnAddAsFriend").click(function(){
+			$("#divAddFriend").dialog('open');
+			return false;
+		});
+	});*/	
 </script>
+
 <logic:notPresent name="UserSession">
 <% 
 	String pagePath = "";
@@ -1124,7 +1419,6 @@
 <%
 	}		
 %>
-
 <div align="center">
 	<table width="100%" border="0" cellpadding="0" cellspacing="0">
 <% 
@@ -1133,7 +1427,6 @@
 		<tr>
 			<td align="left">
 <% 
-		connectDB conn = new connectDB();
 		String sql = "SELECT name FROM userinfo WHERE user_id = " + user_id;
 		ResultSet rs = conn.getResultSet(sql);
 		if(rs.next()){
@@ -1159,40 +1452,106 @@
 						String friend_id = rs.getString("friend_id");
 					}else{//They are not friends. So is there any befriending request?
 						
-						sql = "SELECT request_id FROM request WHERE user_id=" + ub.getUserID() + " AND target_id=" + user_id + 
-							" AND droprequesttime IS NULL";
+						sql = "SELECT request_id FROM request WHERE requester_id=" + ub.getUserID() + " AND target_id=" + user_id + 
+							" AND droprequesttime IS NULL ORDER BY request_id DESC LIMIT 1";
 						
 						rs = conn.getResultSet(sql);
+%>
+		<span id="spanAddAsFriend">
+<%
+						boolean isNotNow = false;
 						if(rs.next()){
 							String request_id = rs.getString("request_id");
-						}else{
+							//Something ...
 %>
-		<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" onclick="showAddFriendDialog();return false;" />
-		<div style="z-index: 1000;position: absolute;display: none;background-color: #fff;text-align: center;width: 300px;" 
+			<span style="font-size: 0.8em;font-style: italic;color: #aaaaaa;">Friend Request Sent</span> <a href="javascript:return false;" onclick="addFriend(divAddFriend,spanAddAsFriend,<%=user_id%>,'drop');return false;"><img border='0' src='images/x.gif' /></a>
+<%
+						}else{
+							sql = "SELECT request_id,notnowtime FROM request WHERE requester_id=" + user_id + " AND target_id=" + ub.getUserID() + 
+								" AND accepttime IS NULL AND rejecttime IS NULL AND droprequesttime IS NULL ORDER BY requesttime DESC LIMIT 1";
+							rs = conn.getResultSet(sql);
+							if(rs.next()){
+								String request_id = rs.getString("request_id");
+								if(rs.getString("notnowtime")!=null){
+									isNotNow = true;
+								}
+%>
+			<input class ="btn" type="button" id="btnRespondRequest" value="Respond to Contact Request" onclick="showAddFriendDialog(divRespondRequest);return false;" />
+<%		
+							}else{
+%>
+			<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Contact" onclick="showAddFriendDialog(divAddFriend);return false;" />
+<%		
+							}
+						}
+%>
+		</span>
+		<div style="z-index: 1000;position: absolute;top: 50%;left: 50%;margin-left: -25%;margin-top: -25%;display: none;bacground: rgb(170,170,170) transparent;background: rgba(170,170,170,0.6);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99aaaaaa, endColorstr=#99aaaaaa);-ms-filter: 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#99aaaaaa, endColorstr=#99aaaaaa)';padding: 10px;" 
 			id="divAddFriend">
-			<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+			<table cellpadding="0" cellspacing="0" style="background-color: #fff;width: 400px;border: 1px solid #aaaaaa;">
 				<tr>
 					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
 				<tr>
-					<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;">
-						&nbsp;Send <%=_username %> a friend request?
+					<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;padding: 4px;">
+						&nbsp;Send <%=_username %> a contact request?
 					</td>
 				</tr>
 				<tr>
 					<td style="border: 1px solid #efefef;">
-						<table width="100%" cellpadding="0" cellspacing="0" border="0" align="center">
+						<table width="100%" cellpadding="1" cellspacing="0" border="0" align="center">
 							<tr>
-								<td align="right" width="85%"><input class="btn" type="button" value="Send Request" onclick="hideAddFriendDialog();return false;"></input></td>
-								<td align="center" width="15%"><input class="btn" type="button" value="Cancel" onclick="hideAddFriendDialog();return false;"></input></td>
+								<td colspan="2" style="font-size: 0.75em;padding: 4px;">
+									<b><%=_username %></b> will have to confirm your request.
+								</td>
+							</tr>
+							<tr style="background-color: #efefef;">
+								<td align="right" width="85%"><input class="btn" type="button" value="Send Request" onclick="addFriend(divAddFriend,spanAddAsFriend,<%=user_id%>,'add');return false;"></input></td>
+								<td align="center" width="15%"><input class="btn" type="button" value="Cancel" onclick="hideAddFriendDialog(divAddFriend);return false;"></input></td>
 							</tr>
 						</table>		
 					</td>
 				</tr>
 			</table>
 		</div>
-<%		
-						}
+		<div style="z-index: 1000;position: absolute;top: 50%;left: 50%;margin-left: -25%;margin-top: -25%;display: none;bacground: rgb(170,170,170) transparent;background: rgba(170,170,170,0.6);filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#99aaaaaa, endColorstr=#99aaaaaa);-ms-filter: 'progid:DXImageTransform.Microsoft.gradient(startColorstr=#99aaaaaa, endColorstr=#99aaaaaa)';padding: 10px;" 
+			id="divRespondRequest">
+			<table cellpadding="0" cellspacing="0" style="background-color: #fff;width: 400px;border: 1px solid #aaaaaa;">
+				<tr>
+					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
+				</tr>
+				<tr>
+					<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;padding: 4px;">
+						&nbsp;Confirm <%=_username %> as a contact?
+					</td>
+				</tr>
+				<tr>
+					<td style="border: 1px solid #efefef;">
+						<table width="100%" cellpadding="1" cellspacing="0" border="0" align="center">
+							<tr>
+								<td colspan="3" style="font-size: 0.75em;padding: 4px;">
+									<b><%=_username %></b> would like to be your contact. If you know <%=_username %>, click Confirm.
+								</td>
+							</tr>
+							<tr style="background-color: #efefef;">
+								<td align="right" width="85%"><input class="btn" type="button" value="Confirm" onclick="addFriend(divRespondRequest,spanAddAsFriend,<%=user_id%>,'accept');return false;"></input></td>
+								<td align="center" width="15%"><input class="btn" type="button" value="<%=isNotNow?"Delete Request":"Not Now" %>" onclick="addFriend(divRespondRequest,spanAddAsFriend,<%=user_id%>,<%=isNotNow?"'reject'":"'notnow'" %>);return false;"></input></td>
+								<td align="center" width="15%"><input class="btn" type="button" value="Cancel" onclick="hideAddFriendDialog(divRespondRequest);return false;"></input></td>
+							</tr>
+						</table>		
+					</td>
+				</tr>
+			</table>
+		</div>
+<%-- 
+		<input class ="btn" type="button" id="btnAddAsFriend" value="Add as Friend" />
+		<div id="divAddFriend" title="Send <%=_username %> a friend request?">
+			<p style="font-size: 0.75em;">
+				<b><%=_username %></b> will have to confirm your request.
+			</p>
+		</div>
+--%>
+<%
 					}
 				}
 			}
@@ -1493,13 +1852,12 @@
 				</table>
 			</td>
 		</tr>
+		<tr>
+			<td>&nbsp;</td>
+		</tr>
 <%	
 	}
-%>		
-<tr>
-	<td>&nbsp;</td>
-</tr>
-<%	
+
 	if((menu.equalsIgnoreCase("profile") || menu.equalsIgnoreCase("calendar") || menu.equalsIgnoreCase("myaccount"))&&t==null){	
 %>
 		<tr>
@@ -1566,40 +1924,49 @@
 	if(menu.equalsIgnoreCase("calendar")){
 %>
 						window.setTimeout(function(){flip2Week();},50);
+						//flip2Week();
 <%		
 	}else if(menu.equalsIgnoreCase("community")||menu.equalsIgnoreCase("series")||menu.equalsIgnoreCase("tag")||menu.equalsIgnoreCase("entity")){
 %>
 						var action = "utils/loadTalks.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
 						window.setTimeout(function(){loadTalks(action);},50);
+						//loadTalks(action);
 <%		
 	}else if(v.equalsIgnoreCase("info")){
 %>
 						window.setTimeout(function(){flip2Info();},50);
+						//flip2Info();
 <%		
 	}else if(v.equalsIgnoreCase("activity")){
 %>
 						window.setTimeout(function(){flip2Activity();},50);
+						//flip2Activity();
 <%		
 	}else if(v.equalsIgnoreCase("bookmark")){
 %>
 						window.setTimeout(function(){flip2Bookmark();},50);
+						//flip2Bookmark();
 <%		
 	}else if(v.equalsIgnoreCase("post")){
 %>
 						window.setTimeout(function(){flip2Post();},50);
+						//flip2Post();
 <%		
 	}else if(v.equalsIgnoreCase("impact")){
 %>
 						window.setTimeout(function(){flip2Impact();},50);
+						//flip2Impact();
 <%		
 	}else if(v.equalsIgnoreCase("summary")){
 %>
 						window.setTimeout(function(){flip2ImpactSummary();},50);
+						//flip2ImpactSummary();
 <%		
 	}else{
 %>
-						var action = "utils/loadTalks.jsp<%if(request.getQueryString()!=null)out.print("?"+request.getQueryString());%>";
+						var action = "utils/loadTalks.jsp<%=request.getQueryString()!=null?"?"+request.getQueryString():"" %>";
 						window.setTimeout(function(){loadTalks(action);},50);
+						//loadTalks(action);
 <%		
 	}
 %>

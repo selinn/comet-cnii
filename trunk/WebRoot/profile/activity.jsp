@@ -12,7 +12,9 @@
 
 <%@page import="java.util.Calendar"%>
 <%@page import="java.util.GregorianCalendar"%>
-<div id="divUserActivityContent">
+
+<%@page import="java.text.Format"%>
+<%@page import="java.text.SimpleDateFormat"%><div id="divUserActivityContent">
 <% 
 	final String[] months = {"January","Febuary","March",
 		    "April","May","June",
@@ -23,6 +25,7 @@
 	int day = calendar.get(Calendar.DAY_OF_MONTH);
 	int month = calendar.get(Calendar.MONTH);
 	int year = calendar.get(Calendar.YEAR);
+	Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); 
 	session = request.getSession(false);
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
 	String user_id = (String)request.getParameter("user_id");
@@ -37,7 +40,7 @@
 %>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
 	<tr>
-		<td width="75%" valign="top">
+		<td id="tdUserSubInfo" width="75%" valign="top">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 <% 
 			if(ub!=null){
@@ -62,10 +65,24 @@
 				if(allowed2shareComment){
 %>
 				<tr>
-					<td><input type="text" id="usercomment" size="90"></input>&nbsp;<input class="btn" id="btnShareComment" type="button" value="Share"></input></td>
+					<td>
+						<table width="98%" border="0" cellspacing="0" cellpadding="0" >
+							<tr>
+								<td style="text-align: right;">
+									<textarea id="txtShare" rows="2" cols="80" onfocus="autohintGotFocus(this,tdShareButton);" onblur="autohintGotBlur(this,tdShareButton);" 
+										class="auto-hint" style="border-style: solid;" title="Collaborate, share an idea, or recommend an article">Collaborate, share an idea, or recommend an article</textarea>
+								</td>
+							</tr>
+							<tr>
+								<td id="tdShareButton" style="text-align: right;display: none;">
+									<input class="btn" id="btnShareComment" onclick="postComment(<%=(user_id==null?"" + ub.getUserID():user_id) %>,txtShare,tdShareButton);" type="button" value="Share"></input>
+								</td>
+							</tr>
+						</table>
+					</td>
 				</tr>
 				<tr>
-					<td>&nbsp;</td>
+					<td><input type="hidden" id="latestTime" value="<%=formatter.format(new Date()) %>" />&nbsp;</td>
 				</tr>
 <% 
 				}
@@ -80,7 +97,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td>
+					<td id="tdRecentActivity">
 						<tiles:insert template="/profile/recentActivity.jsp" />
 					</td>
 				</tr>

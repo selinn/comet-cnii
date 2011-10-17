@@ -7,7 +7,8 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-tiles" prefix="tiles" %>
 
-<table cellspacing="0" cellpadding="0" width="100%" align="center">
+
+<%@page import="edu.pitt.sis.beans.UserBean"%><table cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
 		<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 	</tr>
@@ -66,7 +67,38 @@
 						onmouseout="this.style.textDecoration='none'">
 					<span style="font-size: 0.8em;"><%=rs.getString("comm_name") %></span>
 					&nbsp;-&nbsp;<span style="font-size: 0.6em;"><%=rs.getString("_no") %> bookmarks</span>
-					</a>
+					</a>&nbsp;
+<% 
+			String comm_id = rs.getString("comm_id");
+			sql = "SELECT COUNT(*) _no FROM final_member_community WHERE comm_id=" + comm_id;
+			ResultSet rsExt = conn.getResultSet(sql);
+			int memberno = 0;
+			if(rsExt.next()){
+				memberno = rsExt.getInt("_no");
+			}
+%>					
+					<logic:present name="UserSession">
+<% 
+			UserBean ub = (UserBean)session.getAttribute("UserSession");
+			sql = "SELECT user_id FROM final_member_community WHERE user_id=" + ub.getUserID() +
+					" AND comm_id=" + comm_id;
+			rsExt = conn.getResultSet(sql);
+			boolean membered = false;
+			if(rsExt.next()){
+				membered = true;
+			}
+%>
+						<span class="spanmemcid<%=comm_id %>" id="spanmempcid<%=comm_id %>"
+							style="display: <%=!membered?"none":"inline" %>;font-size: 0.75em;cursor: pointer;background-color: Khaki;font-weight: bold;color: white;"
+							onclick="window.location='community.do?comm_id=<%=comm_id %>'"><%=membered?"&nbsp;Joined&nbsp;":"" %>
+						</span>&nbsp;
+						<a class="amemcid<%=comm_id %>" href="javascript:return false;" 					
+							style="text-decoration: none;font-size: 0.6375em;"
+							onmouseover="this.style.textDecoration='underline'" 
+							onmouseout="this.style.textDecoration='none'"
+							onclick="joinCommunity(<%=ub.getUserID() %>,<%=comm_id %>,this,'spanmempcid<%=comm_id %>')"
+						><%=membered?"Leave":"Join" %></a>
+					</logic:present>
 				</li>
 <%
 		}
@@ -85,7 +117,7 @@
 %>
 			</ol>
 <% 
-	if(rows==5){
+	if(rows==3){
 %>
 				<div style="color:#003399;cursor:pointer;font-size: 0.75em;font-weight: bold;" 
 					onmouseover="this.style.textDecoration='underline'" 

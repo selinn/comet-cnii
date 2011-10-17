@@ -1,8 +1,9 @@
-<%@page import="java.util.ArrayList"%><%@page import="java.util.HashSet"%><%@ page language="java" pageEncoding="UTF-8"%><%@ page import="java.sql.*" %><%@ page import="edu.pitt.sis.db.*" %><%@page import="edu.pitt.sis.beans.UserBean"%><%@page import="java.util.HashMap"%><%@page import="java.util.Vector"%><%@page import="java.util.Collections"%><%@page import="java.util.Iterator"%><%
+<%@page import="edu.pitt.sis.Html2Text"%><%@page import="java.util.ArrayList"%><%@page import="java.util.HashSet"%><%@ page language="java" pageEncoding="UTF-8"%><%@ page import="java.sql.*" %><%@ page import="edu.pitt.sis.db.*" %><%@page import="edu.pitt.sis.beans.UserBean"%><%@page import="java.util.HashMap"%><%@page import="java.util.Vector"%><%@page import="java.util.Collections"%><%@page import="java.util.Iterator"%><%
 	session=request.getSession(false);
 
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
 	String col_id = (String)request.getParameter("col_id");
+	String cleantxt = (String)request.getParameter("cleantxt");
 	if(col_id == null){
 		out.print("ERROR: col_id must be submitted");
 	}else{
@@ -19,8 +20,16 @@
 			if(!rs.next()){
 				out.print("ERROR: Talk Not Found");
 			}else{
-				out.print(rs.getString("detail"));//out.print("<detail><![CDATA[" + rs.getString("detail") + "]]></detail>");				
-			}
+				if(cleantxt==null){
+					out.print(rs.getString("detail"));//out.print("<detail><![CDATA[" + rs.getString("detail") + "]]></detail>");				
+				}else{
+					String detail = rs.getString("detail");
+					detail = detail.replaceAll("\\<.*?>"," ");
+					Html2Text h2t = new Html2Text();
+					h2t.parse(detail);
+					out.print(h2t.getText());
+				}
+			}	
 			rs.close();	
 			conn.conn.close();
 			conn = null;																					

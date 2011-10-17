@@ -2,8 +2,11 @@ package edu.pitt.sis;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.KeySpec;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -11,6 +14,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import javax.crypto.spec.DESedeKeySpec;
+
+import org.apache.commons.codec.binary.Hex;
+
+import edu.pitt.sis.db.connectDB;
+import edu.pitt.sis.db.connectSSHDB;
 
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -145,5 +153,58 @@ public class StringEncrypter
 		{
 			super( t );
 		}
+	}
+	
+	public static void main(String[] args){
+		try {
+			String encryptionScheme = StringEncrypter.DESEDE_ENCRYPTION_SCHEME;		
+			StringEncrypter encrypter;
+			encrypter = new StringEncrypter(encryptionScheme, BasicFunctions.encKey);
+			System.out.println(encrypter.encrypt("colloquium"));
+		} catch (EncryptionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*connectSSHDB conn = new connectSSHDB();
+		String sql = "SELECT u.* FROM userinfo u JOIN eventattendance e ON u.userid = e.userid WHERE e.eventid=54 ORDER BY u.userid";
+		ResultSet rs = conn.getResultSet(sql);
+		
+		//SMArpgRJT4TIVmnSL4K1Wg==
+		String encryptionScheme = StringEncrypter.DESEDE_ENCRYPTION_SCHEME;		
+		StringEncrypter encrypter;
+		
+		try {
+			MessageDigest m = MessageDigest.getInstance("MD5");
+			encrypter = new StringEncrypter(encryptionScheme, BasicFunctions.encKey);
+			while(rs.next()){
+				String userid = rs.getString("userid");
+				String name = rs.getString("name");
+				String email = rs.getString("email");
+				String encryptedPassword = rs.getString("passcode");
+				String decryptedPassword = encrypter.decrypt(encryptedPassword);
+				
+				m.update(decryptedPassword.getBytes("UTF8"));
+		        byte s[] = m.digest();
+		        String result = String.valueOf(Hex.encodeHex(s));
+
+				System.out.println(userid + "," + email + "," + result);
+			}
+			
+			conn.conn.close();
+			//System.out.println(encrypter.decrypt("1VedBtuMFtHIVmnSL4K1Wg=="));
+		} catch (EncryptionException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}*/
 	}
 }

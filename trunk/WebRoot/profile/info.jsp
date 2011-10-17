@@ -63,7 +63,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td width="75%" valign="top">
+		<td id="tdUserSubInfo" width="75%" valign="top">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 				<tr>
 					<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
@@ -122,37 +122,11 @@
 								<tr> 
 									<td width="15%" valign="top" style="font-weight: bold;">About me:</td>
 							  		<td colspan="2"><textarea id="aboutme" name="aboutme" rows="5" cols="45"><%if(aboutme!=null){out.print(aboutme);} %></textarea>
-				<script type="text/javascript"> 
-				//<![CDATA[
- 
-					// This call can be placed at any point after the
-					// <textarea>, or inside a <head><script> in a
-					// window.onload event handler.
- 
-					// Replace the <textarea id="editor"> with an CKEditor
-					// instance, using default configurations.
-					CKEDITOR.replace( 'aboutme' );
- 
-				//]]>
-				</script> 
 							  		</td>
 								</tr>
 								<tr> 
 									<td width="15%" valign="top" style="font-weight: bold;">Interests:</td>
 							  		<td colspan="2"><textarea id="interests" name="interests" rows="5" cols="45"><%if(interests!=null){out.print(interests);} %></textarea>
-				<script type="text/javascript"> 
-				//<![CDATA[
- 
-					// This call can be placed at any point after the
-					// <textarea>, or inside a <head><script> in a
-					// window.onload event handler.
- 
-					// Replace the <textarea id="editor"> with an CKEditor
-					// instance, using default configurations.
-					CKEDITOR.replace( 'interests' );
- 
-				//]]>
-				</script> 
 							  		</td>
 								</tr>
 							</table>
@@ -215,6 +189,120 @@
 						</div>		
 					</td>
 				</tr>
+<% 
+			if(ub!=null){
+				if(user_id==null||user_id==String.valueOf(ub.getUserID())){
+%>
+				<tr>
+					<td colspan="2">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="2" bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
+				</tr>
+				<tr>
+					<td colspan="2" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+					External Profiles <span style="color: red;font-style: italic;">(only you can see these)</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<div id="divExtProfile">
+							<table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 0.7em;">
+								<tr> 
+									<td colspan="3" align="center"><span id="extProfileDesc" style="font-weight: bold;color: blue;"></span></td>
+								</tr>
+								<tr> 
+									<td width="15%" valign="top" style="font-weight: bold;">LinkedIn:</td>
+							  		<td id="tdLinkedIn" colspan="2">
+<% 
+					sql = "SELECT firstname,lastname,headline,pictureurl,siteprofileurl FROM extprofile.linkedin " +
+							"WHERE lAutoID = (SELECT MAX(ext_id) lAutoID FROM extmapping WHERE user_id=" + ub.getUserID() + " AND exttable='extprofile.linkedin')";
+					rs = conn.getResultSet(sql);
+					if(rs.next()){
+%>
+										<table cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size: 1em;">
+											<tr>
+												<td style="width: 100px;text-align: left;" rowspan="3"><a target="_blank" href="<%=rs.getString("siteprofileurl") %>"><img border="0" src="<%=rs.getString("pictureurl") %>"></img></a></td>
+												<td style="width: 80px;">Firstname:</td>
+												<td><%=rs.getString("firstname") %></td>
+											</tr>
+											<tr>
+												<td style="width: 80px;">Lastname:</td>
+												<td><%=rs.getString("lastname") %></td>
+											</tr>
+											<tr valign="top">
+												<td style="width: 80px;">Headline:</td>
+												<td><%=rs.getString("headline") %></td>
+											</tr>
+										</table>
+<%						
+					}else{
+%>
+<%-- 
+							  			<iframe frameborder="0" scrolling="no" src="utils/linkedin.html" style="height: 30px;width: auto;"></iframe>
+--%>
+							  			<iframe frameborder="0" scrolling="no" src="../extprofile/linkedin.jsp?appID=O9aW2MKcw2Uwv42xuFnfBywwYQ4oSdAkBL7NtNyCYUktF7v0Jcs8uKwmqSDOnxl8&extjs=getExtInProfile&extTokenID=<%=ub.getUserID() %>&callback=http://<%=request.getServerName() + request.getContextPath() + "/utils/postExternalProfile.jsp"%>" style="height: 30px;width: 400px;"></iframe>
+<%						
+					}
+%>							  		
+							  		</td>
+								</tr>
+								<tr>
+									<td colspan="3" style="border-bottom: 1px solid #efefef;">&nbsp;</td>
+								</tr>
+								<tr>
+									<td colspan="3" style="border-top: 1px solid #efefef;">&nbsp;</td>
+								</tr>
+								<tr> 
+									<td width="15%" valign="top" style="font-weight: bold;">Facebook:</td>
+							  		<td id="tdFacebook" colspan="2">
+<% 
+					sql = "SELECT uid,first_name,middle_name,last_name,pic_square_with_logo,profile_url FROM extprofile.facebook " +
+							"WHERE fAutoID = (SELECT MAX(ext_id) fAutoID FROM extmapping WHERE user_id=" + ub.getUserID() + " AND exttable='extprofile.facebook')";
+					rs = conn.getResultSet(sql);
+					if(rs.next()){
+%>
+										<table cellpadding="0" cellspacing="0" border="0" width="100%" style="font-size: 1em;">
+											<tr>
+												<td style="width: 100px;text-align: left;" rowspan="3"><a target="_blank" href="<%=rs.getString("profile_url") %>"><img border="0" src="<%=rs.getString("pic_square_with_logo") %>"></img></a></td>
+												<td style="width: 80px;">Firstname:</td>
+												<td><%=rs.getString("first_name") %></td>
+											</tr>
+<% 
+						if(rs.getString("middle_name").trim().length()>0){
+%>
+											<tr>
+												<td style="width: 80px;">Middlename:</td>
+												<td><%=rs.getString("middle_name") %></td>
+											</tr>
+<%							
+						}
+%>											
+											<tr>
+												<td style="width: 80px;">Lastname:</td>
+												<td><%=rs.getString("last_name") %></td>
+											</tr>
+										</table>
+<%						
+					}else{
+%>
+<%-- 
+							  			<iframe frameborder="0" scrolling="no" src="../extprofile/facebook.jsp?appID=345817736440&extTokenID=<%=ub.getUserID() %>&callback=http://<%=request.getServerName() + request.getContextPath() + "/utils/postExternalProfile.jsp"%>" style="height: 30px;width: 400px;"></iframe>
+--%>
+							  			<iframe frameborder="0" scrolling="no" src="../extprofile/facebook.jsp?appID=345817736440&extjs=getExtFBProfile&extTokenID=<%=ub.getUserID() %>&callback=http://<%=request.getServerName() + request.getContextPath() + "/utils/postExternalProfile.jsp"%>" style="height: 30px;width: 400px;"></iframe>
+<%						
+					}
+%>							  		
+							  		</td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+<% 
+				}
+			}	
+%>
 			</table>
 		</td>
 		<td>&nbsp;</td>

@@ -184,7 +184,7 @@
 		loadTalks(action);
 
 		action = "utils/namedEntity.jsp";
-		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		action = action.concat('?month=',month,'&year=',year,'&week=',week);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
 		}
@@ -238,7 +238,7 @@
 		loadTalks(action);
 
 		action = "utils/namedEntity.jsp";
-		action = action.concat('?month=',_month,'&year=',_year,'&day=',_day);
+		action = action.concat('?month=',month,'&year=',year);
 		if(isBookmark == 0){
 			action = action.concat('&post=1');
 		}
@@ -250,6 +250,13 @@
 		}			
 	}
 </script>
+<%
+	if(request.getParameter("year")!=null){
+%>
+<div id="divCalContent">
+<% 
+	}
+%>
 <table cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
 		<td>
@@ -265,11 +272,6 @@
     String color_day_3 = "#6E6E6E";
     String color_view = "#003399";
 
-	if(request.getParameter("year")!=null){
-%>
-<div id="divCalContent">
-<% 
-	}
 	session=request.getSession(false);
 
     /*---- Variable for Calendar -------------*/
@@ -359,9 +361,9 @@
 		UserBean ub = (UserBean)session.getAttribute("UserSession");
 		String uid = String.valueOf(ub.getUserID());
 		if(req_posted){
-			feed_para = "?owner_id=" + uid;
+			feed_para = "owner_id=" + uid;
 		}else{
-			feed_para = "?user_id=" + uid;
+			feed_para = "user_id=" + uid;
 		}
 		if(user_id_value == null){
 			String temp[] = new String[1];
@@ -655,17 +657,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
 					<tr>
 						<td width="25%" style="font-size: 0.75em;"><a href="utils/_rss.jsp<%
 							if(request.getQueryString()!=null)out.print("?"+request.getQueryString());
-							if(feed_para.length() > 0)out.print(feed_para);
+							if(feed_para.length() > 0)out.print((request.getQueryString()==null?"?":"&") + feed_para);
 							%>"><img border="0" src="images/rss_feed.gif" alt="RSS 2.0" /></a></td>
 						<td width="25%" style="font-size: 0.75em;"><a href="utils/_atom.jsp<%
 							if(request.getQueryString()!=null)out.print("?"+request.getQueryString());
-							if(feed_para.length() > 0)out.print(feed_para);
+						if(feed_para.length() > 0)out.print((request.getQueryString()==null?"?":"&") + feed_para);
 							%>"><img border="0" src="images/atom_feed.gif" alt="Atom" /></a></td>
-						<td width="35%" align="right" style="font-size: 0.75em;"><a href="utils/_ical.jsp<%
+						<td width="35%" align="center" style="font-size: 0.75em;"><a href="utils/_ical.jsp<%
 							if(request.getQueryString()!=null)out.print("?"+request.getQueryString());
-							if(feed_para.length() > 0)out.print(feed_para);
+						if(feed_para.length() > 0)out.print((request.getQueryString()==null?"?":"&") + feed_para);
 							%>"><img border="0" style="height: 14px;width: auto;" src="images/ical.jpg" alt="Atom" /></a></td>
-						<td width="15%" align="right" style="font-size: 0.75em;">
+						<td width="15%" align="center" style="font-size: 0.75em;">
 <!-- AddThis Button BEGIN -->
 <div class="addthis_toolbox addthis_default_style">
 <a href="http://www.addthis.com/bookmark.php?v=250&amp;pub=chirayukong" class="addthis_button_compact"></a>
@@ -689,20 +691,23 @@ String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
 	    </div>
     </font></div>
 --%>    
-<%
-		if(request.getParameter("year")!=null){
- %>
-</div>
-<%
-		} 
-%>
 		</td>
 	</tr>
+<%-- 
 	<tr>
-		<td>
-			<div id="divExtension">&nbsp;</div>
+		<td>&nbsp;</td>
+	</tr>
+	<logic:present name="UserSession">
+	<tr>
+		<td align="center">
+			<div id="divExtension">
+				<img border='0' src='images/loading-small.gif' />
+				<tiles:insert template="/utils/namedEntity.jsp" />
+			</div>
 		</td>
 	</tr>
+	</logic:present>
+--%>
 	<tr>
 		<td>
 <div id="divCalDebug">
@@ -711,3 +716,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+path+"/";
 		</td>
 	</tr>
 </table>
+<%
+		if(request.getParameter("year")!=null){
+ %>
+</div>
+<%
+		} 
+%>
