@@ -23,7 +23,7 @@
 	</tr>
 	<tr>
 		<td align="Center" style="font-size: 0.7em;">
-						&copy;2009-<%=(new GregorianCalendar()).get(Calendar.YEAR)%> CoMeT<br>
+						&copy;2009-<%=(new GregorianCalendar()).get(Calendar.YEAR)%> CoMeT - Supported by Google Grant<br>
 						<span style="cursor: pointer;" onclick="window.location='http://www.ischool.pitt.edu'">
 						School of Information Sciences</span>, 
 						<span style="cursor: pointer;" onclick="window.location='http://www.pitt.edu'">University of Pittsburgh</span>, 
@@ -55,4 +55,11 @@ function _loadUserVoice() {
 }
 _loadSuper = window.onload;
 window.onload = (typeof window.onload != 'function') ? _loadUserVoice : function() { _loadSuper(); _loadUserVoice(); };
+	$(document).ready(function(){
+		_loadUserVoice();
+	});
 </script>
+<a title="Real Time Web Analytics" href="http://getclicky.com/66400673"><img alt="Real Time Web Analytics" src="http://static.getclicky.com/media/links/badge.gif" border="0" /></a>
+<script src="http://static.getclicky.com/js" type="text/javascript"></script>
+<script type="text/javascript">try{ clicky.init(66400673); }catch(err){}</script>
+<noscript><p><img alt="Clicky" width="1" height="1" src="http://in.getclicky.com/66400673ns.gif" /></p></noscript>

@@ -191,7 +191,9 @@
 	String sql = "SELECT date_format(c._date,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 					"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
 					"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
-					"date_format(c._date,_utf8'%Y') _year,c.detail,date_format(c.lastupdate,_utf8'%W, %b %d %l:%i %p') _lastupdate " +
+					"date_format(c._date,_utf8'%Y') _year,c.detail," +
+					"date_format(c.lastupdate,_utf8'%W, %b %d %l:%i %p') _lastupdate," +
+					"date_format(c.lastupdate,_utf8'%Y-%m-%d') atomdate " +
 					"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
 					"JOIN userinfo u ON c.owner_id = u.user_id " +
 					"LEFT JOIN host h ON c.host_id = h.host_id " +
@@ -203,7 +205,9 @@
 		sql = "SELECT date_format(pt.posttime,_utf8'%W, %b %d') AS `day`, c.col_id, c.title, " +
 				"date_format(c.begintime,_utf8'%l:%i %p') _begin, date_format(c.endtime,_utf8'%l:%i %p') _end, " +
 				"s.name,c.location,h.host_id,h.host,c.owner_id,u.name owner,lc.abbr,c.video_url,s.affiliation, " +
-				"date_format(c._date,_utf8'%Y') _year,c.detail,date_format(c.lastupdate,_utf8'%W, %b %d %l:%i %p') _lastupdate " +
+				"date_format(c._date,_utf8'%Y') _year,c.detail," +
+				"date_format(c.lastupdate,_utf8'%W, %b %d %l:%i %p') _lastupdate," +
+				"date_format(c.lastupdate,_utf8'%Y-%m-%d') atomdate " +
 				"FROM colloquium c JOIN speaker s ON c.speaker_id = s.speaker_id " +
 				"JOIN userinfo u ON c.owner_id = u.user_id " +
 				"JOIN " +
@@ -222,7 +226,7 @@
 			if(req_posted){
 				sql += "JOIN colloquium cc" + i + " ON c.col_id=cc" + i + ".col_id AND cc"+ i + ".owner_id = " + user_id_value[i] + " ";
 			}else{
-				sql += "JOIN userprofile up" + i + " WHERE c.col_id=up" + i + ".col_id AND up" + i + ".user_id = " + user_id_value[i] + " ";
+				sql += "JOIN userprofile up" + i + " on c.col_id=up" + i + ".col_id AND up" + i + ".user_id = " + user_id_value[i] + " ";
 			}
 		}
 	}
@@ -256,7 +260,12 @@
 			"e" + i + ".entity_id = eee" + i + ".entity_id AND e" + i + "._type = '" + type_value + "' ";
 		}
 	}
-	sql += "WHERE TRUE ";
+	if(menu.equalsIgnoreCase("calendar")||menu.equalsIgnoreCase("myaccount")||req_most_recent||req_specific_date){
+		sql += "WHERE TRUE ";
+	}else{
+		sql += "WHERE c._date >= CURDATE() ";
+		//"c._date >= (SELECT beginterm FROM sys_config) " +
+	}
 	if(affiliate_id_value !=null ){
 		for(int i=0;i<affiliate_id_value.length;i++){
 			sql += "AND c.col_id IN " +
@@ -290,7 +299,7 @@
 		out.println("<feed xmlns:content=\"http://www.w3.org/2005/Atom\" >");
 		out.println("<title>CoMeT</title>");
 		out.println("<subtitle>Collaborative Management of Talks: A social web system for research communities</subtitle>");
-		out.println("<link>http://washington.sis.pitt.edu/comet/</link>");
+		out.println("<link>http://halley.exp.sis.pitt.edu/comet/</link>");
 		
 		SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy HH:mm:ss Z");
 		String today = formatter.format(new Date());
@@ -311,7 +320,7 @@
         	String link = "http://washington.sis.pitt.edu/comet/presentColloquium.do?col_id=" + _col_id;
         	String _lastupdate = rs.getString("_lastupdate");
         	String author = rs.getString("owner");
-        	String email = rs.getString("email");
+        	//String email = rs.getString("email");
         	String speaker = rs.getString("name");
         	String day = rs.getString("day");
         	String _begin = rs.getString("_begin");
@@ -321,8 +330,8 @@
 
 			out.println("<entry>");
 			out.println("<title><![CDATA[" + title.trim() + "]]></title>");
-			out.println("<updated>" + _lastupdate + " -0600</updated>");
-			out.println("<id>tag:washington.sis.pitt.edu," + atomdate + ":/comet/presentColloquium.do?col_id=" + _col_id + "</id>");
+			out.println("<updated>" + _lastupdate + " -0500</updated>");
+			out.println("<id>tag:halley.exp.sis.pitt.edu," + atomdate + ":/comet/presentColloquium.do?col_id=" + _col_id + "</id>");
 			out.println("<link>" + link + "</link>");
 			
 			String content = "<b>Speaker:</b>&nbsp;" + speaker + "<br/>";
@@ -347,7 +356,7 @@
 				String tag = rsExt.getString("tag");
 				long _tag_id = rsExt.getLong("tag_id");
 				long _no = rsExt.getLong("_no");
-				content += "&nbsp;<a href=\"http://washington.sis.pitt.edu/comet/tag.do?tag_id=" + _tag_id + "\">" + tag + "</a>";
+				content += "&nbsp;<a href=\"http://halley.exp.sis.pitt.edu/comet/tag.do?tag_id=" + _tag_id + "\">" + tag + "</a>";
 			}
 			
 			sql = "SELECT c.comm_id,c.comm_name,COUNT(*) _no FROM community c,contribute ct,userprofile u " +
@@ -363,14 +372,14 @@
 				long _comm_id = rsExt.getLong("comm_id");
 				long _no = rsExt.getLong("_no");
 				content += "<br/><b>Posted to communities:</b>&nbsp;" +
-							"<a href=\"http://washington.sis.pitt.edu/comet/community.do?comm_id=" + _comm_id + "\">" + comm_name + "</a>";
+							"<a href=\"http://halley.exp.sis.pitt.edu/comet/community.do?comm_id=" + _comm_id + "\">" + comm_name + "</a>";
 			}
 			while(rsExt.next()){
 				String comm_name = rsExt.getString("comm_name");
 				long _comm_id = rsExt.getLong("comm_id");
 				long _no = rsExt.getLong("_no");
 				content += "&nbsp;" +
-							"<a href=\"http://washington.sis.pitt.edu/comet/community.do?comm_id=" + _comm_id + "\">" + comm_name + "</a>";
+							"<a href=\"http://halley.exp.sis.pitt.edu/comet/community.do?comm_id=" + _comm_id + "\">" + comm_name + "</a>";
 			}
 			//Bookmark by
 			sql = "SELECT u.user_id,u.name,COUNT(*) _no FROM userinfo u,userprofile up " +
@@ -383,14 +392,14 @@
 				long _user_id = rsExt.getLong("user_id");
 				long _no = rsExt.getLong("_no");
 				content += "<br/><b>Bookmarked by:</b>&nbsp;" +
-							"<a href=\"http://washington.sis.pitt.edu/comet/calendar.do?user_id=" + _user_id + "\">" + user_name + "</a>";
+							"<a href=\"http://halley.exp.sis.pitt.edu/comet/calendar.do?user_id=" + _user_id + "\">" + user_name + "</a>";
 			}
 			while(rsExt.next()){
 				String user_name = rsExt.getString("name");
 				long _user_id = rsExt.getLong("user_id");
 				long _no = rsExt.getLong("_no");
 				content += "&nbsp;" +
-							"<a href=\"http://washington.sis.pitt.edu/comet/calendar.do?user_id=" + _user_id + "\">" + user_name + "</a>";
+							"<a href=\"http://halley.exp.sis.pitt.edu/comet/calendar.do?user_id=" + _user_id + "\">" + user_name + "</a>";
 			}
 
 			if(description != null){			
@@ -400,14 +409,14 @@
 			}
 
 			out.println("<content type=\"html\"><![CDATA[" + content + "]]></content>");
-			content = content.replaceAll("\\<.*?>","");
+			content = content.replaceAll("\\<.*?>"," ");
 			parser.parse(content);				
 			content = "<![CDATA[" + parser.getText().trim() + "]]>";
 			out.println("<summary>" + content + "</summary>");
 
 			out.println("<author>");
 			out.println("<name>" + author + "</name>");
-			out.println("<email>" + email + "</email>");
+			//out.println("<email>" + email + "</email>");
 			out.println("</author>");
 			out.println("</entry>");
 		}

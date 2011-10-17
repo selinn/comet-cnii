@@ -8,7 +8,12 @@
 <%@page import="java.util.Iterator"%>
 <%@page import="java.net.URLEncoder"%>
 <%@page import="java.util.ArrayList"%>
-
+<%@page import="java.io.BufferedReader"%>
+<%@page import="java.io.IOException"%>
+<%@page import="java.io.InputStreamReader"%>
+<%@page import="java.net.URL"%>
+<%@page import="java.util.regex.Matcher"%>
+<%@page import="java.util.regex.Pattern"%>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-bean" prefix="bean" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-html" prefix="html" %>
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-logic" prefix="logic" %>
@@ -17,10 +22,51 @@
 <%@ taglib uri="http://jakarta.apache.org/struts/tags-nested" prefix="nested" %>
 
 
+
 <script type="text/javascript">
+function   DrawImage(ImgD, iwidth, iheight){ 
+    var image = new Image();     
+    image.src = ImgD.src; 
+    if(image.width > 0  &&  image.height> 0){ 
+      if(image.width/image.height >= iwidth/iheight){    
+        	 ImgD.width=iwidth; 
+        	 ImgD.height=image.height*iwidth/image.width;  
+        	 ImgD.alt=image.width+ "× "+image.height; 
+      } 
+     else{ 
+        	ImgD.height=iheight; 
+        	ImgD.width=image.width*iheight/image.height;           
+        	ImgD.alt=image.width+ "× "+image.height; 
+     } 
+   }
+} 
 	var oAJAXIFrame = null;
 	function setDocumentTitle(aTitle){
 		document.title = aTitle;
+	}
+	function insert(tag){
+		var el = document.getElementById('myTags');
+		el.innerHTML += '<div><div class="tags">' + tag + '&nbsp;&nbsp;</div><input style="float:left" height="15" width="15" type="image" src="images/delete.jpg" onclick="deleteTag(this, \'' + tag + '\')"/></div>';
+		
+		document.AddBookmarkColloquiumForm.tags.value += tag + ",,";
+		document.getElementById(tag).removeAttribute("onclick");
+		document.getElementById(tag).removeAttribute("href");
+		document.getElementById(tag).style.color = "black";			
+		
+	}
+	function deleteTag(element, tag){
+		 var parentElement = element.parentNode;
+		 var parentElement2 = parentElement.parentNode;
+         if(parentElement2){
+                parentElement2.removeChild(parentElement);  
+         }
+         var tagContent = document.AddBookmarkColloquiumForm.tags.value;
+         document.AddBookmarkColloquiumForm.tags.value = tagContent.replace(tag+",,", "");
+         
+         document.getElementById(tag).onclick = function() {insert(tag);};
+         document.getElementById(tag).href = "javascript: void(0)";
+         document.getElementById(tag).style.color = "#00A";	
+         
 	}
 	function editNote(){
 		if(btnEditNote.value == "Cancel"){
@@ -166,21 +212,50 @@
 		}
 	}
 </script>
+<style>
+	div.tags {float: left; background-color: #0080ff; margin-left:6px;  margin-bottom: 4px; font-size: 11px}
+
+</style>
 <%
 	session=request.getSession(false);
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
 	String col_id = (String)request.getParameter("col_id");
-	String sql = "SELECT c.title,date_format(c._date,_utf8'%b %d, %Y') _date," +
+	String sql = "select name, picURL, affiliation from col_speaker cs, speaker s where cs.speaker_id=s.speaker_id and cs.col_id = " + col_id;
+	ArrayList<String> speakers = new ArrayList<String>();
+	ArrayList<String> pics = new ArrayList<String>();
+	ArrayList<String> affiliations = new ArrayList<String>();
+	
+	connectDB conn = new connectDB();
+	boolean multiSpeakers = false;
+	try{
+		ResultSet rs = conn.getResultSet(sql);
+		while(rs.next()){
+			speakers.add(rs.getString("name"));
+			String imageSrc = rs.getString("picURL");
+			if (imageSrc == null){
+				imageSrc = "images/speaker/avartar.gif";
+			}
+			pics.add(imageSrc);
+			affiliations.add(rs.getString("affiliation"));
+			multiSpeakers = true;
+		}
+			
+		
+		rs.close();
+	}catch(SQLException e){
+		
+	}
+	sql = "SELECT c.title,date_format(c._date,_utf8'%b %d, %Y') _date," +
 					"date_format(c.begintime,_utf8'%l:%i %p') _begin," +
 					"date_format(c.endtime,_utf8'%l:%i %p') _end, " +
-					"c.detail,h.host_id,h.host,s.speaker_id,s.name,c.location," +
+					"c.detail,h.host_id,h.host,s.speaker_id,s.name,s.picURL,c.location," +
 					"c.user_id,c.url,u.name owner,c.owner_id,lc.abbr,c.video_url,s.affiliation,c.slide_url,c.s_bio " +
 					"FROM colloquium c JOIN speaker s ON c.speaker_id=s.speaker_id " +
 					"JOIN userinfo u ON c.owner_id = u.user_id " +
 					"LEFT OUTER JOIN host h ON c.host_id = h.host_id " +
 					"LEFT OUTER JOIN loc_col lc ON c.col_id = lc.col_id " +
 					"WHERE c.col_id = " + col_id;
-	connectDB conn = new connectDB();
+	
 	try{
 		ResultSet rs = conn.getResultSet(sql);
 		if(!rs.next()){
@@ -191,21 +266,30 @@
 			String url = rs.getString("url");
 			String title = rs.getString("title");
 			String host = rs.getString("host");
-			String speaker = rs.getString("name");
-			String affiliation = rs.getString("affiliation");
-			if(affiliation != null){
+			if (!multiSpeakers){
+				speakers.add(rs.getString("name"));
+				String imageSrc = rs.getString("picURL");
+				if (imageSrc == null){
+					imageSrc = "images/speaker/avartar.gif";
+				}
+				pics.add(imageSrc);
+				affiliations.add(rs.getString("affiliation"));
+			}
+			
+			
+			/* if(affiliation != null){
 				if(!affiliation.equalsIgnoreCase("N/A")){
 					speaker += ", " + affiliation;
 				}
-			}
+			} */
 %>
 <script type="text/javascript">
 <!--
-	window.onload = function(){
+	$(document).ready(function(){
 		var aTitle = "CoMeT | ";
 		aTitle = aTitle.concat("<%=title %>");
 		setDocumentTitle(aTitle);
-	};
+	});
 //-->
 </script>
 
@@ -214,6 +298,8 @@
 	session.setAttribute("before-login-redirect", "presentColloquium.do?col_id=" + col_id);
 %>
 </logic:notPresent>
+
+
 
 <table border="0" cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
@@ -244,6 +330,17 @@
 									<script type="text/javascript" src="http://www.google.com/buzz/api/button.js"></script>		
 								</td>
 								<td align="center" width="25%">
+									<!-- Place this tag where you want the +1 button to render -->
+									<g:plusone size="medium"></g:plusone>
+									
+									<!-- Place this render call where appropriate -->
+									<script type="text/javascript">
+									  (function() {
+									    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+									    po.src = 'https://apis.google.com/js/plusone.js';
+									    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+									  })();
+									</script>
 <%-- 
 									<!-- AddThis Button BEGIN -->
 									<div class="addthis_toolbox addthis_default_style">
@@ -270,7 +367,7 @@
 					<td width="85%" colspan="2" bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
 						Colloquium Detail
 					</td>
-					<td align="right" width="15%" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
+					<td align="right" width="15%" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">&nbsp;
 <% 
 			if(ub != null){
 %>
@@ -305,8 +402,26 @@
 					<td colspan="2" style="font-size: 0.9em;font-weight: bold;"><%=title%></td>
 				</tr>
 				<tr>
-					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left">Speaker:</td>
-					<td colspan="2" style="font-size: 0.75em;"><%=speaker%></td>
+					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left" valign="top">Speaker:</td>
+					
+					<td colspan="2">
+						<table>
+					<% 
+					
+						for (int i = 0 ; i < speakers.size(); i++){
+							
+					%>
+							<tr height="50">
+								<td rowspan="2"><img onload="DrawImage(this, 100, 100)"  src='<%= pics.get(i) %>' height="100" width="100" /> </td>
+								<td style="font-size: 0.75em;"><b><%= speakers.get(i) %></b></td>
+							</tr>
+							<tr><td style="font-size: 0.75em;"><%=affiliations.get(i)%></td>
+							</tr>
+					<%
+						}
+					%>
+						</table>
+					</td>
 				</tr>
 <% 
 			if(host!=null){
@@ -392,7 +507,30 @@
 %>
 				<tr>
 					<td style="font-size: 0.75em;font-weight: bold;" width="10%" align="left">Series:</td>
-					<td colspan="2" style="font-size: 0.75em;"><a href="series.do?series_id=<%=series_id%>"><%=series_name%></a></td>
+					<td colspan="2" style="font-size: 0.75em;">
+						<a href="series.do?series_id=<%=series_id%>"><%=series_name%></a>
+						<logic:present name="UserSession">
+							&nbsp;
+<% 
+				int subno = 0;
+				sql = "SELECT COUNT(*) _no FROM final_subscribe_series WHERE series_id=" + series_id + " AND user_id=" + ub.getUserID();
+				rsExt = conn.getResultSet(sql);
+				if(rsExt.next()){
+					subno = rsExt.getInt("_no");
+				}
+%>
+							<span class="spansubsid<%=series_id %>" id="spansubsid<%=series_id %>" 
+								style="display: <%=subno==0?"none":"inline" %>;cursor: pointer;background-color: blue;font-weight: bold;color: white;"
+								onclick="window.location='series.do?series_id=<%=series_id %>'"><%=subno>0?"&nbsp;Subscribed&nbsp;":"" %>
+							</span>&nbsp;
+							<a class="asubsid<%=series_id %>" href="javascript:return false;" 					
+								style="text-decoration: none;"
+								onmouseover="this.style.textDecoration='underline'" 
+								onmouseout="this.style.textDecoration='none'"
+								onclick="subscribeSeries(<%=ub.getUserID() %>, <%=series_id %>, this, 'spansubsid<%=series_id %>')"
+							><%=subno>0?"Unsubscribe":"Subscribe" %></a>
+						</logic:present>					
+					</td>
 				</tr>
 <%				
 			}
@@ -652,16 +790,117 @@
 <%			
 			}
 %>
+						
 						<div id="divBookmark" <%=styleBookmark%>>
-							<html:form action="/bookmarkColloquium">
-								<table cellspacing="0" cellpadding="0" width="100%" align="center">
+
+								<form  name= "form1"   method= "post"   action= " " >
+								<input type="hidden" ></input>
+								<table cellspacing="0" cellpadding="3" width="100%" align="center">
 									<tr>
-										<td width="20%" style="font-size: 0.75em;font-weight: bold;">Tags:</td>
+										<td width="20%" style="font-size: 0.75em;font-weight: bold;">Your Tags:</td>
 										<td>
-											<input style="font-size: 0.75em;" type="text" name="tags" size="50" value="<%=usertags%>" />
-											<input type="hidden" name="col_id" value="<%=col_id%>" /><span style="font-size: 0.75em;font-weight: bold;">(Separate by white space)</span>&nbsp;<input type="submit" class="btn" value="Bookmark" />
+											
+											<b id="myTags">
+									<%
+										String[] existTag = null;
+										if (usertags != ""){
+											existTag = usertags.trim().split(",,"); 
+											for(String t : existTag){
+												
+									%>
+											<div><div class="tags"><%=t%>&nbsp;&nbsp;</div><input type="image" style="float:left" height="15" width="15" src="images/delete.jpg" onclick="deleteTag(this, '<%=t%>')"></div>
+									<% 		}	
+										} %>
+											
+											</b>
+											<!--
+											<input type="hidden" name="col_id" value="<%=col_id%>" /><span style="font-size: 0.75em;font-weight: bold;">(Separate by white space)</span>&nbsp;<input type="submit" class="btn" value="Bookmark" />--> 
 										</td>
 									</tr>
+									<tr>
+										<td width="20%" ></td>
+										<td>
+											
+											<input style="font-size: 0.75em;" type="text" name="tagsInput" size="50"/> 
+											<input id="addTag" class="btn" type= "button"  value="Add" onClick=insert(document.form1.tagsInput.value) /></td>
+									</tr>
+									<%
+										String content = new String();
+										try
+										{
+											String key = "0494dda81af7f0b4c28c93401dd0326845df8d91";
+											String alchemyURL = "http://access.alchemyapi.com/calls/url/URLGetRankedConcepts?apikey=" + key +"&url=" + "http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=" + col_id;
+																					
+											URL rootPage = new URL(alchemyURL);			  
+											BufferedReader reader = new BufferedReader(new InputStreamReader(rootPage.openStream()));
+																		
+											String line = new String();
+											while((line = reader.readLine()) != null)
+												content += line;
+																							
+										
+										}
+									 	catch(IOException e){
+											e.printStackTrace();
+									 	}
+									 	
+									 	
+
+									%>
+									<tr>
+										<td width="20%" ></td>
+										<td style="font-size: 11px">
+											<b>Click to Add: </b>
+										 <%
+										 	int beginIndex = 0, endIndex = 0;
+											
+											while ((beginIndex = content.indexOf("<concept>", beginIndex))!=-1){
+												beginIndex = content.indexOf("<text>", beginIndex);
+												beginIndex += "<text>".length();
+												endIndex = content.indexOf("</text>", beginIndex);
+												String concept = content.substring(beginIndex, endIndex).trim();
+												boolean exist = false;
+												if (existTag != null){
+													for (String t: existTag){
+														if (concept.equals(t)){
+															exist = true;
+															break;
+														}
+													}
+												}
+												if (!exist){
+												
+										 %>
+										 			<a id="<%= concept %>" href="javascript:void(0)" onclick="insert('<%= concept %>')"><%= concept %></a>&nbsp;   
+										<% 
+												}
+												else{
+										%>			
+													<a id="<%= concept %>" style="color:black"><%= concept %></a>&nbsp;
+										<%	
+												}
+											}
+										%>
+									
+										</td>
+									</tr>
+									</table>
+									</form>
+									<html:form action="/bookmarkColloquium">	
+									<table cellspacing="0" cellpadding="0" width="100%" align="center">
+									<tr>
+										<td width="20%"></td>
+										<td>
+											<input name="tags" value="<%=usertags%>">
+											<input type="hidden" name="col_id" value="<%=col_id%>" />
+											<input type="submit" class="btn" value="Bookmark with your tags" />
+											
+										</td>
+									</tr>
+									</table>
+									</br></br>						
+									<table cellspacing="0" cellpadding="0" width="100%" align="center">
+									
 									<tr>
 										<td valign="top" style="font-size: 0.75em;font-weight: bold;">Notes:</td>
 										<td style="font-size: 0.75em;"><textarea name="note" cols="45" rows="5"><%=notes%></textarea></td>
@@ -715,6 +954,7 @@
 									</tr>
 --%>
 								</table>
+								
 							</html:form>
 						</div>
 					</td>
@@ -862,7 +1102,6 @@
 						</logic:present>
 					</td>
 				</tr>
-<%-- 
 				<tr>
 					<td>
 						<tiles:insert template="/utils/scholarCitationStat.jsp" />
@@ -871,7 +1110,6 @@
 				<tr>
 					<td>&nbsp;</td>
 				</tr>
---%>
 				<logic:present name="UserSession">
 					<tr>
 						<td valign="top">

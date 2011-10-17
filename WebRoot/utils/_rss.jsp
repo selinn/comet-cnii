@@ -60,7 +60,10 @@
 	    req_week = calendar.get(Calendar.WEEK_OF_MONTH);
 	    req_specific_date = true;
 	}
-	String menu = (String)session.getAttribute("menu");
+	String menu = "home";
+	if(session.getAttribute("menu")!=null){
+		menu = (String)session.getAttribute("menu");
+	}
 	if(menu.equalsIgnoreCase("myaccount")){
 		String uid = String.valueOf(ub.getUserID());
 		if(user_id_value == null){
@@ -212,7 +215,7 @@
 			if(req_posted){
 				sql += "JOIN colloquium cc" + i + " ON c.col_id=cc" + i + ".col_id AND cc"+ i + ".owner_id = " + user_id_value[i] + " ";
 			}else{
-				sql += "JOIN userprofile up" + i + " WHERE c.col_id=up" + i + ".col_id AND up" + i + ".user_id = " + user_id_value[i] + " ";
+				sql += "JOIN userprofile up" + i + " ON c.col_id=up" + i + ".col_id AND up" + i + ".user_id = " + user_id_value[i] + " ";
 			}
 		}
 	}
@@ -232,7 +235,7 @@
 	}
 	if(series_id_value != null){//Series Mode
 		for(int i=0;i<series_id_value.length;i++){
-			sql += "JOIN seriescol sc" + i + " ON c.col_id = sc" + i + ".col_id AND sc" + i + ".series_id=" + series_id_value + " ";
+			sql += "JOIN seriescol sc" + i + " ON c.col_id = sc" + i + ".col_id AND sc" + i + ".series_id=" + series_id_value[i] + " ";
 		}
 	}
 	if(entity_id_value != null){//Entity Mode
@@ -246,7 +249,14 @@
 			"e" + i + ".entity_id = eee" + i + ".entity_id AND e" + i + "._type = '" + type_value + "' ";
 		}
 	}
-	sql += "WHERE TRUE ";
+	if(menu.equalsIgnoreCase("calendar")||menu.equalsIgnoreCase("myaccount")||
+			req_most_recent||req_specific_date||
+			series_id_value!=null||comm_id_value!=null||user_id_value!=null){
+		sql += "WHERE TRUE ";
+	}else{
+		sql += "WHERE c._date >= CURDATE() ";
+		//"c._date >= (SELECT beginterm FROM sys_config) " +
+	}
 	if(affiliate_id_value !=null ){
 		for(int i=0;i<affiliate_id_value.length;i++){
 			sql += "AND c.col_id IN " +
@@ -273,6 +283,7 @@
 		sql += "ORDER BY c._date,c.begintime;";
 	}
     //out.println(sql);
+    
     try{
 		//response.setContentType("application/xml");
 		//response.setHeader("Content-Disposition","attachment; filename=\"rss.xml\"");
@@ -372,6 +383,7 @@
 							"<a href=\"http://washington.sis.pitt.edu/comet/calendar.do?user_id=" + _user_id + "\">" + user_name + "</a>";
 			}*/
 
+			
 			if(description != null){			
 				description = description.trim();
 				content += "<br/><b>Detail:<b>" + description;
@@ -387,7 +399,7 @@
 			out.println("<author>" + author + "</author>");
 			out.println("</item>");
 		}
-		rs.close();
+		//rs.close();
 		out.println("</channel>");
 		out.println("</rss>");
 		

@@ -30,6 +30,9 @@
 						<td bgcolor="#efefef" style="font-size: 0.95em;font-weight: bold;">This Week Events</td>
 					</tr>
 					<tr>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
 						<td>
 							<tiles:insert template="/utils/loadTalks.jsp?mostrecent=1"/>
 						</td>
@@ -53,15 +56,32 @@
 --%>
 					<tr>
 						<td>
-							<tiles:insert template="/utils/popAnnotatedTalk.jsp?rows=5"/>
+							<tiles:insert template="/utils/popCometScoreTalk.jsp?rows=3"/>
 						</td>
 					</tr>
+					<tr>
+						<td>
+							<tiles:insert template="/utils/popVideoTalk.jsp?rows=3"/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<tiles:insert template="/utils/popSlideTalk.jsp?rows=3"/>
+						</td>
+					</tr>
+<%-- 
+					<tr>
+						<td>
+							<tiles:insert template="/utils/popAnnotatedTalk.jsp?rows=3"/>
+						</td>
+					</tr>
+--%>
 					<tr>
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
 						<td>
-							<tiles:insert template="/utils/popCommunity.jsp?rows=5"/>
+							<tiles:insert template="/utils/popCommunity.jsp?rows=3"/>
 						</td>
 					</tr>
 				</table>

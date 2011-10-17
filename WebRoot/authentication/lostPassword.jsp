@@ -67,9 +67,9 @@
 		String mailuser= "NoReply";
 		MailNotifier mail = new MailNotifier(localhost,mailhost,mailuser,requst_email);
 		String emailContent = "Dear " + name + "\n\n" +
-		"This automated e-mail of the CoMeT Sysytem:\n\n" + 
+		"This automated e-mail is from the CoMeT System:\n\n" + 
 		"Your password is " + DecryptedPassword + "\n\n" +
-		"CoMeT Website: http://halley.exp.sis.pitt.edu/comet ";
+		"CoMeT Website: http://pittcomet.info/ ";
 		
 		try {
 			mail.send("Lost Password | CoMeT", emailContent);

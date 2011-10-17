@@ -47,12 +47,12 @@ public class LogoutAction extends Action {
 		HttpServletRequest request,
 		HttpServletResponse response) {
 		Cookie cid = new Cookie("comet_user_id", null);
-        cid.setMaxAge(0);
+        cid.setMaxAge(10);
         cid.setPath("/");
         response.addCookie(cid);
-		
+        
 		Cookie cname = new Cookie("comet_user_name", null);
-        cname.setMaxAge(0);
+        cname.setMaxAge(10);
         cname.setPath("/");
         response.addCookie(cname);
 

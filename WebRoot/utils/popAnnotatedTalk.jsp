@@ -86,7 +86,7 @@
 %>
 			</ol>
 <% 
-	if(rows==5){
+	if(rows==3){
 %>
 				<div style="color:#003399;cursor:pointer;font-size: 0.75em;font-weight: bold;" 
 					onmouseover="this.style.textDecoration='underline'" 

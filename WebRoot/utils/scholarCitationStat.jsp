@@ -7,7 +7,8 @@
 	String col_id = (String)request.getParameter("col_id");
 	if(col_id == null){
 %>
-<table cellspacing="0" cellpadding="0" width="100%" align="center">
+
+<%@page import="java.sql.PreparedStatement"%><table cellspacing="0" cellpadding="0" width="100%" align="center">
 	<tr>
 		<td>
 			<i>Scholar Name Not Provided</i>
@@ -16,13 +17,23 @@
 </table>
 <% 
 	}else{
-		String sql = "SELECT s.name from speaker s JOIN colloquium c ON s.speaker_id = c.speaker_id WHERE c.col_id=" + col_id;
+		String sql = "SELECT s.speaker_id,s.name,s.citations,s.publications,s.hindex,s.gslink from speaker s JOIN colloquium c ON s.speaker_id = c.speaker_id WHERE c.col_id=" + col_id;
 		connectDB conn = new connectDB();
 		ResultSet rs = conn.getResultSet(sql);
+		int sid = 0;
 		String name = "";
+		int citations = 0;
+		int publications = 0;
+		int h_index = 0;
+		String _publication_link = null;
 		if(rs != null){
 			if(rs.next()){
+				sid = rs.getInt("speaker_id");
 				name = rs.getString("name");
+				citations = rs.getInt("citations");
+				publications = rs.getInt("publications");
+				h_index = rs.getInt("hindex");
+				_publication_link = rs.getString("gslink");
 			}
 		}else{
 			return;
@@ -31,11 +42,22 @@
 		if(commapos > 0){
 			name = name.substring(0,commapos);
 		}
-		GoogleScholarCitation gsc = new GoogleScholarCitation(name);
-		int citations = gsc.getTotal_cites();
-		int publications = gsc.getPublications();
-		int h_index = gsc.getH_index();
-		String _publication_link = gsc.getLink();
+		if(_publication_link==null){
+			GoogleScholarCitation gsc = new GoogleScholarCitation(name);
+			citations = gsc.getTotal_cites();
+			publications = gsc.getPublications();
+			h_index = gsc.getH_index();
+			_publication_link = gsc.getLink();
+			
+			sql = "UPDATE speaker SET citations=?,publications=?,hindex=?,gslink=?,lastupdate=NOW() WHERE speaker_id=?";
+			PreparedStatement pstmt = conn.conn.prepareStatement(sql);
+			pstmt.setInt(1,citations);
+			pstmt.setInt(2,publications);
+			pstmt.setInt(3,h_index);
+			pstmt.setString(4,_publication_link);
+			pstmt.setInt(5,sid);
+			pstmt.executeUpdate();
+		}
 %>					
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-left: 1px #efefef solid;border-right: 1px #efefef solid;border-bottom: 1px #efefef solid;">
 	<tr>

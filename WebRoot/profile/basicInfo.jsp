@@ -36,20 +36,8 @@
 
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
 				<tr>
-					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
-				</tr>
-				<tr>
-					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
-					Friends
-					</td>
-				</tr>
-				<tr>
-					<td style="border: 1px #EFEFEF solid;">
-					<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
-						<tr>
-							<td>No friend</td>
-						</tr>
-					</table>
+					<td>
+						<tiles:insert template="/profile/people.jsp?listtype=snapshot" />
 					</td>
 				</tr>
 				<tr><td>&nbsp;</td></tr>
@@ -80,7 +68,7 @@
 <%
 			if(emailSet.size() > 0){
 %>
-					(<%=emailSet.size() %> contact<%=(emailSet.size()>1?"s":"") %>)
+					(<%=emailSet.size() %>)
 <%				
 			}
 %>
@@ -89,7 +77,7 @@
 				</tr>
 				<tr>
 					<td style="border: 1px #EFEFEF solid;">
-						<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
+						<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;padding: 5px;">
 <% 
 			if(emailSet.size() > 0){
 				int i=0;
@@ -128,18 +116,28 @@
 				<tr><td>&nbsp;</td></tr>
 <%			
 		}
+		sql = "SELECT COUNT(*) _no FROM (SELECT c.comm_id " +
+				"FROM contribute ct JOIN community c ON ct.comm_id = c.comm_id " +
+				"JOIN userprofile u ON ct.userprofile_id = u.userprofile_id " +
+				" WHERE u.user_id=" + (user_id==null?ub.getUserID():user_id) +
+				" GROUP BY c.comm_id) t";
+		rs = conn.getResultSet(sql);
+		int groupno = 0;
+		if(rs.next()){
+			groupno = rs.getInt(1);	
+		}
 %>
 				<tr>
 					<td bgcolor="#00468c"><div style="height: 2px;overflow: hidden;">&nbsp;</div></td>
 				</tr>
 				<tr>
 					<td bgcolor="#efefef" style="background-color: #efefef;font-size: 0.85em;font-weight: bold;">
-					Groups
+					Group<%=groupno>1?"s":"" %> <%=groupno>0?"(" + groupno + ")":"" %>
 					</td>
 				</tr>
 				<tr>
 					<td style="border: 1px #EFEFEF solid;">
-					<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;">
+					<table width="100%" border="0" cellspacing="0" cellpadding="1" style="font-size: 0.7em;padding: 5px;">
 <% 
 		sql = "SELECT c.comm_name,c.comm_id " +
 				"FROM contribute ct JOIN community c ON ct.comm_id = c.comm_id " +
@@ -164,6 +162,13 @@
 			}
 			if(i%2==1){
 				out.println("<td>&nbsp</td></tr>");
+			}
+			if(i==0){
+%>
+						<tr>
+							<td>No group</td>
+						</tr>
+<%			
 			}
 %>
 

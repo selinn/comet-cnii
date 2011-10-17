@@ -16,7 +16,7 @@
 	</head>
 <body topmargin="0">
 	<div align="center">
-		<table width="880" border="0" cellpadding="0" cellspacing="0" bordercolor="black">
+		<table width="1000" border="0" cellpadding="0" cellspacing="0" bordercolor="black">
 			<tr>
 				<td align="left" valign="top" colspan="3"> 		
 					<tiles:insert attribute="header">

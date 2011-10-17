@@ -134,8 +134,8 @@ public class AddBookmarkColloquiumAction extends Action {
 					}
 				}
 			}
-			String tags = abcf.getTags().replaceAll(",", " ");
-			String[] tag = tags.trim().split("\\s+");
+			String tags = abcf.getTags();
+			String[] tag = tags.trim().split(",,");
 			if(tag != null){
 				for(int i=0;i<tag.length;i++){
 					sql = "SELECT tag_id FROM tag WHERE tag = ?";

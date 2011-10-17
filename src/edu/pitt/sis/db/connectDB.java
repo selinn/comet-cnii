@@ -16,7 +16,7 @@ public class connectDB {
     
     /** Creates a new instance of connectDB */
     public connectDB() {
-    	DataSource ds;
+    	/*DataSource ds;
     	try {
 			String context_name = "java:comp/env/jdbc/colloquia";
 			Context initCtx = new InitialContext();
@@ -29,9 +29,9 @@ public class connectDB {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
             System.out.println("SQL Exception: " + e.toString());
-		}
+		}*/
     	
-		/*String serverName = "localhost";
+		String serverName = "127.0.0.1";
 		String myDatabase = "colloquia";
 		String username = "chirayu";
 		String password = "yes";
@@ -45,7 +45,7 @@ public class connectDB {
         }catch(Exception ex){
             // handle any errors
             System.out.println("Load Driver Exception: " + ex.toString());
-        }*/
+        }
     }
     
     public ResultSet getResultSet(String sql){

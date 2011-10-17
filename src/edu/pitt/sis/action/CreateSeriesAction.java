@@ -78,6 +78,7 @@ public class CreateSeriesAction extends Action {
 				ResultSet rs = conn.getResultSet(sql);
 				if(rs.next()){
 					series_id = rs.getString(1);
+					csf.setSeries_id(series_id);
 				}
 				pstmt.close();
 				
@@ -89,8 +90,6 @@ public class CreateSeriesAction extends Action {
 					}
 					conn.executeUpdate(sql);
 				}
-				conn.conn.close();
-				conn = null;
 			}catch(SQLException e){
 				try {
 					if (pstmt != null) pstmt.close();			
@@ -135,8 +134,6 @@ public class CreateSeriesAction extends Action {
 					conn.executeUpdate(sql);
 				}
 
-				conn.conn.close();
-				conn = null;
 			}catch(SQLException e){
 				try {
 					if (pstmt != null) pstmt.close();			
@@ -149,6 +146,30 @@ public class CreateSeriesAction extends Action {
 				return mapping.findForward("Failure");
 			}
 		}
+		
+		//Set Research Area
+		try {
+			if(csf.getSeries_id() != null){
+				String sql = "DELETE FROM area_series WHERE series_id=" + csf.getSeries_id();
+				conn.executeUpdate(sql);
+				
+				if(csf.getArea_id() != null){
+					sql = "INSERT INTO area_series (area_id,series_id) VALUES ";
+					for(int i=0;i<csf.getArea_id().length;i++){
+						if(i!=0)sql += ",";
+						sql += "(" + csf.getArea_id()[i] + "," + csf.getSeries_id() + ")";
+					}
+					conn.executeUpdate(sql);
+				}
+			}
+			
+			conn.conn.close();
+			conn = null;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		session.setAttribute("createNewSeries",new Object());
 		return mapping.findForward("Success");
 	}

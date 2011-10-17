@@ -136,16 +136,16 @@ public class MailNotifier {
 		ResultSet rs = con.getResultSet(sql);
 		try {
 			if(rs.next()){
-				String content = //"Dear my friend,\n\n" + 
+				String content = "This e-mail is sent to you on behalf of the CoMeT System, a recommender system for academic colloquia hosted by the School of Information Sciences, University of Pittsburgh:\n\n" + 
 								//"This e-mail is on behalf of the CoMeT Sysytem:\n\n" + 
-								sender_name + "(" + sender_email + ") sugguest this colloquium to you as follows.\n\n" + 
+								sender_name + "(" + sender_email + ") suggests that you might want to attend the following colloquium\n\n" + 
 								"Title: " + rs.getString("title") + "\n" +
 								"Speaker: " + rs.getString("name") +  "\n" +
 								"Host: " + rs.getString("host") + "\n" + 
 								"Date: " + rs.getString("_date") + "\n" +
 								"Time: " + rs.getString("_begin") + " - " + rs.getString("_end") + "\n" +
 								"Location: " + rs.getString("location") + "\n\n" +
-								"More detail please visit http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=" + col_id;
+								"More detail please visit http://pittcomet.info/presentColloquium.do?col_id=" + col_id;
 
 				System.out.println(content);
 				

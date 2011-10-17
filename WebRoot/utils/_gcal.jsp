@@ -126,13 +126,21 @@
 		// Begin Date
 		String beginTime = rs.getString("_begin");	
 		DateTime _begin = new DateTime(formatter.parse(talkDate + " " + beginTime));
-		//Fix Google Bug -- add 3 more hours to Western Time Zone
-		_begin.setTime(_begin.getTime() + 4*60*60*1000);
+		//Check timezone whether it is daylight saving time or not
+		if(timezone.inDaylightTime(_begin)){
+			_begin.setTime(_begin.getTime() + 4*60*60*1000);
+		}else{
+			_begin.setTime(_begin.getTime() + 5*60*60*1000);
+		}
 		
 		// End Date
 		String endTime = rs.getString("_end");
 		DateTime _end = new DateTime(formatter.parse(talkDate + " " + endTime));	
-		_end.setTime(_end.getTime() + 4*60*60*1000);
+		if(timezone.inDaylightTime(_end)){
+			_end.setTime(_end.getTime() + 4*60*60*1000);
+		}else{
+			_end.setTime(_end.getTime() + 5*60*60*1000);
+		}
 		
 		// Create the event
 		String eventName = rs.getString("title");

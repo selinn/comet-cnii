@@ -20,6 +20,7 @@
 	session = request.getSession(false);
 	UserBean ub = (UserBean)session.getAttribute("UserSession");
 	String user_id = (String)request.getParameter("user_id");
+	String listtype = (String)request.getParameter("listtype");//snapshot,mutual,like
 	if(user_id==null&&ub==null){
 %>
 	<script type="text/javascript">
@@ -28,15 +29,8 @@
 	</script>
 <%		
 	}else{
-		//connectDB conn = new connectDB();
-			
 %>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" >
-	<tr>
-		<td colspan="3">
-			<iframe id="infoFrame" name="infoFrame" style="width: 0px;height: 0px;border: 0px;position: absolute;" src="profile/infoEntry.jsp"></iframe>
-		</td>
-	</tr>
 	<tr>
 		<td width="75%" valign="top">
 			<table width="100%" border="0" cellspacing="0" cellpadding="0" >
@@ -50,6 +44,26 @@
 				</tr>
 				<tr>
 					<td>&nbsp;
+<% 
+		connectDB conn = new connectDB();
+		String sql = "SELECT user0_id,user1_id FROM friend WHERE TRUE ";
+		if(user_id==null){
+			sql += "AND (user0_id=" + ub.getUserID() + " OR user1_id=" + ub.getUserID() + ") ";
+		}else{
+			sql += "AND (user0_id=" + user_id + " OR user1_id=" + user_id + ") ";
+		}
+		if(listtype!=null){
+			if(listtype.equalsIgnoreCase("mutual")){
+				sql += "AND (user0_id=" + ub.getUserID() + " OR user1_id=" + ub.getUserID() + ") ";
+			}
+			if(listtype.equalsIgnoreCase("like")){
+				sql += "AND (user0_id=" + ub.getUserID() + " OR user1_id=" + ub.getUserID() + ") ";
+			}
+			if(listtype.equalsIgnoreCase("snapshot")){
+				sql += " ORDER BY RAND() LIMIT 6;";
+			}
+		}
+%>
 					</td>
 				</tr>
 			</table>

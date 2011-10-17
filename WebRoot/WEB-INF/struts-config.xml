@@ -105,7 +105,19 @@
 		 name="aaa.colloquia.displayTalk"
 		 path="/displayTalk.do"
 		 redirect="true"
-		 contextRelative="true" />  
+		 contextRelative="true" />
+
+		<forward
+		 name="aaa.colloquia.quickbookmark"
+		 path="/quickbookmark.do"
+		 redirect="true"
+		 contextRelative="true" />
+		<forward
+		 name="aaa.colloquia.sucessBookmarkColloquium"
+		 path="/sucessBookmarkColloquium.do"
+		 redirect="true"
+		 contextRelative="true" />
+		   
 		<forward
 		 name="aaa.colloquia.groups"
 		 path="/groups.do"
@@ -161,6 +173,21 @@
 		 path="/popAnnotation.do"
 		 redirect="true"
 		 contextRelative="true" />  		 
+		 <forward
+		 name="aaa.colloquia.cometScore.popular"
+		 path="/popCometScore.do"
+		 redirect="true"
+		 contextRelative="true" />  
+		 <forward
+		 name="aaa.colloquia.video.popular"
+		 path="/popVideo.do"
+		 redirect="true"
+		 contextRelative="true" /> 		
+		 <forward
+		 name="aaa.colloquia.slide.popular"
+		 path="/popSlide.do"
+		 redirect="true"
+		 contextRelative="true" /> 
 		<forward
 		 name="aaa.colloquia.view.popular"
 		 path="/popView.do"
@@ -206,6 +233,28 @@
 		 path="/topic.do"
 		 redirect="true"
 		 contextRelative="true" />  
+		<forward
+		 name="aaa.search.result"
+		 path="/searchResult.do"
+		 redirect="true"
+		 contextRelative="true" /> 
+		 <forward
+		 name="aaa.advancedSearch"
+		 path="/advancedSearch.do"
+		 redirect="true"
+		 contextRelative="true" /> 
+		 <forward
+		 name="aaa.advancedSearch.result"
+		 path="/advancedSearchResult.do"
+		 redirect="true"
+		 contextRelative="true" />
+		 
+		<forward
+		 name="aaa.colloquia.connection"
+		 path="/connection.do"
+		 redirect="true"
+		 contextRelative="true" /> 
+		 
 	</global-forwards>
 
 	<action-mappings>
@@ -284,6 +333,15 @@
 				name="AddBookmarkColloquiumForm" path="/bookmarkColloquium" 
 				scope="request" type="edu.pitt.sis.action.AddBookmarkColloquiumAction">
 		<forward name="Success" path="aaa.colloquia.presentColloquium" redirect="true" contextRelative="true" />
+		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
+		<forward name="Failure" path="aaa.calendar" redirect="true" contextRelative="true" />      
+		</action>              
+
+		<action forward="aaa.colloquia.quickbookmark" path="/quickbookmark" />         	  
+		<action attribute="AddBookmarkColloquiumForm" input="aaa.colloquia.quickbookmark" 
+				name="AddBookmarkColloquiumForm" path="/postQuickBookmark" 
+				scope="request" type="edu.pitt.sis.action.AddBookmarkColloquiumAction">
+		<forward name="Success" path="aaa.colloquia.sucessBookmarkColloquium" redirect="true" contextRelative="true" />
 		<forward name="Login" path="aaa.authentication.login" redirect="true" contextRelative="true" />      
 		<forward name="Failure" path="aaa.calendar" redirect="true" contextRelative="true" />      
 		</action>              
@@ -393,6 +451,12 @@
 
 		<action forward="aaa.colloquia.annotation.popular" path="/popAnnotation" />
 
+		<action forward="aaa.colloquia.cometScore.popular" path="/popCometScore" />
+		
+		<action forward="aaa.colloquia.video.popular" path="/popVideo" />
+		
+		<action forward="aaa.colloquia.slide.popular" path="/popSlide" />
+
 		<action forward="aaa.colloquia.view.popular" path="/popView" />
 
 		<action forward="aaa.colloquia.annotation.recent" path="/recentAnnotation" />
@@ -400,6 +464,14 @@
 		<action forward="aaa.colloquia.view.recent" path="/recentView" />
 
 		<action forward="aaa.authentication.lostpassword" path="/lostPassword" />
+
+		<action forward="aaa.search.result" path="/searchResult" />
+		
+		<action forward="aaa.advancedSearch" path="/advancedSearch" />
+		
+		<action forward="aaa.advancedSearch.result" path="/advancedSearchResult" />
+
+		<action forward="aaa.colloquia.connection" path="/connection" /> 
 
 		<action path="/"
 				type=""

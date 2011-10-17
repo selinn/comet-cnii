@@ -26,6 +26,8 @@
 		<put name="rightsidebar" value="/includes/calendar.jsp" />
 		<put name="footer" value="/includes/footer.jsp" />
 	</definition>
+	<definition name="aaa.colloquia.sucessBookmarkColloquium" path="/colloquia/successBookmark.jsp">
+	</definition>
 <!-- 	<definition name="aaa.index" extends="aaa.default">
 		<put name="mainwindow" value="news.jsp" />
 		<put name="title" value="Welcome to the Adaptive Academic Announcement Project" />
@@ -163,6 +165,21 @@
 		<put name="mainwindow" value="/utils/popAnnotatedTalk.jsp" />
 		<put name="title" value="CoMeT | Popular Annotated Talks" />
 	</definition>
+	<definition name="aaa.colloquia.cometScore.popular" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/utils/popCometScoreTalk.jsp" />
+		<put name="title" value="CoMeT | Higest Comet Score Talks" />
+	</definition>
+	<definition name="aaa.colloquia.video.popular" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/utils/popVideoTalk.jsp" />
+		<put name="title" value="CoMeT | Popular Talks with Videos" />
+	</definition>
+	<definition name="aaa.colloquia.slide.popular" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/utils/popSlideTalk.jsp" />
+		<put name="title" value="CoMeT | Popular Talks with Slides" />
+	</definition>
 	<definition name="aaa.colloquia.view.popular" 
 		extends="aaa.default.nosidebar">
 		<put name="mainwindow" value="/utils/popViewedTalk.jsp" />
@@ -193,4 +210,26 @@
 		<put name="mainwindow" value="/topic/topic.jsp" />
 		<put name="title" value="CoMeT | Topic" />
 	</definition>
+	<definition name="aaa.search.result" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/searchResult.jsp" />
+		<put name="title" value="CoMeT | Search Results" />
+	</definition>
+	<definition name="aaa.advancedSearch" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/advancedSearch.jsp" />
+		<put name="title" value="CoMeT | Advanced Search" />
+	</definition>
+	<definition name="aaa.advancedSearch.result" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/advancedSearchResult.jsp" />
+		<put name="title" value="CoMeT | Search Results" />
+	</definition>	
+	
+	<definition name="aaa.colloquia.connection" 
+		extends="aaa.default.nosidebar">
+		<put name="mainwindow" value="/includes/socialConnection.jsp" />
+		<put name="title" value="CoMeT | Connection" />
+	</definition>
+	
 </tiles-definitions>

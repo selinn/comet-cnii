@@ -65,102 +65,163 @@ public class AddColloquiumAction extends Action {
 		PreparedStatement pstmt = null;
 		
 		long speaker_id = -1;
-		String concatname = "";
+		String pic_url = "";
+		
 		
 		//Search for existing speakers
-		String[] name = cqf.getSpeaker().trim().split("\\s+");
-		for(int i=0;i<name.length;i++){
-			concatname += name[i];
+		String[] speakersStr = cqf.getSpeaker().trim().split(";;");
+		System.out.println(cqf.getAffiliation());
+		String[] affiliationStr = cqf.getAffiliation().split(";;");
+		String[] pictureStr = cqf.getPicURL().split(";;");
+		
+		ArrayList<String> speakers = new ArrayList<String>();
+		HashMap<String, Long> speakerID = new HashMap<String,Long>();
+		ArrayList<String> affiliations = new ArrayList<String>();
+		ArrayList<String> pictures = new ArrayList<String>();
+		for (int i = 0; i < speakersStr.length; i++){
+			if (!speakersStr[i].equals("")){
+				speakers.add(speakersStr[i]);
+				if(affiliationStr[i].equals("null"))
+					affiliationStr[i] = "";
+				affiliations.add(affiliationStr[i]);
+				pictures.add(pictureStr[i]);
+			}
 		}
 		
-		String sql = "SELECT speaker_id FROM speaker WHERE concatname = ? and affiliation = ?";
-		try {
-			pstmt = conn.conn.prepareStatement(sql);
-			pstmt.setString(1, concatname.toLowerCase());
-			pstmt.setString(2, cqf.getAffiliation());
-			ResultSet rs = pstmt.executeQuery();
-			
+		String sql;	
+		/*try{		
+			ResultSet rs = conn.getResultSet(sql);		
 			if(rs.next()){
-				speaker_id = rs.getLong("speaker_id");
+				col_id = rs.getLong("maximum");
+				col_id++;
 			}
 			rs.close();
-			pstmt.close();
-		} catch (SQLException e) {
+			
+		}catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			try {				
-				pstmt.close();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-				session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#1) occured. Please try again.");
-				return mapping.findForward("Failure");
+		}*/
+		System.out.println(speakers.size());
+		for (int j = 0; j < speakers.size(); j++){
+			speaker_id = -1;
+			pic_url = "";
+			System.out.println(speakers.get(j));
+			String[] name = speakers.get(j).trim().split("\\s+");
+			String concatname = "";
+			for(int i=0;i<name.length;i++){
+				concatname += name[i];
 			}
-		}
-		
-		//If not there, insert new speakers
-		if(speaker_id == -1){
-			sql = "INSERT INTO speaker (name,concatname,affiliation) VALUES (?,?,?)";
+			
+			sql = "SELECT speaker_id, picURL FROM speaker WHERE concatname = ? and affiliation = ?";
 			try {
-				String speaker = "";
-				for(int i=0;i<name.length;i++){
-					speaker += name[i] + " ";
-				}
-				speaker = speaker.trim();
 				pstmt = conn.conn.prepareStatement(sql);
-				pstmt.setString(1, speaker);
-				pstmt.setString(2, concatname.toLowerCase());
-				pstmt.setString(3, cqf.getAffiliation());
-				pstmt.execute();
+				pstmt.setString(1, concatname.toLowerCase());
+				pstmt.setString(2, affiliations.get(j));
+				System.out.println(concatname.toLowerCase() + "     " + affiliations.get(j));
+				ResultSet rs = pstmt.executeQuery();
+				
+				if(rs.next()){
+					//We shall assign the first speaker as the one in the colloquium table
+					if(j==0){
+						speaker_id = rs.getLong("speaker_id");
+					}
+					pic_url = rs.getString("picURL");
+					
+					speakerID.put(speakers.get(j), rs.getLong("speaker_id"));
+				}
+				rs.close();
 				pstmt.close();
-								
+				//System.out.println(speaker_id + ";; " + concatname);
+				if (pic_url == null || (!pic_url.equals(pictures.get(j))) ){				
+					sql = "UPDATE speaker SET picURL=? WHERE speaker_id=?";
+					pstmt = conn.conn.prepareStatement(sql);
+					pstmt.setString(1,pictures.get(j));
+					pstmt.setLong(2,speaker_id);
+					pstmt.executeUpdate();
+					pstmt.close();
+				}
+				
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				try {
+				try {				
 					pstmt.close();
 				} catch (SQLException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
-					session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#3) occured. Please try again.");
+					session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#1) occured. Please try again.");
 					return mapping.findForward("Failure");
-				}				
-				session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#2) occured. Please try again.");
-				return mapping.findForward("Failure");
+				}
 			}
-			sql = "SELECT LAST_INSERT_ID()";
-			try {
-				pstmt = conn.conn.prepareStatement(sql);
-				ResultSet rs = pstmt.executeQuery();
-				if(rs.next()){
-					speaker_id = rs.getLong(1);
-					
+			
+			//If not there, insert new speakers
+			if(speaker_id == -1){
+				
+				sql = "INSERT INTO speaker (name,concatname,affiliation, picURL) VALUES (?,?,?,?)";
+				try {
 					String speaker = "";
 					for(int i=0;i<name.length;i++){
 						speaker += name[i] + " ";
 					}
 					speaker = speaker.trim();
-
-					GoogleScholarCitation gsc = new GoogleScholarCitation(speaker);
-					int citations = gsc.getTotal_cites();
-					int publications = gsc.getPublications();
-					int h_index = gsc.getH_index();
-					String _publication_link = gsc.getLink();
-					
-					sql = "UPDATE speaker SET citations=?,publications=?,hindex=?,gslink=?,lastupdate=NOW() WHERE speaker_id=?";
 					pstmt = conn.conn.prepareStatement(sql);
-					pstmt.setInt(1,citations);
-					pstmt.setInt(2,publications);
-					pstmt.setInt(3,h_index);
-					pstmt.setString(4,_publication_link);
-					pstmt.setLong(5,speaker_id);
-					pstmt.executeUpdate();
+					pstmt.setString(1, speaker);
+					pstmt.setString(2, concatname.toLowerCase());
+					pstmt.setString(3, affiliations.get(j));
+					pstmt.setString(4, pictures.get(j));
+					pstmt.execute();
 					pstmt.close();
-
+									
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					try {
+						pstmt.close();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#3) occured. Please try again.");
+						return mapping.findForward("Failure");
+					}				
+					session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#2) occured. Please try again.");
+					return mapping.findForward("Failure");
 				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				sql = "SELECT LAST_INSERT_ID()";
+				try {
+					pstmt = conn.conn.prepareStatement(sql);
+					ResultSet rs = pstmt.executeQuery();
+					if(rs.next()){
+						speaker_id = rs.getLong(1);
+						
+						speakerID.put(speakers.get(j), speaker_id);
+
+						String speaker = "";
+						for(int i=0;i<name.length;i++){
+							speaker += name[i] + " ";
+						}
+						speaker = speaker.trim();
+	
+						GoogleScholarCitation gsc = new GoogleScholarCitation(speaker);
+						int citations = gsc.getTotal_cites();
+						int publications = gsc.getPublications();
+						int h_index = gsc.getH_index();
+						String _publication_link = gsc.getLink();
+						
+						sql = "UPDATE speaker SET citations=?,publications=?,hindex=?,gslink=?,lastupdate=NOW() WHERE speaker_id=?";
+						pstmt = conn.conn.prepareStatement(sql);
+						pstmt.setInt(1,citations);
+						pstmt.setInt(2,publications);
+						pstmt.setInt(3,h_index);
+						pstmt.setString(4,_publication_link);
+						pstmt.setLong(5,speaker_id);
+						pstmt.executeUpdate();
+						pstmt.close();
+	
+					}
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 		
@@ -253,8 +314,11 @@ public class AddColloquiumAction extends Action {
 			return mapping.findForward("Failure");
 		}
 		
+		//Need to notify about subscribed series of this talk, too
 		//Add/edit talk
+		boolean isTalkNew = false;
 		if(cqf.getCol_id() == 0){
+			isTalkNew = true;
 			//Insert talk
 			sql = "INSERT INTO colloquium " +
 					"(_date,begintime,endtime,location,detail,lastupdate," +
@@ -341,61 +405,44 @@ public class AddColloquiumAction extends Action {
 				return mapping.findForward("Failure");
 			}
 			
-			//Acknowledge bookmarked users
-			try {
-				int _updateno = 0;
-				sql = "SELECT COUNT(*) _no FROM col_bk WHERE col_id=?";
-				pstmt = conn.conn.prepareStatement(sql);
-				pstmt.setLong(1, cqf.getCol_id());
-				ResultSet rs = pstmt.executeQuery();
-				if(rs.next()){
-					_updateno = rs.getInt("_no");
-				}
-				
-				sql = "SELECT u.name,u.email FROM userinfo u JOIN userprofile up ON u.user_id=up.user_id WHERE up.col_id=? GROUP BY u.name,u.email";
-				pstmt = conn.conn.prepareStatement(sql);
-				pstmt.setLong(1, cqf.getCol_id());
-				rs = pstmt.executeQuery();
-				SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM d, yyyy");
-				SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
-				String _talkDate = dateFormatter.format(talkDate);
-				String _beginTime = timeFormatter.format(beginTime);
-				String _endTime = timeFormatter.format(endTime);
-				while(rs.next()){
-					String bname = rs.getString("name");
-					String[] bemail = new String[1];
-					bemail[0] = rs.getString("email");
-	
-					
-					String localhost= "halley.exp.sis.pitt.edu";
-					String mailhost= "smtp.gmail.com";
-					String mailuser= "NoReply";
-					MailNotifier mail = new MailNotifier(localhost,mailhost,mailuser,bemail);
-					String emailContent = "Dear " + bname + "\n\n" +
-					"Your bookmarked talk was updated as belows:\n\n" + 
-					"Title: " + cqf.getTitle() + "\n" +
-					"Speaker: " + cqf.getSpeaker() +  "\n" +
-					"Host: " + cqf.getHost() + "\n" + 
-					"Date: " + _talkDate + "\n" +
-					"Time: " + _beginTime + " - " + _endTime + "\n" +
-					"Location: " + cqf.getLocation() + "\n\n" +
-					"More detail please visit http://halley.exp.sis.pitt.edu/comet/presentColloquium.do?col_id=" + cqf.getCol_id();
-					
-					try {
-						mail.send("CoMeT | [Update #" + _updateno + "] " + cqf.getTitle(), emailContent);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			/**
 			 * 		
 			 * */
 			
+		}
+		
+		
+		//Assign speakers into the col_speaker table
+		sql = "DELETE FROM col_speaker WHERE col_id=" + cqf.getCol_id();
+		conn.executeUpdate(sql);
+		for(int i=0;i<speakers.size();i++){
+			String name = speakers.get(i);
+			
+			if(speakerID.containsKey(name)){
+				sql = "insert into col_speaker(col_id, speaker_id) values(?,?)";
+				try{
+					
+					pstmt = conn.conn.prepareStatement(sql);
+					pstmt.setLong(1, cqf.getCol_id());
+					pstmt.setLong(2, speakerID.get(name));
+					pstmt.execute();
+					pstmt.close();
+									
+				}catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					try {
+						pstmt.close();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#3) occured. Please try again.");
+						return mapping.findForward("Failure");
+					}				
+					session.setAttribute("SubmitTalkError", "Technical problem (DB Connection#2) occured. Please try again.");
+					return mapping.findForward("Failure");
+				}				
+			}
 		}
 		
 		//Delete col_id in the seriescol table
@@ -403,6 +450,7 @@ public class AddColloquiumAction extends Action {
 		conn.executeUpdate(sql);
 
 		String[] selected_series = cqf.getSeries_id();
+		
 		String series_list = "";
 		if(selected_series != null){
 			for(int i=0;i<selected_series.length;i++){
@@ -415,12 +463,126 @@ public class AddColloquiumAction extends Action {
 			}
 		}
 		
+		//Acknowledge bookmark-this-talk and series-subscribed users
+		try {
+			int _updateno = 0;
+			sql = "SELECT COUNT(*) _no FROM col_bk WHERE col_id=?";
+			pstmt = conn.conn.prepareStatement(sql);
+			pstmt.setLong(1, cqf.getCol_id());
+			ResultSet rs = pstmt.executeQuery();
+			if(rs.next()){
+				_updateno = rs.getInt("_no");
+			}
+			
+			sql = "SELECT u.user_id,u.name,u.email " +
+					"FROM userinfo u JOIN userprofile up ON u.user_id=up.user_id " +
+					"WHERE up.col_id=? " +
+					"GROUP BY u.user_id,u.name,u.email " +
+					"UNION " +
+					"SELECT u.user_id,u.name,u.email " +
+					"FROM userinfo u JOIN final_subscribe_series fss ON fss.user_id = u.user_id " +
+					"LEFT JOIN seriescol sc ON fss.series_id = sc.series_id " +
+					"LEFT JOIN series s ON fss.series_id=s.series_id " +
+					"WHERE sc.col_id=? " +
+					"GROUP BY u.user_id,u.name,u.email ";
+			pstmt = conn.conn.prepareStatement(sql);
+			pstmt.setLong(1, cqf.getCol_id());
+			pstmt.setLong(2, cqf.getCol_id());
+			rs = pstmt.executeQuery();
+			SimpleDateFormat dateFormatter = new SimpleDateFormat("MMM d, yyyy");
+			SimpleDateFormat timeFormatter = new SimpleDateFormat("hh:mm a");
+			String _talkDate = dateFormatter.format(talkDate);
+			String _beginTime = timeFormatter.format(beginTime);
+			String _endTime = timeFormatter.format(endTime);
+			while(rs.next()){
+				String bname = rs.getString("name");
+				String[] bemail = new String[1];
+				bemail[0] = rs.getString("email");
+				String user_id = rs.getString("user_id");
+				
+				//Is this talk bookmarked by this user?
+				boolean isBookmarked = false;
+				sql = "SELECT userprofile_id FROM userprofile WHERE user_id=" + user_id + " AND col_id=" + cqf.getCol_id();
+				ResultSet rsExt = conn.getResultSet(sql);
+				if(rsExt.next()){
+					isBookmarked = true;
+				}
+				
+				//Is there any subscribed series? If so, elaborate them
+				String[] subSeries = null;
+				sql = "SELECT s.name FROM final_subscribe_series fss JOIN series s ON fss.series_id=s.series_id " +
+						"JOIN seriescol sc ON s.series_id=sc.series_id " +
+						"WHERE fss.user_id=" + user_id + " AND sc.col_id=" + cqf.getCol_id() +
+						" GROUP BY s.name";
+				rsExt = conn.getResultSet(sql);
+				while(rsExt.next()){
+					String series = rsExt.getString("name");
+					String[] temp = new String[(subSeries==null?1:subSeries.length)];
+					if(subSeries != null){
+						System.arraycopy(subSeries, 0, temp, 0, subSeries.length);
+					}
+					subSeries = temp;
+					subSeries[subSeries.length-1] = series;
+				}
+				
+				String[] speaker = cqf.getSpeaker().split(";;");
+				String s = "";
+				if(speaker != null){
+					for(int i=0;i<speaker.length;i++){
+						if(speaker[i].trim().length()>0){
+							if(s.length() > 0){
+								s += ", ";
+							}
+							s += speaker[i];
+						}
+					}
+				}
+				
+				
+				String localhost= "halley.exp.sis.pitt.edu";
+				String mailhost= "smtp.gmail.com";
+				String mailuser= "NoReply";
+				MailNotifier mail = new MailNotifier(localhost,mailhost,mailuser,bemail);
+				String emailContent = "Dear " + bname + "\n\n" +
+				"Thank you for using CoMeT." +
+				(isBookmarked?"\nThe talk you have bookmarked has been updated as shown below.":"") +
+				//(isBookmarked && subSeries!=null?" and ":"") +
+				(subSeries!=null?"\nAs you are a subscriber to the " + subSeries[0] + "":"") +
+				(subSeries!=null?
+					(subSeries.length>1?
+						" and " + (subSeries.length==2?
+							"" + subSeries[1]:"" + (subSeries.length-1) + " other")
+						:"")
+					:"") +
+				(subSeries!=null?(subSeries[0].indexOf("Series") >= 0||subSeries[0].indexOf("series") >= 0?"":" Series"):"") +
+				(subSeries!=null?", we wanted to let you know that the following event has been ":"") +
+				(subSeries!=null&&isTalkNew?"posted":"updated") + " as shown below:\n\n" + 
+				"Title: " + cqf.getTitle() + "\n" +
+				"Speaker: " + s +  "\n" +
+				"Host: " + cqf.getHost() + "\n" + 
+				"Date: " + _talkDate + "\n" +
+				"Time: " + _beginTime + " - " + _endTime + "\n" +
+				"Location: " + cqf.getLocation() + "\n\n" +
+				"More detail please visit http://pittcomet.info/presentColloquium.do?col_id=" + cqf.getCol_id();
+				
+				try {
+					mail.send("CoMeT | " + (_updateno > 0?"[Update #" + _updateno + "]":"") + (subSeries!=null?"[Series Subscription]":"") + " " + cqf.getTitle(), emailContent);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//Assign a colloquium to sponsor affiliations
 		HashSet<String> sponsorSet = new HashSet<String>();
 		sql = "DELETE FROM affiliate_col WHERE col_id = " + cqf.getCol_id();
 		conn.executeUpdate(sql);
 
-		if(selected_series != null){
+		if(series_list.length() > 0){
 			sql = "SELECT DISTINCT affiliate_id FROM affiliate_series WHERE series_id IN (" + series_list + ")";
 			ResultSet rs = conn.getResultSet(sql);
 			try {
@@ -434,9 +596,11 @@ public class AddColloquiumAction extends Action {
 		}
 		
 		if(cqf.getSponsor_id() !=null){
-			for(int i=0;i<cqf.getSponsor_id().length;i++){
-				sponsorSet.add(cqf.getSponsor_id()[i]);
-			}
+			
+			String[] sponsors = cqf.getSponsor_id().split(",");
+			for (String sponsor: sponsors)
+				sponsorSet.add(sponsor);
+			
 		}
 		sql = "";
 		for(Iterator<String> it=sponsorSet.iterator();it.hasNext();){
@@ -447,6 +611,7 @@ public class AddColloquiumAction extends Action {
 		}
 		if(sql.length() > 0){
 			sql = "INSERT INTO affiliate_col (affiliate_id,col_id) VALUES " + sql;
+			System.out.println(sql);
 			conn.executeUpdate(sql);
 		}
 		

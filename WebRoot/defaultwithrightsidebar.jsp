@@ -19,7 +19,7 @@
 	</head>
 <body topmargin="0">
 	<div align="center">
-		<table width="880" border="0" cellpadding="0" cellspacing="0" bordercolor="black">
+		<table width="1000" border="0" cellpadding="0" cellspacing="0" bordercolor="black">
 			<tr>
 				<td align="left" valign="top" colspan="2"> 		
 					<tiles:insert attribute="header">
@@ -28,15 +28,18 @@
 				</td>
 			</tr>
 			<tr>
-				<td align="left" valign="top" width="690">
+				<td align="left" valign="top" width="900">
 					<div id="divMain">
 						<tiles:insert attribute="mainwindow"/>
 					</div>
 		        </td>
-				<td align="right" valign="top" width="90"> 		
+				<td align="right" valign="top" width="100"> 		
 					<div id="divCal">
 						<tiles:insert attribute="rightsidebar"/>
 					</div>
+					<logic:present name="UserSession">
+						<div id="divExtension">&nbsp;</div>
+					</logic:present>
 		        </td>
 			</tr>
 			<tr>
